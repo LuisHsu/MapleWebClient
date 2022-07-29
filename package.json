@@ -1,0 +1,19 @@
+{
+  "name": "mapleclient",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LuisHsu/MapleWebClient.git"
+  },
+  "author": "Luis Hsu",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/LuisHsu/MapleWebClient/issues"
+  },
+  "homepage": "https://github.com/LuisHsu/MapleWebClient#readme"
+}
