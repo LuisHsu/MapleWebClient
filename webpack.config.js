@@ -4,16 +4,26 @@ const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = (env, argv) => {
     var config = {
-        entry: './src/index.js',
+        entry: './src/index.ts',
         output: {
             filename: 'index.js',
             path: Path.resolve(__dirname, 'dist'),
             clean: true,
         },
+        module: {
+            rules: [
+              {
+                test: /\.ts?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+              },
+            ],
+        },
         plugins: [
             new HtmlWebpackPlugin({
                 title: 'Maplestory Web Client',
-                template: './src/index.ejs'
+                template: './src/index.ejs',
+                favicon: './asset/Icon.ico',
             }),
         ]
     };
