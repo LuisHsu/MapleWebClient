@@ -4,55 +4,37 @@
     <meta charset="utf-8" />
     <title><%= htmlWebpackPlugin.options.title %></title>
   </head>
-  <body style="
-    background-color: black;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100vw;
-    height: 100vh;
-  ">
-    <form style="
-      font-family: sans-serif;
-      background: transparent;
-      color: white;
-      border: none;
-      height: fit-content;
-    ">
-      <h1 >Enable full screen?</h1>
-      <div style="
-        width: 100%;
-        display: flex;
-        justify-content: space-around;
-      ">
-        <button type="submit" style="
-          max-width: 100px;
-          width: 50%;
-          font-size: 1.2em;
-          line-height: 1.5em;
-        ">
-          Yes
-        </button>
-        <button style="
-          max-width: 100px;
-          width: 50%;
-          font-size: 1.2em;
-          line-height: 1.5em;
-        ">
-          No
-        </button>
-      </div>
-    </form>
-    <canvas id="screen" width="1024" height="768" style="
-      aspect-ratio: 4 / 3;
-      object-fit: contain;
-      object-position: center;
+  <body
+    style="
+      background-color: black;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: 100vw;
       height: 100vh;
-      display: none;
-    "></canvas>
+  ">
+    <canvas id="screen"
+      width="1024"
+      height="768"
+      style="
+        aspect-ratio: 4 / 3;
+        object-fit: contain;
+        object-position: center;
+        width: 100vw;
+        height: 100vh;
+      "></canvas>
     <script src="./index.js"></script>
+    <style>
+      @keyframes fade {
+        from {opacity: 1;}
+        to {opacity: 0;}
+      }
+      .fadeOut{
+        animation-duration: 1.5s;
+        animation-name: fade;
+      }
+    </style>
   </body>
 </html>

@@ -23,9 +23,12 @@ module.exports = (env, argv) => {
             new HtmlWebpackPlugin({
                 title: 'Maplestory Web Client',
                 template: './src/index.ejs',
-                favicon: './asset/Icon.ico',
+                favicon: './asset/icon.ico',
             }),
-        ]
+        ],
+        resolve: {
+            extensions: ['.ts', '.js', '.json']
+        }
     };
     if(env.DEBUG){
         config.mode = 'development';
