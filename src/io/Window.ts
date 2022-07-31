@@ -37,6 +37,8 @@ class Window {
         this.#canvas.addEventListener("mouseup", this.#handle_mouse_up.bind(this));
         this.#canvas.addEventListener("mousemove", this.#handle_mouse_move.bind(this));
         this.#canvas.addEventListener("wheel", this.#handle_wheel.bind(this));
+        document.body.addEventListener("keydown", this.#handle_keydown.bind(this));
+        document.body.addEventListener("keyup", this.#handle_keyup.bind(this));
         this.#canvas.addEventListener("animationend", () => {
             // Reset fade
             Window.#canvas.className = "";
@@ -84,6 +86,12 @@ class Window {
         event.preventDefault();
         // TODO:
         //console.log(event.deltaY);
+    }
+    static #handle_keydown(event: KeyboardEvent): void{
+        // TODO:
+    }
+    static #handle_keyup(event: KeyboardEvent): void{
+        // TODO:
     }
 
     // WebGL
