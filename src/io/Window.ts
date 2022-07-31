@@ -24,7 +24,8 @@ class Window {
         return result;
     }
 
-    static setup(): void {
+    static init(): void {
+        alert("點擊任何地方進入全螢幕模式");
         const init_screen = () => {
             this.#canvas.requestFullscreen().catch(() => {});
             this.#canvas.removeEventListener("click", init_screen);
