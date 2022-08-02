@@ -1,6 +1,11 @@
-import Window from "./io/Window"
+import { Sound } from "./Audio";
+import * as Window from "./io/Window"
 
 // Main function
 document.body.onload = () => {
-    Window.init();
+    try{
+        Window.init();
+    }catch(err){
+        console.error(`[ERROR] ${err.name}: ${err.message}`);
+    }
 }

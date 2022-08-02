@@ -13,9 +13,6 @@
   },
   "author": "Luis Hsu",
   "license": "UNLICENSED",
-  "bugs": {
-    "url": "https://github.com/LuisHsu/MapleWebClient/issues"
-  },
   "homepage": "https://github.com/LuisHsu/MapleWebClient#readme",
   "devDependencies": {
     "html-webpack-plugin": "^5.5.0",

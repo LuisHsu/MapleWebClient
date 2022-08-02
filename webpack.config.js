@@ -9,6 +9,7 @@ module.exports = (env, argv) => {
             filename: 'index.js',
             path: Path.resolve(__dirname, 'dist'),
             clean: true,
+            publicPath: '/',
         },
         module: {
             rules: [
@@ -34,7 +35,7 @@ module.exports = (env, argv) => {
         config.mode = 'development';
         config.devtool = 'inline-source-map';
         config.devServer = {
-            static: './dist',
+            static: './data',
             client: {
                 progress: true,
                 reconnect: true,
