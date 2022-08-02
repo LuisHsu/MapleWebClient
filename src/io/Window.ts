@@ -4,7 +4,6 @@ const window_size = new Size(1024, 768);
 const canvas = document.getElementById("screen") as HTMLCanvasElement;
 
 export function init(): void {
-    alert("點擊任何地方進入全螢幕模式");
     const init_screen = () => {
         canvas.requestFullscreen().catch(() => {});
         canvas.removeEventListener("click", init_screen);
