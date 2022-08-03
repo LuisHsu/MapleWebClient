@@ -1,6 +1,7 @@
 const Path = require("path");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TerserPlugin = require("terser-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = (env, argv) => {
     var config = {
@@ -25,6 +26,11 @@ module.exports = (env, argv) => {
                 title: 'Maplestory Web Client',
                 template: './src/index.ejs',
                 favicon: './asset/icon.ico',
+            }),
+            new CopyPlugin({
+                patterns: [
+                    Path.resolve(__dirname, 'asset', "*"),
+                ],
             }),
         ],
         resolve: {

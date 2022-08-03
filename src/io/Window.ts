@@ -1,14 +1,12 @@
-import { Point, Size } from "../common";
+import { Point, Size } from "../Types";
 
 const window_size = new Size(1024, 768);
 const canvas = document.getElementById("screen") as HTMLCanvasElement;
 
-export function init(): void {
-    const init_screen = () => {
-        canvas.requestFullscreen().catch(() => {});
-        canvas.removeEventListener("click", init_screen);
-    }
-    canvas.addEventListener("click", init_screen);
+export default {init, fade_out}
+
+function init(): void {
+    canvas.requestFullscreen();
     canvas.addEventListener("contextmenu", handle_right_click.bind(this));
     canvas.addEventListener("dblclick", handle_double_click.bind(this));
     canvas.addEventListener("mousedown", handle_mouse_down.bind(this));
@@ -18,12 +16,11 @@ export function init(): void {
     document.body.addEventListener("keydown", handle_keydown.bind(this));
     document.body.addEventListener("keyup", handle_keyup.bind(this));
     canvas.addEventListener("animationend", () => {
-        // Reset fade
-        canvas.className = "";
+        canvas.className = ""; // Reset fade
     })
 }
 
-export function fade_out(): void{
+function fade_out(): void{
     canvas.className = "fadeOut";
 }
 

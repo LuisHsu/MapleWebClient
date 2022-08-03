@@ -15,6 +15,7 @@
   "license": "UNLICENSED",
   "homepage": "https://github.com/LuisHsu/MapleWebClient#readme",
   "devDependencies": {
+    "copy-webpack-plugin": "^11.0.0",
     "html-webpack-plugin": "^5.5.0",
     "ts-loader": "^9.3.1",
     "typescript": "^4.7.4",

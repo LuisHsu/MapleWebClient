@@ -1,14 +1,13 @@
-import { Sound } from "./Audio";
-import * as Window from "./io/Window"
+import Window from "./io/Window";
+import Audio from "./audio/Audio";
 
-// Main function
-document.body.onload = () => {
+function main(){
     try{
-        alert("點擊任何地方進入全螢幕模式");
+        try{document.getElementById("play-button").remove();}catch{};
         Window.init();
-        let testSound = new Sound();
-        testSound.play("GameIn");
+        Audio.Sound.play("LevelUp");
     }catch(err){
         console.error(`[ERROR] ${err.name}: ${err.message}`);
     }
 }
+document.getElementById("play-button").addEventListener("click", main);
