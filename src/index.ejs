@@ -16,14 +16,14 @@
       height: 100vh;
       cursor: url(./cursor.png);
   ">
-    <div style="
+    <div id="play-button" style="
       position:fixed;
       display: flex;
       align-items: center;
       justify-content: center;
       background-color: black;
     ">
-      <img id="play-button" src="./play.svg"/>
+      <img src="./play.svg"/>
     </div>
     <canvas id="screen"
       width="1024"
@@ -45,11 +45,11 @@
         animation-duration: 1.5s;
         animation-name: fade;
       }
-      #play-button{
+      #play-button img{
         height: 50vh;
         width: 50vw;
       }
-      #play-button:hover{
+      #play-button img:hover{
         filter: invert(1);
       }
     </style>

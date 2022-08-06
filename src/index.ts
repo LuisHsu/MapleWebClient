@@ -1,11 +1,18 @@
+import GL from "./graphics/GL";
 import Window from "./io/Window";
-import Audio from "./audio/Audio";
+
+function draw(){
+    
+}
 
 function main(){
     try{
-        try{document.getElementById("play-button").remove();}catch{};
+        if(document.getElementById("play-button")){
+            document.getElementById("play-button").remove();
+        }
         Window.init();
-        Audio.Sound.play("LevelUp");
+        GL.init();
+        GL.start(draw);
     }catch(err){
         console.error(`[ERROR] ${err.name}: ${err.message}`);
     }

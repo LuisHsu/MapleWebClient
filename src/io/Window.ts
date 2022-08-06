@@ -6,7 +6,7 @@ const canvas = document.getElementById("screen") as HTMLCanvasElement;
 export default {init, fade_out}
 
 function init(): void {
-    canvas.requestFullscreen();
+    canvas.requestFullscreen().catch(() => {});
     canvas.addEventListener("contextmenu", handle_right_click.bind(this));
     canvas.addEventListener("dblclick", handle_double_click.bind(this));
     canvas.addEventListener("mousedown", handle_mouse_down.bind(this));
@@ -41,7 +41,6 @@ const map_cursor_position = (pos: Point): Point => {
     result.y = Math.max(0, Math.min(window_size.height, result.y));
     return result;
 }
-
 const handle_right_click = (event: MouseEvent): void => {
     event.preventDefault();
     // Only care about right click
