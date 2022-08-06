@@ -1,5 +1,8 @@
+import Texture from "./Texture";
+
 const gl = (document.getElementById("screen") as HTMLCanvasElement).getContext("webgl");
-const vertex_array = new Float32Array([1, 1, -1, 1, 1, -1, -1, -1,]);
+const vertex_array = new Float32Array([1, 1, -1, 1, 1, -1, -1, -1]);
+const coordinate_array = new Float32Array([1, 0, 0, 0, 1, 1, 0, 1]);
 
 class GL {
     init(): void {
@@ -22,7 +25,6 @@ class GL {
             uniform sampler2D texture;
             void main(void){
                 gl_FragColor = texture2D(texture, texcoord);
-                gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
             }
         `);
         this.program = gl.createProgram();
@@ -35,9 +37,16 @@ class GL {
         this.attributes = {
             vertex_rect: gl.getAttribLocation(this.program, "vertex_rect"),
             tex_coord: gl.getAttribLocation(this.program, "tex_coord"),
+            sampler: gl.getUniformLocation(this.program, "texture"),
         };
-        // Position buffer
+        // Vertex position buffer
         this.position_buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.position_buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, vertex_array, gl.STATIC_DRAW);
+        // Texture coordinate buffer
+        this.coordinate_buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.coordinate_buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, coordinate_array, gl.STATIC_DRAW);
         // Clean
         gl.deleteShader(vertexShader);
         gl.deleteShader(fragmentShader);
@@ -57,19 +66,31 @@ class GL {
             this.interval = null;
         }
     }
-    draw_texture(texture: WebGLTexture): void {
-        gl.useProgram(this.program);
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.position_buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, vertex_array, gl.STATIC_DRAW);
-        gl.vertexAttribPointer(this.attributes.vertex_rect, 2, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(this.attributes.vertex_rect);
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    draw_texture(texture: Texture): void {
+        if(texture.texture){
+            gl.useProgram(this.program);
+            // Vertex
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.position_buffer);
+            gl.vertexAttribPointer(this.attributes.vertex_rect, 2, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(this.attributes.vertex_rect);
+            // Texture
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.coordinate_buffer);
+            gl.vertexAttribPointer(this.attributes.tex_coord, 2, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(this.attributes.tex_coord);
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D, texture.texture);
+            gl.uniform1i(this.attributes.sampler, 0);
+            // Draw
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        }
     }
     private program: WebGLProgram;
     private position_buffer: WebGLBuffer;
+    private coordinate_buffer: WebGLBuffer;
     private attributes: {
         vertex_rect: number,
         tex_coord: number,
+        sampler: WebGLUniformLocation,
     };
     private interval: ReturnType<typeof setInterval> = null;
 }
