@@ -1,0 +1,19 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Docs
+on:
+  push:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: node:16
+    steps:
+      - uses: actions/checkout@v3
+      - name: Npm install
+        run: npm install
+      - name: Build doc/
+        run: npm run doc
