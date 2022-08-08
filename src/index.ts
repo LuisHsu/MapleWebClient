@@ -1,13 +1,13 @@
 import GL, { Transform } from "./graphics/GL";
-import Window, { window_size } from "./io/Window";
+import Window from "./io/Window";
 import {Point, Size} from "./Types";
 
-import Texture from "./graphics/Texture";
+import {Texture} from "./graphics/Texture";
 import Animation, { Frame } from "./graphics/Animation";
 
 let testtex = new Texture("Gamania.0.png",
-    new Point(window_size.width / 2, window_size.height / 2),
-    new Size(window_size.width, window_size.height)
+    new Point(Window.size.width / 2, Window.size.height / 2),
+    new Size(Window.size.width, Window.size.height)
 );
 let testanim = new Animation([
     new Frame(testtex, 4,

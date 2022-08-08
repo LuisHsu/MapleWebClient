@@ -1,5 +1,10 @@
+/**
+ * @category Graphics
+ * @module Animation
+ */
+
 import Setting from "../Setting";
-import Texture from "./Texture";
+import {Texture} from "./Texture";
 import gl, { Drawable, Transform } from "./GL";
 import { Point, Size } from "../Types";
 
@@ -42,7 +47,7 @@ export class Frame implements Drawable {
     private from?: Transform;
 };
 
-class Animation implements Drawable{
+export class Animation implements Drawable{
     constructor(frames: Frame[], repeat: boolean = false){
         this.frames = frames;
         this.repeat = repeat;

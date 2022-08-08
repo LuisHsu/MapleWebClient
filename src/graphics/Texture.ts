@@ -1,7 +1,12 @@
+/**
+ *  @category Graphics
+ *  @module Texture
+ */
+
 import { Point, Size } from "../Types";
 import {create_texture} from "./GL";
 
-class Texture {
+export class Texture {
     offset: Point;
     size: Size;
     texture: WebGLTexture = null;
@@ -15,5 +20,3 @@ class Texture {
         image.src = url;
     }
 }
-
-export default Texture;

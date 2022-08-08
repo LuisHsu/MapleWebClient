@@ -1,5 +1,9 @@
+/**
+ * @category IO
+ * @module Cursor
+ */
 
-enum CursorState {
+export enum CursorState {
     Idle = 0,
     CanClick,
     Game,
@@ -84,7 +88,7 @@ const CursorImage = [
     ],
 ]
 
-class Cursor {
+export class Cursor {
     position: [number, number] = [0, 0];
     state: CursorState;
 };

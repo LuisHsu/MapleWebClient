@@ -1,16 +1,21 @@
+/** 
+ *  #### Coordinate system
+ *  * Model => Origin: bottom center, Positive: up, right
+ *  * View => Origin: bottom left, Positive: up, right
+ * 
+ *  @category Graphics
+ *  @module GL
+ */
+
 import Setting from "../Setting";
-import Texture from "./Texture";
-import {window_size} from "../io/Window";
-import { Point, Size } from "../Types";
+import {Texture} from "./Texture";
+import Window from "../io/Window";
+import {Point, Size} from "../Types";
 
 const gl = (document.getElementById("screen") as HTMLCanvasElement).getContext("webgl");
 const vertex_array = new Float32Array([1, 1, -1, 1, 1, -1, -1, -1]);
 const coordinate_array = new Float32Array([1, 0, 0, 0, 1, 1, 0, 1]);
 
-/** Coordinates
- *  Model => Origin: bottom center, Positive: up, right
- *  View => Origin: bottom left, Positive: up, right
- */
 
 export interface Drawable{
     draw: () => void;
@@ -39,7 +44,7 @@ export class Transform {
     opacity: number = 1.0;
 };
 
-class GL {
+export class GL {
     init(): void {
         // Clear color
         gl.clearColor(0, 0, 0, 1);
@@ -60,8 +65,8 @@ class GL {
                 float rotate_cos = cos(radians(rotate));
                 vec2 rotated_pos = mat2(rotate_cos, -rotate_sin, rotate_sin, rotate_cos) * scaled_pos;
                 gl_Position = vec4(
-                    (vertex_rect.x + rotated_pos.x / 2.0) / ${Math.round(window_size.width / 2)}.0 - 1.0,
-                    (vertex_rect.y + rotated_pos.y / 2.0) / ${Math.round(window_size.height / 2)}.0 - 1.0,
+                    (vertex_rect.x + rotated_pos.x / 2.0) / ${Math.round(Window.size.width / 2)}.0 - 1.0,
+                    (vertex_rect.y + rotated_pos.y / 2.0) / ${Math.round(Window.size.height / 2)}.0 - 1.0,
                 0, 1);
                 texcoord = tex_coord;
             }

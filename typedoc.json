@@ -1,5 +1,10 @@
 {
+    "name": "Maple Web Client",
     "entryPoints": ["./src"],
     "out": "docs",
-    "entryPointStrategy": "expand"
+    "entryPointStrategy": "expand",
+    "exclude": [
+        "src/audio/AudioData.ts",
+        "src/index.ts"
+    ]
 }

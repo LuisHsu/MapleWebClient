@@ -1,13 +1,17 @@
+/**
+ * @category Audio
+ * @module Audio
+ */
 import AudioData from "./AudioData";
 
-class AudioError extends Error{
+export class AudioError extends Error{
     constructor(message: string = ""){
         super(message);
         this.name = "Audio";
     }
 }
 
-class BaseAudio {
+export class BaseAudio {
     protected playlist: {[key: string]: HTMLAudioElement} = {};
     protected _master_volume: number = 1;
     play = (id: string, volume: number = 1, loop: boolean = false) : void => {
@@ -51,7 +55,12 @@ class BaseAudio {
     }
 }
 
-export default {
-    Sound: new BaseAudio,
-    Music: new BaseAudio,
-}
+/**
+ * Singleton for game sound
+ */
+export let Sound = new BaseAudio;
+
+/**
+ * Singleton for game music
+ */
+export let Music = new BaseAudio;

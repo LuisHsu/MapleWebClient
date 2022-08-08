@@ -5,9 +5,11 @@ on:
       - master
 jobs:
   deploy:
-    runs-on: node:16
+    runs-on: ubuntu-latest
     permissions:
       contents: write
+    container:
+      image: node:16
     steps:
       - uses: actions/checkout@v3
         with:
