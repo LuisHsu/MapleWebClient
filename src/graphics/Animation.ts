@@ -1,18 +1,45 @@
+import Setting from "../Setting";
 import Texture from "./Texture";
 import gl, { Drawable, Transform } from "./GL";
+import { Point, Size } from "../Types";
 
 export class Frame implements Drawable {
-    constructor(texture: Texture, delay: number, transform: Transform = new Transform){
+    constructor(texture: Texture, delay: number, transform: Transform = new Transform, from?: Transform){
         this.texture = texture;
-        this.delay = delay;
+        this.delay = delay * 1000;
         this.transform = transform;
+        if(from){
+            this.counter = 0;
+            this.from = from;
+        }
     }
     draw(): void {
-        gl.draw_texture(this.texture, this.transform);
+        if(this.from && (this.counter <= this.delay)){
+            gl.draw_texture(this.texture, new Transform({
+                rotate: this.from.rotate + ((this.transform.rotate - this.from.rotate) * this.counter / this.delay),
+                opacity: this.from.opacity + ((this.transform.opacity - this.from.opacity) * this.counter / this.delay),
+                scale: new Size(
+                    this.from.scale.width + ((this.transform.scale.width - this.from.scale.width) * this.counter / this.delay),
+                    this.from.scale.height + ((this.transform.scale.height - this.from.scale.height) * this.counter / this.delay)
+                ),
+                offset: new Point(
+                    this.from.offset.x + ((this.transform.offset.x - this.from.offset.x) * this.counter / this.delay),
+                    this.from.offset.y + ((this.transform.offset.y - this.from.offset.y) * this.counter / this.delay)
+                ),
+            }));
+            this.counter += Setting.FPS;
+        }else{
+            gl.draw_texture(this.texture, this.transform);
+        }
+    }
+    reset(): void{
+        this.counter = 0;
     }
     delay: number;
     private texture: Texture;
     private transform: Transform;
+    private counter?: number;
+    private from?: Transform;
 };
 
 class Animation implements Drawable{
@@ -22,6 +49,7 @@ class Animation implements Drawable{
     }
     start(){
         if(this.timeout === null){
+            this.frames[this.index].reset();
             this.timeout = setTimeout(this.update.bind(this), this.frames[this.index].delay);
         }
     }
@@ -53,6 +81,7 @@ class Animation implements Drawable{
             }else{
                 this.index += 1;
             }
+            this.frames[this.index].reset();
             this.timeout = setTimeout(this.update.bind(this), this.frames[this.index].delay)
         }
     }

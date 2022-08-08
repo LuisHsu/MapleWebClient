@@ -110,7 +110,7 @@ class GL {
         this.interval = setInterval(() => {
             gl.clear(gl.COLOR_BUFFER_BIT);
             update();
-        }, Setting.FPS / 1000.0) // 60 fps
+        }, 1000.0 / Setting.FPS) // 60 fps
     }
     pause(): void {
         if(this.interval){

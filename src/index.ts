@@ -10,13 +10,14 @@ let testtex = new Texture("Gamania.0.png",
     new Size(window_size.width, window_size.height)
 );
 let testanim = new Animation([
-    new Frame(testtex, 500, new Transform({rotate: 180, opacity: 0.5})),
-    new Frame(testtex, 500, new Transform({rotate: 90, scale: new Size(1.5, 1.5)})),
-    new Frame(testtex, 500, new Transform({offset: new Point(100, 100)})),
-], true);
+    new Frame(testtex, 4,
+        new Transform({opacity: 1, rotate: 180}),
+        new Transform({opacity: 0, scale: new Size(2, 2)})
+    ),
+], false);
 
 function draw(){
-    GL.draw_texture(testtex, new Transform({opacity: 1}));
+    testanim.draw();
 }
 
 function main(){

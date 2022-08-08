@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TerserPlugin = require("terser-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 
-module.exports = (env, argv) => {
+module.exports = (env) => {
     var config = {
         entry: './src/index.ts',
         output: {
