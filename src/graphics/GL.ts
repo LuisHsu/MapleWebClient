@@ -1,5 +1,6 @@
 import Texture from "./Texture";
 import {window_size} from "../io/Window";
+import { Point, Size } from "../Types";
 
 const gl = (document.getElementById("screen") as HTMLCanvasElement).getContext("webgl");
 const vertex_array = new Float32Array([1, 1, -1, 1, 1, -1, -1, -1]);
@@ -10,10 +11,40 @@ const coordinate_array = new Float32Array([1, 0, 0, 0, 1, 1, 0, 1]);
  *  View => Origin: bottom left, Positive: up, right
  */
 
+export interface Drawable{
+    draw: () => void;
+}
+
+export class Transform {
+    constructor(initializer?: {rotate?: number, offset?: Point, scale?: Size, opacity?: number}){
+        if(initializer){
+            if(typeof(initializer.rotate) !== "undefined"){
+                this.rotate = initializer.rotate;
+            }
+            if(typeof(initializer.offset) !== "undefined"){
+                this.offset = initializer.offset;
+            }
+            if(typeof(initializer.scale) !== "undefined"){
+                this.scale = initializer.scale;
+            }
+            if(typeof(initializer.opacity) !== "undefined"){
+                this.opacity = initializer.opacity;
+            }
+        }
+    }
+    rotate: number = 0.0;
+    offset: Point = new Point(0, 0);
+    scale: Size = new Size(1, 1);
+    opacity: number = 1.0;
+};
+
 class GL {
     init(): void {
         // Clear color
-        gl.clearColor(0, 0, 1, 1);
+        gl.clearColor(0, 0, 0, 1);
+        // Alpha blending
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
         // Shaders
         const vertexShader: WebGLShader = load_shader(gl.VERTEX_SHADER,`
@@ -23,14 +54,14 @@ class GL {
             uniform float rotate;
             varying vec2 texcoord;
             void main(void){
+                vec2 scaled_pos = vertex_pos.xy * vertex_rect.zw;
                 float rotate_sin = sin(radians(rotate));
                 float rotate_cos = cos(radians(rotate));
-                vec2 rotated_pos = mat2(rotate_cos, -rotate_sin, rotate_sin, rotate_cos) * vertex_pos;
-                vec2 position = vec2(
-                    (vertex_rect.x + rotated_pos.x / 2.0 * vertex_rect.z) / ${window_size.width / 2}.0 - 1.0,
-                    (vertex_rect.y + ((rotated_pos.y + 1.0) / 2.0) * vertex_rect.w) / ${window_size.height / 2}.0 - 1.0
-                );
-                gl_Position = vec4(position, 0, 1);
+                vec2 rotated_pos = mat2(rotate_cos, -rotate_sin, rotate_sin, rotate_cos) * scaled_pos;
+                gl_Position = vec4(
+                    (vertex_rect.x + rotated_pos.x / 2.0) / ${window_size.width / 2}.0 - 1.0,
+                    (vertex_rect.y + rotated_pos.y / 2.0) / ${window_size.height / 2}.0 - 1.0,
+                0, 1);
                 texcoord = tex_coord;
             }
         `);
@@ -38,8 +69,10 @@ class GL {
             precision mediump float;
             varying vec2 texcoord;
             uniform sampler2D texture;
+            uniform float opacity;
             void main(void){
                 gl_FragColor = texture2D(texture, texcoord);
+                gl_FragColor *= opacity;
             }
         `);
         this.program = gl.createProgram();
@@ -55,6 +88,7 @@ class GL {
             rotate: gl.getUniformLocation(this.program, "rotate"),
             tex_coord: gl.getAttribLocation(this.program, "tex_coord"),
             sampler: gl.getUniformLocation(this.program, "texture"),
+            opacity: gl.getUniformLocation(this.program, "opacity"),
         };
         // Vertex position buffer
         this.position_buffer = gl.createBuffer();
@@ -83,7 +117,7 @@ class GL {
             this.interval = null;
         }
     }
-    draw_texture(texture: Texture, rotate: number = 0): void {
+    draw_texture(texture: Texture, transform: Transform = new Transform): void {
         if(texture.texture){
             gl.useProgram(this.program);
             // Vertex
@@ -92,11 +126,13 @@ class GL {
             gl.enableVertexAttribArray(this.attributes.vertex_pos);
             // Vertex rect
             gl.uniform4fv(this.attributes.vertex_rect, [
-                texture.offset.x, texture.offset.y,
-                texture.size.width, texture.size.height,
+                texture.offset.x + transform.offset.x,
+                texture.offset.y + transform.offset.y,
+                texture.size.width * transform.scale.width,
+                texture.size.height * transform.scale.height,
             ]);
             // Rotate
-            gl.uniform1f(this.attributes.rotate, rotate);
+            gl.uniform1f(this.attributes.rotate, transform.rotate);
             // Texture
             gl.bindBuffer(gl.ARRAY_BUFFER, this.coordinate_buffer);
             gl.vertexAttribPointer(this.attributes.tex_coord, 2, gl.FLOAT, false, 0, 0);
@@ -104,6 +140,8 @@ class GL {
             gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D, texture.texture);
             gl.uniform1i(this.attributes.sampler, 0);
+            // Opacity
+            gl.uniform1f(this.attributes.opacity, transform.opacity);
             // Draw
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
         }
@@ -117,6 +155,7 @@ class GL {
         rotate: WebGLUniformLocation,
         tex_coord: number,
         sampler: WebGLUniformLocation,
+        opacity: WebGLUniformLocation,
     };
     private interval: ReturnType<typeof setInterval> = null;
 }

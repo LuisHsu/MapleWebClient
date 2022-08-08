@@ -22,6 +22,7 @@
       align-items: center;
       justify-content: center;
       background-color: black;
+      z-index: 999;
     ">
       <img src="./play.svg"/>
     </div>
@@ -34,6 +35,18 @@
         object-position: center;
         width: 100vw;
         height: 100vh;
+      "></canvas>
+    <canvas id="ui"
+      width="1024"
+      height="768"
+      style="
+        aspect-ratio: 4 / 3;
+        object-fit: contain;
+        object-position: center;
+        width: 100vw;
+        height: 100vh;
+        position:absolute;
+        z-index: 10;
       "></canvas>
     <script src="./index.js"></script>
     <style>
