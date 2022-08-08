@@ -17,7 +17,7 @@ jobs:
       - name: Build doc/
         run: npm run doc
       - name: Accept GitHub
-        run: ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+        run: mkdir ~/.ssh && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
