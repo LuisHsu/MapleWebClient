@@ -1,4 +1,4 @@
-# MapleWebClient
+# MapleStory Web Client
 
 ### Setup
 
