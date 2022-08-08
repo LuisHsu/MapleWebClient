@@ -1,6 +1,6 @@
 import { Point, Size } from "../Types";
 
-const window_size = new Size(1024, 768);
+export const window_size = new Size(1024, 768);
 const canvas = document.getElementById("screen") as HTMLCanvasElement;
 
 export default {init, fade_out}

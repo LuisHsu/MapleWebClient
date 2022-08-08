@@ -1,21 +1,36 @@
 import Texture from "./Texture";
+import {window_size} from "../io/Window";
 
 const gl = (document.getElementById("screen") as HTMLCanvasElement).getContext("webgl");
 const vertex_array = new Float32Array([1, 1, -1, 1, 1, -1, -1, -1]);
 const coordinate_array = new Float32Array([1, 0, 0, 0, 1, 1, 0, 1]);
 
+/** Coordinates
+ *  Model => Origin: bottom center, Positive: up, right
+ *  View => Origin: bottom left, Positive: up, right
+ */
+
 class GL {
     init(): void {
         // Clear color
-        gl.clearColor(0, 0, 0, 1);
+        gl.clearColor(0, 0, 1, 1);
 
         // Shaders
         const vertexShader: WebGLShader = load_shader(gl.VERTEX_SHADER,`
-            attribute vec4 vertex_rect;
+            attribute vec2 vertex_pos;
             attribute vec2 tex_coord;
+            uniform vec4 vertex_rect;
+            uniform float rotate;
             varying vec2 texcoord;
             void main(void){
-                gl_Position = vertex_rect;
+                float rotate_sin = sin(radians(rotate));
+                float rotate_cos = cos(radians(rotate));
+                vec2 rotated_pos = mat2(rotate_cos, -rotate_sin, rotate_sin, rotate_cos) * vertex_pos;
+                vec2 position = vec2(
+                    (vertex_rect.x + rotated_pos.x / 2.0 * vertex_rect.z) / ${window_size.width / 2}.0 - 1.0,
+                    (vertex_rect.y + ((rotated_pos.y + 1.0) / 2.0) * vertex_rect.w) / ${window_size.height / 2}.0 - 1.0
+                );
+                gl_Position = vec4(position, 0, 1);
                 texcoord = tex_coord;
             }
         `);
@@ -35,7 +50,9 @@ class GL {
             console.error(`Unable to initialize the shader program: ${gl.getProgramInfoLog(this.program)}`);
         }
         this.attributes = {
-            vertex_rect: gl.getAttribLocation(this.program, "vertex_rect"),
+            vertex_pos: gl.getAttribLocation(this.program, "vertex_pos"),
+            vertex_rect: gl.getUniformLocation(this.program, "vertex_rect"),
+            rotate: gl.getUniformLocation(this.program, "rotate"),
             tex_coord: gl.getAttribLocation(this.program, "tex_coord"),
             sampler: gl.getUniformLocation(this.program, "texture"),
         };
@@ -66,13 +83,20 @@ class GL {
             this.interval = null;
         }
     }
-    draw_texture(texture: Texture): void {
+    draw_texture(texture: Texture, rotate: number = 0): void {
         if(texture.texture){
             gl.useProgram(this.program);
             // Vertex
             gl.bindBuffer(gl.ARRAY_BUFFER, this.position_buffer);
-            gl.vertexAttribPointer(this.attributes.vertex_rect, 2, gl.FLOAT, false, 0, 0);
-            gl.enableVertexAttribArray(this.attributes.vertex_rect);
+            gl.vertexAttribPointer(this.attributes.vertex_pos, 2, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(this.attributes.vertex_pos);
+            // Vertex rect
+            gl.uniform4fv(this.attributes.vertex_rect, [
+                texture.offset.x, texture.offset.y,
+                texture.size.width, texture.size.height,
+            ]);
+            // Rotate
+            gl.uniform1f(this.attributes.rotate, rotate);
             // Texture
             gl.bindBuffer(gl.ARRAY_BUFFER, this.coordinate_buffer);
             gl.vertexAttribPointer(this.attributes.tex_coord, 2, gl.FLOAT, false, 0, 0);
@@ -88,7 +112,9 @@ class GL {
     private position_buffer: WebGLBuffer;
     private coordinate_buffer: WebGLBuffer;
     private attributes: {
-        vertex_rect: number,
+        vertex_pos: number,
+        vertex_rect: WebGLUniformLocation,
+        rotate: WebGLUniformLocation,
         tex_coord: number,
         sampler: WebGLUniformLocation,
     };
