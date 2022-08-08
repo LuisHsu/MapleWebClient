@@ -1,12 +1,23 @@
+/**
+ * Point: 2D location
+ */
 export class Point{
     x: number;
     y: number;
+
+    /**
+     * @param x : x position
+     * @param y : y position
+     */
     constructor(x: number = 0, y: number = 0){
         this.x = x;
         this.y = y;
     }
 }
 
+/**
+ * Size: 2D size
+ */
 export class Size{
     width: number;
     height: number;
