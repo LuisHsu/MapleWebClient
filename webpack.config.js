@@ -26,6 +26,9 @@ module.exports = (env, argv) => {
                 title: 'Maplestory Web Client',
                 template: './src/index.ejs',
                 favicon: './asset/icon.ico',
+                templateParameters: {
+                    screenSize: {width: 1024, height: 768},
+                }
             }),
             new CopyPlugin({
                 patterns: [

@@ -1,3 +1,4 @@
+import Setting from "../Setting";
 import Texture from "./Texture";
 import {window_size} from "../io/Window";
 import { Point, Size } from "../Types";
@@ -59,8 +60,8 @@ class GL {
                 float rotate_cos = cos(radians(rotate));
                 vec2 rotated_pos = mat2(rotate_cos, -rotate_sin, rotate_sin, rotate_cos) * scaled_pos;
                 gl_Position = vec4(
-                    (vertex_rect.x + rotated_pos.x / 2.0) / ${window_size.width / 2}.0 - 1.0,
-                    (vertex_rect.y + rotated_pos.y / 2.0) / ${window_size.height / 2}.0 - 1.0,
+                    (vertex_rect.x + rotated_pos.x / 2.0) / ${Math.round(window_size.width / 2)}.0 - 1.0,
+                    (vertex_rect.y + rotated_pos.y / 2.0) / ${Math.round(window_size.height / 2)}.0 - 1.0,
                 0, 1);
                 texcoord = tex_coord;
             }
@@ -109,7 +110,7 @@ class GL {
         this.interval = setInterval(() => {
             gl.clear(gl.COLOR_BUFFER_BIT);
             update();
-        }, 60.0 / 1000.0) // 60 fps
+        }, Setting.FPS / 1000.0) // 60 fps
     }
     pause(): void {
         if(this.interval){

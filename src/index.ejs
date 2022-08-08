@@ -26,25 +26,12 @@
     ">
       <img src="./play.svg"/>
     </div>
-    <canvas id="screen"
-      width="1024"
-      height="768"
-      style="
-        aspect-ratio: 4 / 3;
-        object-fit: contain;
-        object-position: center;
-        width: 100vw;
-        height: 100vh;
-      "></canvas>
+    <canvas width=<%= screenSize.width %> height=<%= screenSize.height %> id="screen" class="screen"></canvas>
     <canvas id="ui"
-      width="1024"
-      height="768"
+      class="screen"
+      width=<%= screenSize.width %>
+      height=<%= screenSize.height %>
       style="
-        aspect-ratio: 4 / 3;
-        object-fit: contain;
-        object-position: center;
-        width: 100vw;
-        height: 100vh;
         position:absolute;
         z-index: 10;
       "></canvas>
@@ -57,6 +44,13 @@
       .fadeOut{
         animation-duration: 1.5s;
         animation-name: fade;
+      }
+      .screen{
+        aspect-ratio: <%= screenSize.width %> / <%= screenSize.height %>;
+        object-fit: contain;
+        object-position: center;
+        width: 100vw;
+        height: 100vh;
       }
       #play-button img{
         height: 50vh;

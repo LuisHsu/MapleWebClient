@@ -1,13 +1,16 @@
+import Setting from "../Setting";
 import { Point, Size } from "../Types";
 
-export const window_size = new Size(1024, 768);
+export const window_size = new Size(Setting.ScreenSize.width, Setting.ScreenSize.height);
 const ui_canvas = document.getElementById("ui") as HTMLCanvasElement;
 const screen_canvas = document.getElementById("screen") as HTMLCanvasElement;
 
 export default {init, fade_out}
 
 function init(): void {
-    document.body.requestFullscreen().catch(() => {});
+    if(Setting.Fullscreen){
+        document.body.requestFullscreen().catch(() => {});
+    }
     ui_canvas.addEventListener("contextmenu", handle_right_click.bind(this));
     ui_canvas.addEventListener("dblclick", handle_double_click.bind(this));
     ui_canvas.addEventListener("mousedown", handle_mouse_down.bind(this));
@@ -18,19 +21,17 @@ function init(): void {
     document.body.addEventListener("keyup", handle_keyup.bind(this));
     screen_canvas.addEventListener("animationend", () => {
         // Reset fade
-        screen_canvas.className = ""; 
-        ui_canvas.className = "";
+        document.body.className = ""; 
     })
 }
 
 function fade_out(): void{
-    screen_canvas.className = "fadeOut";
-    ui_canvas.className = "fadeOut";
+    document.body.className = "fadeOut";
 }
 
 const map_cursor_position = (pos: Point): Point => {
     let result = new Point;
-    if(ui_canvas.clientHeight > ui_canvas.clientWidth * 0.75){
+    if(ui_canvas.clientHeight > ui_canvas.clientWidth * (window_size.height / window_size.width)){
         const window_h = ui_canvas.clientWidth * window_size.height / window_size.width;
         const window_y = pos.y - ((ui_canvas.clientHeight - window_h) / 2);
         result.x = Math.round(pos.x * window_size.width / ui_canvas.clientWidth);

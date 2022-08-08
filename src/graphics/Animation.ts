@@ -43,14 +43,15 @@ class Animation implements Drawable{
     private timeout: ReturnType<typeof setTimeout> = null;
     private update(){
         if(this.timeout !== null){
-            this.index += 1;
-            if(this.index >= this.frames.length){
+            if((this.index + 1) >= this.frames.length){
                 if(this.repeat){
-                    this.index = 0;
+                    this.reset();
                 }else{
                     this.stop();
                     return;
                 }
+            }else{
+                this.index += 1;
             }
             this.timeout = setTimeout(this.update.bind(this), this.frames[this.index].delay)
         }
