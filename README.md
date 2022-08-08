@@ -1,4 +1,4 @@
-# MapleClient
+# MapleWebClient
 
 ### Setup
 

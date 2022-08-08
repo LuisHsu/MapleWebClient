@@ -1,0 +1,28 @@
+name: Build & Deploy documents
+on:
+  push:
+    branches:
+      - master
+jobs:
+  deploy:
+    runs-on: node:16
+    permissions:
+      contents: write
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: Npm install
+        run: npm install
+
+      - name: Build doc/
+        run: npm run doc
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
