@@ -4,7 +4,6 @@ name: Docs
 on:
   push:
     branches: [ "master" ]
-  workflow_dispatch:
 
 jobs:
   build:
@@ -17,3 +16,4 @@ jobs:
         run: npm install
       - name: Build doc/
         run: npm run doc
+      - uses: ptienchuan/deploy-github-pages-action@1.0.0
