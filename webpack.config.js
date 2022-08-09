@@ -25,26 +25,30 @@ module.exports = (env) => {
             new HtmlWebpackPlugin({
                 title: 'Maplestory Web Client',
                 template: './src/index.ejs',
-                favicon: './asset/icon.ico',
+                favicon: './src/icon.ico',
                 templateParameters: {
                     screenSize: {width: 1024, height: 768},
                 }
             }),
             new CopyPlugin({
                 patterns: [
-                    Path.resolve(__dirname, 'asset', "*"),
+                    Path.resolve(__dirname, 'src', "icon.ico"),
+                    Path.resolve(__dirname, 'src', "play.svg"),
                 ],
             }),
         ],
         resolve: {
             extensions: ['.ts', '.js', '.json']
+        },
+        watchOptions: {
+            ignored: new RegExp("data"),
         }
     };
     if(env.DEBUG){
         config.mode = 'development';
-        config.devtool = 'inline-source-map';
+        config.devtool = 'source-map';
         config.devServer = {
-            static: './data',
+            static: './dist/data',
             client: {
                 progress: true,
                 reconnect: true,

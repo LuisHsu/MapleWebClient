@@ -1,4 +1,4 @@
-const AudioData: {[key: string]: string}= {
+const AudioData: {[key: string]: string} = {
     "BtMouseClick": "UI/BtMouseClick.mp3",
     "BtMouseOver": "UI/BtMouseOver.mp3",
     "CharSelect": "UI/CharSelect.mp3",
