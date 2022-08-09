@@ -1,3 +1,5 @@
+import { Transform } from "./graphics/GL";
+
 /**
  * Point: 2D location
  */
@@ -25,4 +27,12 @@ export class Size{
         this.width = w;
         this.height = h;
     }
+}
+
+export interface Drawable {
+    draw(transform: Transform): void;
+}
+
+export interface NeedInit {
+    init(): void;
 }

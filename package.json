@@ -7,7 +7,7 @@
     "start": " webpack serve --open --env DEBUG=1",
     "debug_build": "webpack --progress --env DEBUG=1",
     "build": "webpack --progress",
-    "doc": "typedoc --pretty"
+    "docs": "typedoc --pretty"
   },
   "repository": {
     "type": "git",

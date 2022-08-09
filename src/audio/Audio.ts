@@ -4,7 +4,7 @@
  */
 import AudioData from "./AudioData";
 
-export class AudioError extends Error{
+export class AudioError extends Error {
     constructor(message: string = ""){
         super(message);
         this.name = "Audio";

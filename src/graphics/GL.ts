@@ -10,15 +10,11 @@
 import Setting from "../Setting";
 import {Texture} from "./Texture";
 import Window from "../io/Window";
-import {Point, Size} from "../Types";
+import {NeedInit, Point, Size} from "../Types";
 
 const gl = (document.getElementById("screen") as HTMLCanvasElement).getContext("webgl");
 const vertex_array = new Float32Array([1, 1, -1, 1, 1, -1, -1, -1]);
 const coordinate_array = new Float32Array([1, 0, 0, 0, 1, 1, 0, 1]);
-
-export interface Drawable{
-    draw: (transform: Transform) => void;
-}
 
 export class Transform {
     constructor(initializer?: {rotate?: number, offset?: Point, scale?: Size, opacity?: number}){
@@ -43,7 +39,7 @@ export class Transform {
     opacity: number = 1.0;
 };
 
-export class GL {
+export class GL implements NeedInit {
     init(): void {
         // Clear color
         gl.clearColor(0, 0, 0, 1);

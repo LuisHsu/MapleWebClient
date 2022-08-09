@@ -4,15 +4,15 @@
  */
 
 import Animation, { Frame } from "../graphics/Animation";
-import { Drawable, Transform } from "../graphics/GL";
+import { Transform } from "../graphics/GL";
 import { Texture } from "../graphics/Texture";
-import { Point, Size } from "../Types";
+import { Drawable, NeedInit, Point, Size } from "../Types";
 import Window from "./Window";
 
-export class Cursor implements Drawable {
+export class Cursor implements Drawable, NeedInit {
     public position: Point = new Point(Window.size.width / 2, Window.size.height / 2);
     init(): void {
-        this.set_state(CursorState.CanClick);
+        this.set_state(CursorState.Idle);
     }
     state(): CursorState {
         return this._state;
