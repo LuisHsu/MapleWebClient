@@ -14,7 +14,6 @@
       justify-content: center;
       width: 100vw;
       height: 100vh;
-      cursor: url(./cursor.png);
   ">
     <div id="play-button" style="
       position:fixed;
@@ -26,15 +25,7 @@
     ">
       <img src="./play.svg"/>
     </div>
-    <canvas width=<%= screenSize.width %> height=<%= screenSize.height %> id="screen" class="screen"></canvas>
-    <canvas id="ui"
-      class="screen"
-      width=<%= screenSize.width %>
-      height=<%= screenSize.height %>
-      style="
-        position:absolute;
-        z-index: 10;
-      "></canvas>
+    <canvas width=<%= screenSize.width %> height=<%= screenSize.height %> id="screen"></canvas>
     <script src="./index.js"></script>
     <style>
       @keyframes fade {
@@ -45,7 +36,7 @@
         animation-duration: 1.5s;
         animation-name: fade;
       }
-      .screen{
+      #screen{
         aspect-ratio: <%= screenSize.width %> / <%= screenSize.height %>;
         object-fit: contain;
         object-position: center;

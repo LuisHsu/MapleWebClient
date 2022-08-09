@@ -1,6 +1,6 @@
 /** 
  *  #### Coordinate system
- *  * Model => Origin: bottom center, Positive: up, right
+ *  * Model => Origin: center, Positive: up, right
  *  * View => Origin: bottom left, Positive: up, right
  * 
  *  @category Graphics
