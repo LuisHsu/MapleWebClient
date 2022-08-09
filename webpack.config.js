@@ -39,16 +39,13 @@ module.exports = (env) => {
         ],
         resolve: {
             extensions: ['.ts', '.js', '.json']
-        },
-        watchOptions: {
-            ignored: new RegExp("data"),
         }
     };
     if(env.DEBUG){
         config.mode = 'development';
-        config.devtool = 'source-map';
+        config.devtool = 'inline-source-map';
         config.devServer = {
-            static: './dist/data',
+            static: './dist',
             client: {
                 progress: true,
                 reconnect: true,

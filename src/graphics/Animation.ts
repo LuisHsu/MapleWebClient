@@ -18,29 +18,40 @@ export class Frame implements Drawable {
             this.from = from;
         }
     }
-    draw(transform: Transform): void {
+    draw(transform: Transform = new Transform): void {
         if(this.delay && this.from && (this.counter <= this.delay)){
             gl.draw_texture(this.texture, new Transform({
-                rotate: this.from.rotate + transform.rotate +
-                    ((this.transform.rotate - this.from.rotate) * this.counter / this.delay),
-                opacity: this.from.opacity * transform.opacity *
-                    ((this.transform.opacity - this.from.opacity) * this.counter / this.delay),
+                rotate: transform.rotate + (this.from.rotate + 
+                    ((this.transform.rotate - this.from.rotate) * this.counter / this.delay)),
+                opacity: transform.opacity * (this.from.opacity +
+                    ((this.transform.opacity - this.from.opacity) * this.counter / this.delay)),
                 scale: new Size(
-                    this.from.scale.width + transform.scale.width +
-                    ((this.transform.scale.width - this.from.scale.width) * this.counter / this.delay),
-                    this.from.scale.height + transform.scale.height +
-                    ((this.transform.scale.height - this.from.scale.height) * this.counter / this.delay)
+                    transform.scale.width * (this.from.scale.width + 
+                    ((this.transform.scale.width - this.from.scale.width) * this.counter / this.delay)),
+                    transform.scale.height * (this.from.scale.height + 
+                    ((this.transform.scale.height - this.from.scale.height) * this.counter / this.delay))
                 ),
                 offset: new Point(
-                    this.from.offset.x + transform.offset.x +
-                    ((this.transform.offset.x - this.from.offset.x) * this.counter / this.delay),
-                    this.from.offset.y + transform.offset.y +
-                    ((this.transform.offset.y - this.from.offset.y) * this.counter / this.delay)
+                    transform.offset.x + (this.from.offset.x + 
+                    ((this.transform.offset.x - this.from.offset.x) * this.counter / this.delay)),
+                    transform.offset.y + (this.from.offset.y + 
+                    ((this.transform.offset.y - this.from.offset.y) * this.counter / this.delay))
                 ),
             }));
             this.counter += Setting.FPS;
         }else{
-            gl.draw_texture(this.texture, this.transform);
+            gl.draw_texture(this.texture, new Transform({
+                rotate: this.transform.rotate + transform.rotate,
+                opacity: this.transform.opacity * transform.opacity,
+                scale: new Size(
+                    this.transform.scale.width * transform.scale.width,
+                    this.transform.scale.height * transform.scale.height
+                ),
+                offset: new Point(
+                    this.transform.offset.x + transform.offset.x,
+                    this.transform.offset.y + transform.offset.y
+                ),
+            }));
         }
     }
     reset(): void{
@@ -73,7 +84,7 @@ export class Animation implements Drawable{
     reset(){
         this.index = 0;
     }
-    draw(transform: Transform){
+    draw(transform: Transform = new Transform){
         this.frames[this.index].draw(transform);
     }
     private repeat: boolean;

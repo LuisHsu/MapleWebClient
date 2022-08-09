@@ -11,10 +11,12 @@
             "url": "file:///${workspaceFolder}/dist/index.html",
             "sourceMaps": true,
             "disableNetworkCache": true,
+            "webRoot": "${workspaceFolder}",
             "outFiles": [
                 "${workspaceFolder}/dist/*.js"
             ],
-            "preLaunchTask": "Debug build"
+            "preLaunchTask": "Debug build",
+            "runtimeArgs": ["--disable-web-security"]
         }
     ]
 }
