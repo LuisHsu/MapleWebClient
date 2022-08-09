@@ -15,8 +15,6 @@ export class Window implements NeedInit {
         if(Setting.Fullscreen){
             document.body.requestFullscreen().catch(() => {});
         }
-        document.body.style.cursor = "none";
-        canvas.style.cursor = "none";
         canvas.addEventListener("contextmenu", this.handle_right_click.bind(this));
         canvas.addEventListener("dblclick", this.handle_double_click.bind(this));
         canvas.addEventListener("mousedown", this.handle_mouse_down.bind(this));
