@@ -4,9 +4,15 @@
  */
 
 import Setting from "../Setting";
+<<<<<<< HEAD
 import { Texture } from "./Texture";
 import canvas, { Drawable, Transform } from "./Canvas";
 import { Size } from "../Types";
+=======
+import {Texture} from "./Texture";
+import gl, {Transform} from "./GL";
+import {Drawable, Point, Size} from "../Types";
+>>>>>>> ef04676 (Add NeedInit interface)
 
 export class Frame implements Drawable {
     /**
