@@ -7,14 +7,14 @@
         {
             "type": "chrome",
             "request": "launch",
-            "name": "Launch Chrome against localhost",
+            "name": "Launch by Chrome",
             "url": "file:///${workspaceFolder}/dist/index.html",
-            "webRoot": "${workspaceFolder}/dist",
             "sourceMaps": true,
             "disableNetworkCache": true,
             "outFiles": [
                 "${workspaceFolder}/dist/*.js"
-            ]
+            ],
+            "preLaunchTask": "Debug build"
         }
     ]
 }
