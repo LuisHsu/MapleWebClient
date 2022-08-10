@@ -23,6 +23,7 @@ const AudioData: {[key: string]: string} = {
     "Tombstone": "Game/Tombstone.mp3",
     "NxLogo": "BgmUI/NxLogo.mp3",
     "WzLogo": "BgmUI/WzLogo.mp3",
+    "Login": "BgmUI/Title.mp3",
 }
 
 export default AudioData;

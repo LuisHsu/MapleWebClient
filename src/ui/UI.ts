@@ -8,9 +8,7 @@ import { Drawable, MouseHandler, NeedInit, Point } from "../Types";
 import { Cursor, CursorState } from "../io/Cursor";
 import { UILogo } from "./UILogo";
 
-export interface UIState extends Drawable, MouseHandler {
-    state_name: string;
-}
+export type UIState = Drawable & MouseHandler;
 
 export class UI implements Drawable, NeedInit, MouseHandler {
     
