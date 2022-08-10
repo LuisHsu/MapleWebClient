@@ -80,9 +80,12 @@ export class Frame implements Drawable {
 };
 
 export class Animation implements Drawable{
-    constructor(frames: Frame[], repeat: boolean = false){
+    constructor(frames: Frame[], repeat: boolean = false, auto_start: boolean = false){
         this.frames = frames;
         this.repeat = repeat;
+        if(auto_start){
+            this.start();
+        }
     }
     start(){
         if((this.frames.length > 1) && (this.timeout === null)){
