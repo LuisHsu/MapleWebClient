@@ -36,3 +36,12 @@ export interface Drawable {
 export interface NeedInit {
     init(): void;
 }
+
+export interface MouseHandler {
+    right_click?(position: Point): void;
+    double_click?(position: Point): void;
+    mouse_down?(position: Point): void;
+    mouse_up?(position: Point): void;
+    mouse_move?(position: Point): void;
+    mouse_wheel?(delta: number): void;
+}

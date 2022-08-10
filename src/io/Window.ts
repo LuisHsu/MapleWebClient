@@ -86,8 +86,7 @@ export class Window implements NeedInit {
     }
     private handle_wheel = (event: WheelEvent): void => {
         event.preventDefault();
-        // TODO:
-        //console.log(event.deltaY);
+        UI.mouse_wheel(event.deltaY);
     }
     private handle_keydown = (event: KeyboardEvent): void => {
         // TODO:

@@ -4,11 +4,11 @@
  */
 
 import { Transform } from "../graphics/GL";
-import { Drawable, NeedInit, Point } from "../Types";
+import { Drawable, MouseHandler, NeedInit, Point } from "../Types";
 import { Cursor, CursorState } from "./Cursor";
 
-export class UI implements Drawable, NeedInit {
-
+export class UI implements Drawable, NeedInit, MouseHandler {
+    
     cursor: Cursor;
 
     init(): void{
@@ -35,9 +35,20 @@ export class UI implements Drawable, NeedInit {
         this.cursor.set_state(this.saved_cursor_state);
     }
 
+    mouse_wheel(delta: number): void {
+        
+    }
+
     private saved_cursor_state: CursorState = CursorState.Idle;
 }
 
+export namespace UI{
+    export enum State{
+        LOGIN,
+        GAME,
+        CASHSHOP,
+    }
+}
 
 let _UI = new UI;
 export default _UI;
