@@ -22,4 +22,8 @@ export default {
      * Using fullscreen
      */
     Fullscreen: false,
+    /**
+     * Path of data files
+     */
+    DataPath: "data/",
 }

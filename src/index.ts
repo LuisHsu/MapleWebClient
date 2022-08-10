@@ -1,5 +1,5 @@
 import GL from "./graphics/GL";
-import UI from "./io/UI";
+import UI from "./ui/UI";
 import Window from "./io/Window";
 
 function draw(){

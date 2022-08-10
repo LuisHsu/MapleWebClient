@@ -9,10 +9,24 @@ import gl, {Transform} from "./GL";
 import {Drawable, Point, Size} from "../Types";
 
 export class Frame implements Drawable {
-    constructor(texture: Texture, delay?: number, transform: Transform = new Transform, from?: Transform){
+    /**
+     * 
+     * @param texture Frame texture
+     * @param delay Frame delay in seconds
+     * @param transform Frame transformation
+     * @param from Frame transformation that begins from
+     * @param callback Callback function after frame expired
+     */
+    constructor(texture: Texture,
+            delay?: number,
+            transform: Transform = new Transform,
+            from?: Transform,
+            callback?: () => void
+        ){
         this.texture = texture;
         this.delay = delay ? (delay * 1000) : null;
         this.transform = transform;
+        this.callback = callback;
         if(from){
             this.counter = 0;
             this.from = from;
@@ -58,6 +72,7 @@ export class Frame implements Drawable {
         this.counter = 0;
     }
     delay?: number;
+    callback?: () => void;
     private texture: Texture;
     private transform: Transform;
     private counter?: number;
@@ -93,18 +108,25 @@ export class Animation implements Drawable{
     private timeout: ReturnType<typeof setTimeout> = null;
     private update(){
         if(this.timeout !== null){
+            const previous = this.frames[this.index];
             if((this.index + 1) >= this.frames.length){
                 if(this.repeat){
                     this.reset();
                 }else{
                     this.stop();
+                    if(previous.callback){
+                        previous.callback();
+                    }
                     return;
                 }
             }else{
                 this.index += 1;
             }
             this.frames[this.index].reset();
-            this.timeout = setTimeout(this.update.bind(this), this.frames[this.index].delay)
+            this.timeout = setTimeout(this.update.bind(this), this.frames[this.index].delay);
+            if(previous.callback){
+                previous.callback();
+            }
         }
     }
 }

@@ -2,6 +2,7 @@
  * @category Audio
  * @module Audio
  */
+import Setting from "../Setting";
 import AudioData from "./AudioData";
 
 export class AudioError extends Error {
@@ -17,7 +18,7 @@ export class BaseAudio {
     play = (id: string, volume: number = 1, loop: boolean = false) : void => {
         if(id in AudioData){
             if(!(id in this.playlist)){
-                this.playlist[id] = new Audio(`Sound/${AudioData[id]}`);
+                this.playlist[id] = new Audio(`${Setting.DataPath}Sound/${AudioData[id]}`);
             }
             this.playlist[id].volume = volume * this._master_volume;
             this.playlist[id].loop = loop;

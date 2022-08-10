@@ -22,7 +22,7 @@ export class Cursor implements Drawable, NeedInit {
             this._animation.stop();
         }
         this._animation = new Animation(CursorData[state].map(data => new Frame(
-            new Texture(`data/UI/Cursor/${data.path}`, data.offset, data.size),
+            new Texture(`UI/Cursor/${data.path}`, data.offset, data.size),
             data.delay
         )), true);
         this._animation.start();

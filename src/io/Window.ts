@@ -4,7 +4,7 @@
  */
 
 import Setting from "../Setting";
-import UI from "./UI";
+import UI from "../ui/UI";
 import { NeedInit, Point, Size } from "../Types";
 
 const canvas = document.getElementById("screen") as HTMLCanvasElement;
@@ -54,16 +54,14 @@ export class Window implements NeedInit {
         event.preventDefault();
         // Only care about right click
         if(event.button == 2){
-            // TODO:
-            console.log(this.map_cursor_position(new Point(event.clientX, event.clientY)));
+            UI.right_click(this.map_cursor_position(new Point(event.clientX, event.clientY)));
         }
     }
     private handle_double_click = (event: MouseEvent): void => {
         event.preventDefault();
         // Only care about left click
         if(event.button == 0){
-            // TODO:
-            console.log(this.map_cursor_position(new Point(event.clientX, event.clientY)));
+            UI.double_click(this.map_cursor_position(new Point(event.clientX, event.clientY)));
         }
     }
     private handle_mouse_down = (event: MouseEvent): void => {

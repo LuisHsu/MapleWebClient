@@ -147,6 +147,9 @@ export class GL implements NeedInit {
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
         }
     }
+    set_clear_color(r:number, g:number, b:number, a:number){
+        gl.clearColor(r, g, b, a);
+    }
     private program: WebGLProgram;
     private position_buffer: WebGLBuffer;
     private coordinate_buffer: WebGLBuffer;
