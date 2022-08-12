@@ -37,6 +37,13 @@ export class Transform {
     offset: Point = new Point(0, 0);
     scale: Size = new Size(1, 1);
     opacity: number = 1.0;
+
+    concat = (transform: Transform) => new Transform({
+        rotate: this.rotate + transform.rotate,
+        offset: this.offset.concat(transform.offset),
+        scale: this.scale.concat(transform.scale),
+        opacity: this.opacity * transform.opacity,
+    });
 };
 
 export class GL implements NeedInit {

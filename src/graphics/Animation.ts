@@ -35,21 +35,15 @@ export class Frame implements Drawable {
     draw(transform: Transform = new Transform): void {
         if(this.delay && this.from && (this.counter <= this.delay)){
             gl.draw_texture(this.texture, new Transform({
-                rotate: transform.rotate + (this.from.rotate + 
-                    ((this.transform.rotate - this.from.rotate) * this.counter / this.delay)),
-                opacity: transform.opacity * (this.from.opacity +
-                    ((this.transform.opacity - this.from.opacity) * this.counter / this.delay)),
+                rotate: this.from.rotate + ((this.transform.rotate - this.from.rotate) * this.counter / this.delay),
+                opacity: this.from.opacity + ((this.transform.opacity - this.from.opacity) * this.counter / this.delay),
                 scale: new Size(
-                    transform.scale.width * (this.from.scale.width + 
-                    ((this.transform.scale.width - this.from.scale.width) * this.counter / this.delay)),
-                    transform.scale.height * (this.from.scale.height + 
-                    ((this.transform.scale.height - this.from.scale.height) * this.counter / this.delay))
+                    this.from.scale.width + ((this.transform.scale.width - this.from.scale.width) * this.counter / this.delay),
+                    this.from.scale.height + ((this.transform.scale.height - this.from.scale.height) * this.counter / this.delay)
                 ),
                 offset: new Point(
-                    transform.offset.x + (this.from.offset.x + 
-                    ((this.transform.offset.x - this.from.offset.x) * this.counter / this.delay)),
-                    transform.offset.y + (this.from.offset.y + 
-                    ((this.transform.offset.y - this.from.offset.y) * this.counter / this.delay))
+                    this.from.offset.x + ((this.transform.offset.x - this.from.offset.x) * this.counter / this.delay),
+                    this.from.offset.y + ((this.transform.offset.y - this.from.offset.y) * this.counter / this.delay)
                 ),
             }));
             this.counter += Setting.FPS;
