@@ -68,6 +68,7 @@ export interface MouseHandler {
     double_click?(position: Point): void;
     mouse_down?(position: Point): void;
     mouse_up?(position: Point): void;
+    left_click?(position: Point): void;
     mouse_move?(position: Point): void;
     mouse_wheel?(delta: number): void;
 }

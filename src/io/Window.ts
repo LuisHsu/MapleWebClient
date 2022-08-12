@@ -20,6 +20,7 @@ export class Window implements NeedInit {
         canvas.addEventListener("mousedown", this.handle_mouse_down.bind(this));
         canvas.addEventListener("mouseup", this.handle_mouse_up.bind(this));
         canvas.addEventListener("mousemove", this.handle_mouse_move.bind(this));
+        canvas.addEventListener("click", this.handle_mouse_click.bind(this));
         canvas.addEventListener("wheel", this.handle_wheel.bind(this));
         document.body.addEventListener("keydown", this.handle_keydown.bind(this));
         document.body.addEventListener("keyup", this.handle_keyup.bind(this));
@@ -66,6 +67,7 @@ export class Window implements NeedInit {
     }
     private handle_mouse_down = (event: MouseEvent): void => {
         event.preventDefault();
+        event.stopPropagation();
         // Only care about left click
         if(event.button == 0){
             UI.mouse_down(this.map_cursor_position(new Point(event.clientX, event.clientY)));
@@ -73,6 +75,7 @@ export class Window implements NeedInit {
     }
     private handle_mouse_up = (event: MouseEvent): void => {
         event.preventDefault();
+        event.stopPropagation();
         // Only care about left click
         if(event.button == 0){
             UI.mouse_up(this.map_cursor_position(new Point(event.clientX, event.clientY)));
@@ -80,7 +83,16 @@ export class Window implements NeedInit {
     }
     private handle_mouse_move = (event: MouseEvent): void => {
         event.preventDefault();
+        event.stopPropagation();
         UI.mouse_move(this.map_cursor_position(new Point(event.clientX, event.clientY)))
+    }
+    private handle_mouse_click = (event: MouseEvent): void => {
+        event.stopPropagation();
+        event.preventDefault();
+        // Only care about left click
+        if(event.button == 0){
+            UI.left_click(this.map_cursor_position(new Point(event.clientX, event.clientY)))
+        }
     }
     private handle_wheel = (event: WheelEvent): void => {
         event.preventDefault();

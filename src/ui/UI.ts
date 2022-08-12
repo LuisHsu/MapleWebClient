@@ -71,6 +71,12 @@ export class UI implements Drawable, NeedInit, MouseHandler {
         }
     }
 
+    left_click(position: Point): void {
+        if(this.state.left_click){
+            this.state.left_click(position);
+        }
+    }
+
     private saved_cursor_state: CursorState = CursorState.Idle;
     private state: UIState;
 }

@@ -18,7 +18,7 @@ export class UILogo implements UIState {
         this.animation.draw(transform);
     }
 
-    mouse_up = this.next;
+    left_click = this.next;
 
     constructor(){
         let frames = [
