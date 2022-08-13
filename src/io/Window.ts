@@ -7,7 +7,7 @@ import Setting from "../Setting";
 import UI from "../ui/UI";
 import { NeedInit, Point, Size } from "../Types";
 
-const canvas = document.getElementById("screen") as HTMLCanvasElement;
+const display = document.getElementById("display") as HTMLCanvasElement;
 
 export class Window implements NeedInit {
     size = new Size(Setting.ScreenSize.width, Setting.ScreenSize.height);
@@ -15,16 +15,16 @@ export class Window implements NeedInit {
         if(Setting.Fullscreen){
             document.body.requestFullscreen().catch(() => {});
         }
-        canvas.addEventListener("contextmenu", this.handle_right_click.bind(this));
-        canvas.addEventListener("dblclick", this.handle_double_click.bind(this));
-        canvas.addEventListener("mousedown", this.handle_mouse_down.bind(this));
-        canvas.addEventListener("mouseup", this.handle_mouse_up.bind(this));
-        canvas.addEventListener("mousemove", this.handle_mouse_move.bind(this));
-        canvas.addEventListener("click", this.handle_mouse_click.bind(this));
-        canvas.addEventListener("wheel", this.handle_wheel.bind(this));
+        display.addEventListener("contextmenu", this.handle_right_click.bind(this));
+        display.addEventListener("dblclick", this.handle_double_click.bind(this));
+        display.addEventListener("mousedown", this.handle_mouse_down.bind(this));
+        display.addEventListener("mouseup", this.handle_mouse_up.bind(this));
+        display.addEventListener("mousemove", this.handle_mouse_move.bind(this));
+        display.addEventListener("click", this.handle_mouse_click.bind(this));
+        display.addEventListener("wheel", this.handle_wheel.bind(this));
         document.body.addEventListener("keydown", this.handle_keydown.bind(this));
         document.body.addEventListener("keyup", this.handle_keyup.bind(this));
-        canvas.addEventListener("animationend", () => {
+        display.addEventListener("animationend", () => {
             // Reset fade
             document.body.className = ""; 
         })
@@ -35,21 +35,16 @@ export class Window implements NeedInit {
     }
 
     private map_cursor_position = (pos: Point): Point => {
-        let result = new Point;
-        if(canvas.clientHeight > canvas.clientWidth * (this.size.height / this.size.width)){
-            const window_h = canvas.clientWidth * this.size.height / this.size.width;
-            const window_y = pos.y - ((canvas.clientHeight - window_h) / 2);
-            result.x = Math.round(pos.x * this.size.width / canvas.clientWidth);
-            result.y = Math.round(window_y * this.size.height / window_h);
-        }else{
-            const window_w = canvas.clientHeight * this.size.width / this.size.height;
-            const window_x = pos.x - ((canvas.clientWidth - window_w) / 2);
-            result.x = Math.round(window_x * this.size.width / window_w);
-            result.y = Math.round(pos.y * this.size.height / canvas.clientHeight);
-        }
-        result.x = Math.max(5, Math.min(this.size.width - 5, result.x));
-        result.y = Math.max(5, Math.min(this.size.height, this.size.height - result.y - 5));
-        return result;
+        return new Point(
+            Math.max(5, Math.min(
+                this.size.width - 5,
+                Math.round((pos.x - display.offsetLeft) * this.size.width / display.offsetWidth)
+            )),
+            Math.max(5, Math.min(
+                this.size.height, 
+                this.size.height - Math.round((pos.y - display.offsetTop) * this.size.height / display.offsetHeight) - 5
+            ))
+        );
     }
     private handle_right_click = (event: MouseEvent): void => {
         event.preventDefault();

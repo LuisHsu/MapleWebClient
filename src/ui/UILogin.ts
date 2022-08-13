@@ -5,6 +5,7 @@
 
 import { Music } from "../audio/Audio";
 import { Button, MapleButton } from "../components/Button";
+import { TextInput } from "../components/TextInput";
 import Animation, { Frame } from "../graphics/Animation";
 import GL, { Transform } from "../graphics/GL";
 import { Sprite } from "../graphics/Sprite";
@@ -19,6 +20,9 @@ export class UILogin extends UIElement implements UIState {
         super(login_sprites());
         Music.play("Login", 1, true);
         this.login_button.state = Button.State.NORMAL;
+        this.account_input = new TextInput(new Point(678, 400), new Size(185, 24), {
+            color: "white",
+        });
     }
 
     login(): void {
@@ -55,9 +59,12 @@ export class UILogin extends UIElement implements UIState {
     left_click(position: Point): void {
         this.login_button.handle_click(position, new Point, this.login.bind(this));
         this.account_save_button.handle_click(position, new Point, this.toggle_save_account.bind(this));
+        this.account_input.handle_click();
     }
 
     save_account: boolean = false;
+
+    account_input: TextInput;
 
     login_button: MapleButton = new MapleButton({
         pressed: new Texture("UI/Login/Title.BtLogin.pressed.0.png"),
