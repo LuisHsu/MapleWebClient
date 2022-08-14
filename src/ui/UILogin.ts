@@ -20,14 +20,30 @@ export class UILogin extends UIElement implements UIState {
         super(login_sprites());
         Music.play("Login", 1, true);
         this.login_button.state = Button.State.NORMAL;
-        this.account_input = new TextInput(new Point(678, 400), new Size(185, 24), {
+        let saved_account = window.localStorage.getItem("account");
+        this.account_input = new TextInput(new Point(678, 401), new Size(185, 24), {
             color: "white",
+            value: saved_account,
         });
+        this.password_input = new TextInput(new Point(678, 364), new Size(185, 24), {
+            color: "white",
+            type: "password",
+        });
+        this.save_account = (saved_account !== null);
     }
 
     login(): void {
-        // TODO:
-        console.log(this);
+        // Save account
+        if(this.save_account){
+            window.localStorage.setItem("account", this.account_input.value());
+        }else{
+            window.localStorage.removeItem("account");
+        }
+        // TODO: login api
+        console.log(`
+            ${this.account_input.value()}
+            ${this.password_input.value()}
+        `);
     }
 
     toggle_save_account(): void {
@@ -65,6 +81,7 @@ export class UILogin extends UIElement implements UIState {
     save_account: boolean = false;
 
     account_input: TextInput;
+    password_input: TextInput;
 
     login_button: MapleButton = new MapleButton({
         pressed: new Texture("UI/Login/Title.BtLogin.pressed.0.png"),

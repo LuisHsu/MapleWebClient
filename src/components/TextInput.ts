@@ -12,6 +12,7 @@ export class TextInput {
     constructor(position: Point, size: Size, option?: {
         color?: string,
         type?: string,
+        value?: string,
     }) {
         this.position = position;
         this.size = size;
@@ -23,6 +24,9 @@ export class TextInput {
             this.element.type = option.type ? option.type : "text";
             if(option.color){
                 this.element.style.color = option.color;
+            }
+            if(option.value){
+                this.element.value = option.value;
             }
         }else{
             this.element.type = "text";

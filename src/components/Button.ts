@@ -127,7 +127,7 @@ export class MapleButton extends Button{
 
     bounds(offset: Point = new Point): Rect {
         let origin = this.position.concat(offset);
-        if(this.textures[this.state]){
+        if(this.textures[this.state] && this.textures[this.state].size){
             let half_size = this.textures[this.state].size.div(2);
             return new Rect(
                 origin.y + half_size.height,
