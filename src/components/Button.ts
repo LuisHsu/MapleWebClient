@@ -3,6 +3,7 @@
  * @module Button
  */
 
+import { Sound } from "../audio/Audio";
 import GL, { Transform } from "../graphics/GL";
 import { Texture } from "../graphics/Texture";
 import { Drawable, Point, Rect } from "../Types";
@@ -24,7 +25,10 @@ export abstract class Button implements Drawable {
             if((mouse_pos.x <= bounds.right) && (mouse_pos.x >= bounds.left)
                 && (mouse_pos.y <= bounds.top) && (mouse_pos.y >= bounds.bottom)
             ){
-                this.state = Button.State.HOVERED;
+                if(this.state == Button.State.NORMAL){
+                    Sound.play("BtMouseOver");
+                    this.state = Button.State.HOVERED;
+                }
                 if(callback){
                     callback();
                 }
@@ -80,6 +84,7 @@ export abstract class Button implements Drawable {
             if((mouse_pos.x <= bounds.right) && (mouse_pos.x >= bounds.left)
                 && (mouse_pos.y <= bounds.top) && (mouse_pos.y >= bounds.bottom)
             ){
+                Sound.play("BtMouseClick");
                 callback();
             }
         }
