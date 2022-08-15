@@ -11,8 +11,9 @@ import GL, { Transform } from "../graphics/GL";
 import { Sprite } from "../graphics/Sprite";
 import { Texture } from "../graphics/Texture";
 import { Point, Size } from "../Types";
-import { UIState } from "./UI";
+import UI, { UIState } from "./UI";
 import { UIElement } from "./UIElement";
+import { UIWorldSelect } from "./UIWorldSelect";
 
 export class UILogin extends UIElement implements UIState {
 
@@ -40,13 +41,14 @@ export class UILogin extends UIElement implements UIState {
             window.localStorage.removeItem("account");
         }
         // TODO: login api
+        UI.change_state(new UIWorldSelect);
         console.log(`
             ${this.account_input.value()}
             ${this.password_input.value()}
         `);
     }
 
-    toggle_save_account(): void {
+    private toggle_save_account(): void {
         this.save_account = !this.save_account;
     }
 
@@ -78,26 +80,26 @@ export class UILogin extends UIElement implements UIState {
         this.account_input.handle_click();
     }
 
-    save_account: boolean = false;
+    private save_account: boolean = false;
 
-    account_input: TextInput;
-    password_input: TextInput;
+    private account_input: TextInput;
+    private password_input: TextInput;
 
-    login_button: MapleButton = new MapleButton({
+    private login_button: MapleButton = new MapleButton({
         pressed: new Texture("UI/Login/Title.BtLogin.pressed.0.png"),
         normal: new Texture("UI/Login/Title.BtLogin.normal.0.png"),
         hovered: new Texture("UI/Login/Title.BtLogin.mouseOver.0.png"),
         disabled: new Texture("UI/Login/Title.BtLogin.disabled.0.png"),
     }, new Point(842, 409));
 
-    account_save_button: MapleButton = new MapleButton({
+    private account_save_button: MapleButton = new MapleButton({
         pressed: new Texture("UI/Login/Title.BtEmailSave.pressed.0.png"),
         normal: new Texture("UI/Login/Title.BtEmailSave.normal.0.png"),
         hovered: new Texture("UI/Login/Title.BtEmailSave.mouseOver.0.png"),
         disabled: new Texture("UI/Login/Title.BtEmailSave.disabled.0.png"),
     }, new Point(615, 338));
 
-    account_save_status: Texture[] = [
+    private account_save_status: Texture[] = [
         new Texture("UI/Login/Title.check.0.png", new Point(567, 338)),
         new Texture("UI/Login/Title.check.1.png", new Point(567, 338)),
     ];

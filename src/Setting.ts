@@ -8,6 +8,10 @@ export default {
      */
     ServerPort: 8484,
     /**
+     * Server channel numbers
+     */
+    ServerChannels: 4,
+    /**
      * Size of game screen
      */
     ScreenSize: {

@@ -5,7 +5,7 @@
 
 import GL, { Transform } from "../graphics/GL";
 import { Texture } from "../graphics/Texture";
-import { Drawable, MouseHandler, Point, Rect } from "../Types";
+import { Drawable, Point, Rect } from "../Types";
 
 export abstract class Button implements Drawable {
     state: Button.State;

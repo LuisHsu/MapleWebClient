@@ -7,6 +7,7 @@ import { Transform } from "../graphics/GL";
 import { Drawable, MouseHandler, NeedInit, Point } from "../Types";
 import { Cursor, CursorState } from "../io/Cursor";
 import { UILogo } from "./UILogo";
+import { UILogin } from "./UILogin";
 
 export type UIState = Drawable & MouseHandler;
 
@@ -72,6 +73,7 @@ export class UI implements Drawable, NeedInit, MouseHandler {
     }
 
     left_click(position: Point): void {
+
         if(this.state.left_click){
             this.state.left_click(position);
         }
