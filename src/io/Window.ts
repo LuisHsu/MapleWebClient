@@ -24,14 +24,18 @@ export class Window implements NeedInit {
         display.addEventListener("wheel", this.handle_wheel.bind(this));
         document.body.addEventListener("keydown", this.handle_keydown.bind(this));
         document.body.addEventListener("keyup", this.handle_keyup.bind(this));
-        display.addEventListener("animationend", () => {
-            // Reset fade
-            document.body.className = ""; 
-        })
     }
 
-    fade_out(): void {
-        document.body.className = "fadeOut";
+    fade_out(callback?: () => void): void {
+        function onEnd(){
+            display.className = "";
+            display.removeEventListener("animationend", onEnd);
+            if(callback){
+                callback();
+            }
+        }
+        display.addEventListener("animationend", onEnd);
+        display.className = "fadeOut";
     }
 
     private map_cursor_position = (pos: Point): Point => {

@@ -13,7 +13,7 @@ export class TextInput {
         color?: string,
         type?: string,
         value?: string,
-    }) {
+    }){
         this.position = position;
         this.size = size;
         this.element = document.createElement("input");
@@ -56,6 +56,10 @@ export class TextInput {
 
     handle_click(): void {
         this.element.blur();
+    }
+
+    clean(): void {
+        display.removeChild(this.element);
     }
     
     private set_focus(event: MouseEvent): void{

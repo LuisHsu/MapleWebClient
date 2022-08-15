@@ -10,6 +10,7 @@ import Animation, { Frame } from "../graphics/Animation";
 import GL, { Transform } from "../graphics/GL";
 import { Sprite } from "../graphics/Sprite";
 import { Texture } from "../graphics/Texture";
+import Window from "../io/Window";
 import { Point, Size } from "../Types";
 import UI, { UIState } from "./UI";
 import { UIElement } from "./UIElement";
@@ -40,8 +41,13 @@ export class UILogin extends UIElement implements UIState {
         }else{
             window.localStorage.removeItem("account");
         }
+        // Clean input
+        this.account_input.clean();
+        this.password_input.clean();
         // TODO: login api
-        UI.change_state(new UIWorldSelect);
+        Window.fade_out(() => {
+            UI.change_state(new UIWorldSelect);
+        })
         console.log(`
             ${this.account_input.value()}
             ${this.password_input.value()}
