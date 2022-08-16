@@ -10,7 +10,7 @@ import Animation, { Frame } from "../graphics/Animation";
 import GL, { Transform } from "../graphics/GL";
 import { Sprite } from "../graphics/Sprite";
 import { Texture } from "../graphics/Texture";
-import { KeyType } from "../io/Keyboard";
+import { KeyType, TabFocus } from "../io/Keyboard";
 import Window from "../io/Window";
 import { Point, Size } from "../Types";
 import UI, { UIState } from "./UI";
@@ -23,16 +23,38 @@ export class UILogin extends UIElement implements UIState {
         super(login_sprites());
         Music.play("Login", 1, true);
         this.login_button.state = Button.State.DISABLED;
+        this.login_button.focus = () => {
+            if(this.account_input.value() && this.password_input.value()){
+                this.login_button.focused = true;
+            }else{
+                this.tab_focus.update(KeyType.Tab);
+            }
+        }
         let saved_account = window.localStorage.getItem("account");
         this.account_input = new TextInput(new Point(678, 401), new Size(185, 24), {
             color: "white",
             value: saved_account,
+            focus_enter: () => {
+                this.tab_focus.update(KeyType.Tab);
+            }
         });
         this.password_input = new TextInput(new Point(678, 364), new Size(185, 24), {
             color: "white",
             type: "password",
+            focus_enter: () => {
+                if(this.account_input.value() && this.password_input.value()){
+                    this.login();
+                }
+            },
         });
         this.save_account = (saved_account !== null);
+        this.tab_focus = new TabFocus([
+            this.account_input,
+            this.password_input,
+            this.login_button,
+            this.account_save_button,
+        ]);
+        this.tab_focus.update(KeyType.Tab);
     }
 
     login(): void {
@@ -62,9 +84,9 @@ export class UILogin extends UIElement implements UIState {
     draw(transform: Transform): void {
         super.draw(transform);
         this.login_button.state = (this.account_input.value() && this.password_input.value()) ? Button.State.NORMAL : Button.State.DISABLED;
-        this.login_button.draw(new Transform({scale: new Size(1.25, 1.25)}));
-        this.account_save_button.draw(new Transform({scale: new Size(1.25, 1.25)}));
-        GL.draw_texture(this.account_save_status[this.save_account ? 1 : 0], new Transform({scale: new Size(1.25, 1.25)}));
+        this.login_button.draw(transform.concat(new Transform({scale: new Size(1.25, 1.25)})));
+        this.account_save_button.draw(transform.concat(new Transform({scale: new Size(1.25, 1.25)})));
+        GL.draw_texture(this.account_save_status[this.save_account ? 1 : 0], transform.concat(new Transform({scale: new Size(1.25, 1.25)})));
     }
 
     mouse_move(position: Point): void {
@@ -86,18 +108,11 @@ export class UILogin extends UIElement implements UIState {
         this.login_button.handle_click(position, new Point, this.login.bind(this));
         this.account_save_button.handle_click(position, new Point, this.toggle_save_account.bind(this));
         this.account_input.handle_click();
-    }
-
-    key_down(key: KeyType): void {
-        if(this.account_input.value() && this.password_input.value() && key == KeyType.Enter){
-            this.login_button.state = Button.State.PRESSED;
-        }
+        this.password_input.handle_click();
     }
 
     key_up(key: KeyType): void {
-        if(this.account_input.value() && this.password_input.value() && key == KeyType.Enter){
-            this.login();
-        }
+        this.tab_focus.update(key);
     }
 
     private save_account: boolean = false;
@@ -105,19 +120,23 @@ export class UILogin extends UIElement implements UIState {
     private account_input: TextInput;
     private password_input: TextInput;
 
+    private tab_focus: TabFocus;
+
     private login_button: MapleButton = new MapleButton({
         pressed: new Texture("UI/Login/Title.BtLogin.pressed.0.png"),
         normal: new Texture("UI/Login/Title.BtLogin.normal.0.png"),
         hovered: new Texture("UI/Login/Title.BtLogin.mouseOver.0.png"),
         disabled: new Texture("UI/Login/Title.BtLogin.disabled.0.png"),
-    }, new Point(842, 409));
+        focused: new Texture("UI/Login/Title.BtLogin.mouseOver.0.png"),
+    }, new Point(842, 409), this.login.bind(this));
 
     private account_save_button: MapleButton = new MapleButton({
         pressed: new Texture("UI/Login/Title.BtEmailSave.pressed.0.png"),
         normal: new Texture("UI/Login/Title.BtEmailSave.normal.0.png"),
         hovered: new Texture("UI/Login/Title.BtEmailSave.mouseOver.0.png"),
         disabled: new Texture("UI/Login/Title.BtEmailSave.disabled.0.png"),
-    }, new Point(615, 338));
+        focused: new Texture("UI/Login/Title.BtEmailSave.mouseOver.0.png"),
+    }, new Point(615, 338), this.toggle_save_account.bind(this));
 
     private account_save_status: Texture[] = [
         new Texture("UI/Login/Title.check.0.png", new Point(567, 338)),

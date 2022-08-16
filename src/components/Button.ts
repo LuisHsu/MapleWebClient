@@ -6,14 +6,18 @@
 import { Sound } from "../audio/Audio";
 import GL, { Drawable, Transform } from "../graphics/GL";
 import { Texture } from "../graphics/Texture";
+import { TabHandler } from "../io/Keyboard";
 import { Point, Rect } from "../Types";
 
-export abstract class Button implements Drawable {
+export abstract class Button implements Drawable, TabHandler {
     state: Button.State;
     active: boolean;
     position: Point;
     abstract draw(transform?: Transform): void;
     abstract bounds(offset: Point): Rect;
+    abstract focus?(): void;
+    abstract blur?(): void;
+    abstract focus_enter?(): void;
 
     update_hover(
         mouse_pos: Point,
@@ -101,18 +105,20 @@ export namespace Button {
     }
 }
 
-export class MapleButton extends Button{
+export class MapleButton extends Button {
 
     state: Button.State = Button.State.NORMAL;
     active: boolean = true;
     position: Point;
+    focused: boolean = false;
 
     constructor(textures: {
         pressed: Texture,
         hovered: Texture,
         disabled: Texture,
         normal: Texture,
-    }, position: Point = new Point){
+        focused?: Texture,
+    }, position: Point = new Point, focus_click?: () => void){
         super();
         this.textures = {
             [Button.State.PRESSED]: textures.pressed,
@@ -121,12 +127,17 @@ export class MapleButton extends Button{
             [Button.State.NORMAL]: textures.normal,
         }
         this.position = position;
+        this.focus_texture = textures.focused;
+        this.focus_enter = focus_click;
     }
 
     draw(transform?: Transform): void {
         if(this.active){
             let offset = new Transform({offset: this.position});
             GL.draw_texture(this.textures[this.state], transform ? transform.concat(offset) : offset);
+            if(this.focused && this.focus_texture){
+                GL.draw_texture(this.focus_texture, transform ? transform.concat(offset) : offset);
+            }
         }
     }
 
@@ -145,5 +156,16 @@ export class MapleButton extends Button{
         }
     }
 
+    focus(): void {
+        this.focused = true;
+    }
+
+    blur(): void {
+        this.focused = false;
+    }
+
+    focus_enter?(): void;
+
     private textures: {[state in Button.State]?: Texture};
+    private focus_texture?: Texture;
 }

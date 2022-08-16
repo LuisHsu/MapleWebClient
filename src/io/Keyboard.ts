@@ -110,13 +110,52 @@ export const KeyMap: {[key in string]: KeyType} = {
     "\\": KeyType.BackSlash,
 }
 
-export class TabFocus {
-    constructor(){
+export const SkipDefaultKeys: KeyType[] = [
+    KeyType.Tab,
+];
 
+export class TabFocus {
+    handlers: TabHandler[];
+    index: number = null;
+
+    constructor(handlers: TabHandler[] = []){
+        this.handlers = handlers;
+    }
+
+    update(key: KeyType){
+        if(this.handlers.length > 0){
+            if(key == KeyType.Tab){
+                if(this.index === null){
+                    this.index = 0;
+                }else{
+                    if(this.handlers[this.index].blur){
+                        this.handlers[this.index].blur();
+                    }
+                    this.index += 1;
+                    if(this.index == this.handlers.length){
+                        this.index = null;
+                        return;
+                    }
+                }
+                if(this.handlers[this.index].focus){
+                    this.handlers[this.index].focus();
+                }
+            }else if(key == KeyType.Enter && this.index !== null){
+                if(this.handlers[this.index].focus_enter){
+                    this.handlers[this.index].focus_enter();
+                }
+            }
+        }
     }
 }
 
 export interface KeyboardHandler {
     key_down?(key: KeyType): void;
     key_up?(key: KeyType): void;
+}
+
+export interface TabHandler {
+    focus?(): void;
+    blur?(): void;
+    focus_enter?(): void;
 }

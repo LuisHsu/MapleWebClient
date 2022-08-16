@@ -6,7 +6,7 @@
 import Setting from "../Setting";
 import UI from "../ui/UI";
 import { NeedInit, Point, Size } from "../Types";
-import { KeyMap } from "./Keyboard";
+import { KeyMap, SkipDefaultKeys } from "./Keyboard";
 
 const display = document.getElementById("display") as HTMLCanvasElement;
 
@@ -100,12 +100,20 @@ export class Window implements NeedInit {
     }
     private handle_keydown = (event: KeyboardEvent): void => {
         if(event.key in KeyMap){
-            UI.key_down(KeyMap[event.key]);
+            let key = KeyMap[event.key];
+            if(SkipDefaultKeys.includes(key)){
+                event.preventDefault();
+            }
+            UI.key_down(key);
         }
     }
     private handle_keyup = (event: KeyboardEvent): void => {
         if(event.key in KeyMap){
-            UI.key_up(KeyMap[event.key]);
+            let key = KeyMap[event.key];
+            if(SkipDefaultKeys.includes(key)){
+                event.preventDefault();
+            }
+            UI.key_up(key);
         }
     }
 }
