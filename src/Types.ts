@@ -1,4 +1,5 @@
 import { Transform } from "./graphics/GL";
+import { KeyType } from "./io/Keymap";
 
 /**
  * Point: 2D location
@@ -71,4 +72,9 @@ export interface MouseHandler {
     left_click?(position: Point): void;
     mouse_move?(position: Point): void;
     mouse_wheel?(delta: number): void;
+}
+
+export interface KeyboardHandler {
+    key_down?(key: KeyType): void;
+    key_up?(key: KeyType): void;
 }

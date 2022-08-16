@@ -4,14 +4,15 @@
  */
 
 import { Transform } from "../graphics/GL";
-import { Drawable, MouseHandler, NeedInit, Point } from "../Types";
+import { Drawable, KeyboardHandler, MouseHandler, NeedInit, Point } from "../Types";
 import { Cursor, CursorState } from "../io/Cursor";
 import { UILogo } from "./UILogo";
 import { UILogin } from "./UILogin";
+import { KeyType } from "../io/Keymap";
 
-export type UIState = Drawable & MouseHandler;
+export type UIState = Drawable & MouseHandler & KeyboardHandler;
 
-export class UI implements Drawable, NeedInit, MouseHandler {
+export class UI implements Drawable, NeedInit, MouseHandler, KeyboardHandler{
     
     cursor: Cursor;
 
@@ -73,9 +74,20 @@ export class UI implements Drawable, NeedInit, MouseHandler {
     }
 
     left_click(position: Point): void {
-
         if(this.state.left_click){
             this.state.left_click(position);
+        }
+    }
+
+    key_down(key: KeyType): void {
+        if(this.state.key_down){
+            this.state.key_down(key);
+        }
+    }
+
+    key_up(key: KeyType): void {
+        if(this.state.key_up){
+            this.state.key_up(key);
         }
     }
 
