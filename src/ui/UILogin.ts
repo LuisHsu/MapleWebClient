@@ -10,6 +10,7 @@ import Animation, { Frame } from "../graphics/Animation";
 import GL, { Transform } from "../graphics/GL";
 import { Sprite } from "../graphics/Sprite";
 import { Texture } from "../graphics/Texture";
+import { KeyType } from "../io/Keyboard";
 import Window from "../io/Window";
 import { Point, Size } from "../Types";
 import UI, { UIState } from "./UI";
@@ -21,7 +22,7 @@ export class UILogin extends UIElement implements UIState {
     constructor(){
         super(login_sprites());
         Music.play("Login", 1, true);
-        this.login_button.state = Button.State.NORMAL;
+        this.login_button.state = Button.State.DISABLED;
         let saved_account = window.localStorage.getItem("account");
         this.account_input = new TextInput(new Point(678, 401), new Size(185, 24), {
             color: "white",
@@ -60,6 +61,7 @@ export class UILogin extends UIElement implements UIState {
 
     draw(transform: Transform): void {
         super.draw(transform);
+        this.login_button.state = (this.account_input.value() && this.password_input.value()) ? Button.State.NORMAL : Button.State.DISABLED;
         this.login_button.draw(new Transform({scale: new Size(1.25, 1.25)}));
         this.account_save_button.draw(new Transform({scale: new Size(1.25, 1.25)}));
         GL.draw_texture(this.account_save_status[this.save_account ? 1 : 0], new Transform({scale: new Size(1.25, 1.25)}));
@@ -84,6 +86,18 @@ export class UILogin extends UIElement implements UIState {
         this.login_button.handle_click(position, new Point, this.login.bind(this));
         this.account_save_button.handle_click(position, new Point, this.toggle_save_account.bind(this));
         this.account_input.handle_click();
+    }
+
+    key_down(key: KeyType): void {
+        if(this.account_input.value() && this.password_input.value() && key == KeyType.Enter){
+            this.login_button.state = Button.State.PRESSED;
+        }
+    }
+
+    key_up(key: KeyType): void {
+        if(this.account_input.value() && this.password_input.value() && key == KeyType.Enter){
+            this.login();
+        }
     }
 
     private save_account: boolean = false;

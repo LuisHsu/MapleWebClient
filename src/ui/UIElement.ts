@@ -3,9 +3,8 @@
  * @module UIElement
  */
 
-import { Transform } from "../graphics/GL";
+import { Drawable, Transform } from "../graphics/GL";
 import { Sprite } from "../graphics/Sprite";
-import { Drawable } from "../Types";
 
 export class UIElement implements Drawable {
 

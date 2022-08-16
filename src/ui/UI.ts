@@ -3,12 +3,11 @@
  * @module UI
  */
 
-import { Transform } from "../graphics/GL";
-import { Drawable, KeyboardHandler, MouseHandler, NeedInit, Point } from "../Types";
-import { Cursor, CursorState } from "../io/Cursor";
+import { Drawable, Transform } from "../graphics/GL";
+import { NeedInit, Point } from "../Types";
+import { Cursor, CursorState, MouseHandler } from "../io/Cursor";
 import { UILogo } from "./UILogo";
-import { UILogin } from "./UILogin";
-import { KeyType } from "../io/Keymap";
+import { KeyboardHandler, KeyType } from "../io/Keyboard";
 
 export type UIState = Drawable & MouseHandler & KeyboardHandler;
 

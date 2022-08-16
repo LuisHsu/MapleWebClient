@@ -4,9 +4,9 @@
  */
 
 import Setting from "../Setting";
-import {Texture} from "./Texture";
-import gl, {Transform} from "./GL";
-import {Drawable, Point, Size} from "../Types";
+import { Texture } from "./Texture";
+import gl, { Drawable, Transform } from "./GL";
+import { Point, Size } from "../Types";
 
 export class Frame implements Drawable {
     /**

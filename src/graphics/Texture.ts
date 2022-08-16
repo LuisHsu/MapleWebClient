@@ -5,7 +5,7 @@
 
 import Setting from "../Setting";
 import { Point, Size } from "../Types";
-import {create_texture} from "./GL";
+import { create_texture } from "./GL";
 
 export class Texture {
     offset: Point;

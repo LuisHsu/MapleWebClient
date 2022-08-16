@@ -6,7 +6,7 @@
 import Setting from "../Setting";
 import UI from "../ui/UI";
 import { NeedInit, Point, Size } from "../Types";
-import { KeyMap } from "./Keymap";
+import { KeyMap } from "./Keyboard";
 
 const display = document.getElementById("display") as HTMLCanvasElement;
 
@@ -99,13 +99,11 @@ export class Window implements NeedInit {
         UI.mouse_wheel(event.deltaY);
     }
     private handle_keydown = (event: KeyboardEvent): void => {
-        event.preventDefault();
         if(event.key in KeyMap){
             UI.key_down(KeyMap[event.key]);
         }
     }
     private handle_keyup = (event: KeyboardEvent): void => {
-        event.preventDefault();
         if(event.key in KeyMap){
             UI.key_up(KeyMap[event.key]);
         }

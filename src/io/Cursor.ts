@@ -4,9 +4,9 @@
  */
 
 import Animation, { Frame } from "../graphics/Animation";
-import { Transform } from "../graphics/GL";
+import { Drawable, Transform } from "../graphics/GL";
 import { Texture } from "../graphics/Texture";
-import { Drawable, NeedInit, Point, Size } from "../Types";
+import { NeedInit, Point, Size } from "../Types";
 import Window from "./Window";
 
 export class Cursor implements Drawable, NeedInit {
@@ -343,3 +343,13 @@ const CursorData: CursorDataType[][] = [
         },
     ],
 ]
+
+export interface MouseHandler {
+    right_click?(position: Point): void;
+    double_click?(position: Point): void;
+    mouse_down?(position: Point): void;
+    mouse_up?(position: Point): void;
+    left_click?(position: Point): void;
+    mouse_move?(position: Point): void;
+    mouse_wheel?(delta: number): void;
+}

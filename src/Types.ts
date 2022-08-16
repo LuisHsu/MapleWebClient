@@ -1,5 +1,5 @@
 import { Transform } from "./graphics/GL";
-import { KeyType } from "./io/Keymap";
+import { KeyType } from "./io/Keyboard";
 
 /**
  * Point: 2D location
@@ -56,25 +56,6 @@ export class Rect{
     }
 }
 
-export interface Drawable {
-    draw(transform: Transform): void;
-}
-
 export interface NeedInit {
     init(): void;
-}
-
-export interface MouseHandler {
-    right_click?(position: Point): void;
-    double_click?(position: Point): void;
-    mouse_down?(position: Point): void;
-    mouse_up?(position: Point): void;
-    left_click?(position: Point): void;
-    mouse_move?(position: Point): void;
-    mouse_wheel?(delta: number): void;
-}
-
-export interface KeyboardHandler {
-    key_down?(key: KeyType): void;
-    key_up?(key: KeyType): void;
 }

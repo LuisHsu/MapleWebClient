@@ -4,9 +4,9 @@
  */
 
 import { Sound } from "../audio/Audio";
-import GL, { Transform } from "../graphics/GL";
+import GL, { Drawable, Transform } from "../graphics/GL";
 import { Texture } from "../graphics/Texture";
-import { Drawable, Point, Rect } from "../Types";
+import { Point, Rect } from "../Types";
 
 export abstract class Button implements Drawable {
     state: Button.State;

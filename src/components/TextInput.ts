@@ -1,5 +1,5 @@
 import Window from "../io/Window";
-import { MouseHandler, Point, Rect, Size } from "../Types";
+import { Point, Size } from "../Types";
 
 const display = document.getElementById("display") as HTMLCanvasElement;
 

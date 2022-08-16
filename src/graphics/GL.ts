@@ -16,6 +16,10 @@ const gl = (document.getElementById("screen") as HTMLCanvasElement).getContext("
 const vertex_array = new Float32Array([1, 1, -1, 1, 1, -1, -1, -1]);
 const coordinate_array = new Float32Array([1, 0, 0, 0, 1, 1, 0, 1]);
 
+export interface Drawable {
+    draw(transform: Transform): void;
+}
+
 export class Transform {
     constructor(initializer?: {rotate?: number, offset?: Point, scale?: Size, opacity?: number}){
         if(initializer){

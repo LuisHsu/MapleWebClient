@@ -3,9 +3,8 @@
  *  @module Sprite
  */
 
-import { Drawable } from "../Types";
 import Animation from "./Animation";
-import GL, { Transform } from "./GL";
+import GL, { Drawable, Transform } from "./GL";
 import { Texture } from "./Texture";
 
 export class Sprite implements Drawable {
