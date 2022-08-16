@@ -109,3 +109,14 @@ export const KeyMap: {[key in string]: KeyType} = {
     "=": KeyType.Equal,
     "\\": KeyType.BackSlash,
 }
+
+export class TabFocus {
+    constructor(){
+
+    }
+}
+
+export interface KeyboardHandler {
+    key_down?(key: KeyType): void;
+    key_up?(key: KeyType): void;
+}
