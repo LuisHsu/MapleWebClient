@@ -53,6 +53,7 @@ export class UILogin extends UIElement implements UIState {
             this.password_input,
             this.login_button,
             this.account_save_button,
+            this.quit_button,
         ]);
         this.tab_focus.update(KeyType.Tab);
     }
@@ -85,27 +86,32 @@ export class UILogin extends UIElement implements UIState {
         super.draw(transform);
         this.login_button.state = (this.account_input.value() && this.password_input.value()) ? Button.State.NORMAL : Button.State.DISABLED;
         this.login_button.draw(transform.concat(new Transform({scale: new Size(1.25, 1.25)})));
+        this.quit_button.draw(transform.concat(new Transform({scale: new Size(1.3, 1.3)})));
         this.account_save_button.draw(transform.concat(new Transform({scale: new Size(1.25, 1.25)})));
         GL.draw_texture(this.account_save_status[this.save_account ? 1 : 0], transform.concat(new Transform({scale: new Size(1.25, 1.25)})));
     }
 
     mouse_move(position: Point): void {
         this.login_button.update_hover(position);
+        this.quit_button.update_hover(position);
         this.account_save_button.update_hover(position);
     }
 
     mouse_down(position: Point): void {
         this.login_button.update_pressed(position);
+        this.quit_button.update_pressed(position);
         this.account_save_button.update_pressed(position);
     }
 
     mouse_up(position: Point): void {
         this.login_button.update_released(position);
+        this.quit_button.update_released(position);
         this.account_save_button.update_released(position);
     }
 
     left_click(position: Point): void {
         this.login_button.handle_click(position, new Point, this.login.bind(this));
+        this.quit_button.handle_click(position, new Point, Window.quit);
         this.account_save_button.handle_click(position, new Point, this.toggle_save_account.bind(this));
         this.account_input.handle_click();
         this.password_input.handle_click();
@@ -129,6 +135,14 @@ export class UILogin extends UIElement implements UIState {
         disabled: new Texture("UI/Login/Title.BtLogin.disabled.0.png"),
         focused: new Texture("UI/Login/Title.BtLogin.mouseOver.0.png"),
     }, new Point(842, 409), this.login.bind(this));
+
+    private quit_button: MapleButton = new MapleButton({
+        pressed: new Texture("UI/Login/Title.BtQuit.pressed.0.png"),
+        normal: new Texture("UI/Login/Title.BtQuit.normal.0.png"),
+        hovered: new Texture("UI/Login/Title.BtQuit.mouseOver.0.png"),
+        disabled: new Texture("UI/Login/Title.BtQuit.disabled.0.png"),
+        focused: new Texture("UI/Login/Title.BtQuit.mouseOver.0.png"),
+    }, new Point(838, 264), Window.quit);
 
     private account_save_button: MapleButton = new MapleButton({
         pressed: new Texture("UI/Login/Title.BtEmailSave.pressed.0.png"),

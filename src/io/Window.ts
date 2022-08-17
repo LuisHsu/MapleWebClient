@@ -39,6 +39,14 @@ export class Window implements NeedInit {
         display.className = "fadeOut";
     }
 
+    quit(): void {
+        if(Setting.Fullscreen){
+            document.exitFullscreen().catch(() => {}).finally(() => {
+                window.location.reload();
+            });
+        }
+    }
+
     private map_cursor_position = (pos: Point): Point => {
         return new Point(
             Math.max(5, Math.min(
