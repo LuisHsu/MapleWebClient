@@ -5,6 +5,7 @@ import { Point, Size } from "../Types";
 const display = document.getElementById("display") as HTMLCanvasElement;
 
 export class TextInput implements TabHandler {
+    tab_active: boolean = true;
     active: boolean = true;
     element: HTMLInputElement;
     position: Point;

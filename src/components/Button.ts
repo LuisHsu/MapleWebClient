@@ -13,6 +13,8 @@ export abstract class Button implements Drawable, TabHandler {
     state: Button.State;
     active: boolean;
     position: Point;
+    tab_active: boolean = true;
+    
     abstract draw(transform?: Transform): void;
     abstract bounds(offset: Point): Rect;
     abstract focus?(): void;

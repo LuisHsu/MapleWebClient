@@ -115,35 +115,93 @@ export const SkipDefaultKeys: KeyType[] = [
 ];
 
 export class TabFocus {
-    handlers: TabHandler[];
-    index: number = null;
+    private static handlers: TabHandler[] = [];
+    private static index: number = null;
+    private elements: TabHandler[];
 
-    constructor(handlers: TabHandler[] = []){
-        this.handlers = handlers;
+    constructor(elements: TabHandler[] = []){
+        TabFocus.handlers.push(...elements);
+        this.elements = elements;
     }
 
-    update(key: KeyType){
-        if(this.handlers.length > 0){
-            if(key == KeyType.Tab){
-                if(this.index === null){
-                    this.index = 0;
-                }else{
-                    if(this.handlers[this.index].blur){
-                        this.handlers[this.index].blur();
+    activate(){
+        this.elements.forEach(elem => {
+            elem.tab_active = true;
+        });
+    }
+
+    deactivate(){
+        this.elements.forEach(elem => {
+            elem.tab_active = false;
+        });
+    }
+
+    add(handler: TabHandler){
+        TabFocus.handlers.push(handler);
+        this.elements.push(handler);
+    }
+
+    remove(){
+        // Find next element
+        let next_elem: TabHandler = null;
+        if(TabFocus.index !== null){
+            for(let index = TabFocus.index; index < TabFocus.handlers.length; ++index){
+                if(TabFocus.handlers[TabFocus.index].tab_active && !this.elements.includes(TabFocus.handlers[TabFocus.index])){
+                    next_elem = TabFocus.handlers[TabFocus.index];
+                    break;
+                }
+            }
+        }
+        // Remove elements
+        TabFocus.handlers = TabFocus.handlers.filter(handler => {
+            return !this.elements.includes(handler);
+        });
+        if(next_elem !== null){
+            TabFocus.handlers.every((handler, index) => {
+                if(Object.is(handler, next_elem)){
+                    TabFocus.index = index;
+                    return false;
+                }
+                return true;
+            })
+        }else{
+            TabFocus.index = null;
+        }
+    }
+
+    static update(key: KeyType): void {
+        if(TabFocus.handlers.length == 0){
+            return;
+        }
+        if(key == KeyType.Tab){
+            if(TabFocus.index === null){
+                TabFocus.handlers.every((handler, index) => {
+                    if(handler.tab_active === true){
+                        TabFocus.index = index;
+                        return false;
                     }
-                    this.index += 1;
-                    if(this.index == this.handlers.length){
-                        this.index = null;
-                        return;
+                    return true;
+                });
+            }else{
+                if(TabFocus.handlers[TabFocus.index].blur){
+                    TabFocus.handlers[TabFocus.index].blur();
+                }
+                for(TabFocus.index += 1; TabFocus.index < TabFocus.handlers.length; ++TabFocus.index){
+                    if(TabFocus.handlers[TabFocus.index].tab_active){
+                        break;
                     }
                 }
-                if(this.handlers[this.index].focus){
-                    this.handlers[this.index].focus();
+                if(TabFocus.index >= TabFocus.handlers.length){
+                    TabFocus.index = null;
+                    return;
                 }
-            }else if(key == KeyType.Enter && this.index !== null){
-                if(this.handlers[this.index].focus_enter){
-                    this.handlers[this.index].focus_enter();
-                }
+            }
+            if(TabFocus.index !== null && TabFocus.handlers[TabFocus.index].focus){
+                TabFocus.handlers[TabFocus.index].focus();
+            }
+        }else if(key == KeyType.Enter && TabFocus.index !== null){
+            if(TabFocus.handlers[TabFocus.index].focus_enter){
+                TabFocus.handlers[TabFocus.index].focus_enter();
             }
         }
     }
@@ -155,6 +213,7 @@ export interface KeyboardHandler {
 }
 
 export interface TabHandler {
+    tab_active: boolean;
     focus?(): void;
     blur?(): void;
     focus_enter?(): void;

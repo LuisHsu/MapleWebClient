@@ -27,7 +27,7 @@ export class UILogin extends UIElement implements UIState {
             if(this.account_input.value() && this.password_input.value()){
                 this.login_button.focused = true;
             }else{
-                this.tab_focus.update(KeyType.Tab);
+                TabFocus.update(KeyType.Tab);
             }
         }
         let saved_account = window.localStorage.getItem("account");
@@ -35,7 +35,7 @@ export class UILogin extends UIElement implements UIState {
             color: "white",
             value: saved_account,
             focus_enter: () => {
-                this.tab_focus.update(KeyType.Tab);
+                TabFocus.update(KeyType.Tab);
             }
         });
         this.password_input = new TextInput(new Point(678, 364), new Size(185, 24), {
@@ -55,7 +55,7 @@ export class UILogin extends UIElement implements UIState {
             this.account_save_button,
             this.quit_button,
         ]);
-        this.tab_focus.update(KeyType.Tab);
+        TabFocus.update(KeyType.Tab);
     }
 
     login(): void {
@@ -70,6 +70,7 @@ export class UILogin extends UIElement implements UIState {
         this.password_input.clean();
         // TODO: login api
         Window.fade_out(() => {
+            this.tab_focus.remove();
             UI.change_state(new UIWorldSelect);
         })
         console.log(`
@@ -118,7 +119,7 @@ export class UILogin extends UIElement implements UIState {
     }
 
     key_up(key: KeyType): void {
-        this.tab_focus.update(key);
+        TabFocus.update(key);
     }
 
     private save_account: boolean = false;

@@ -25,7 +25,7 @@ export default {
     /**
      * Using fullscreen
      */
-    Fullscreen: true,
+    Fullscreen: false,
     /**
      * Path of data files
      */

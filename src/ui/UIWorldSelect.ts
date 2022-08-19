@@ -14,20 +14,40 @@ import Setting from "../Setting";
 import Animation, { Frame } from "../graphics/Animation";
 import { UILogin } from "./UILogin";
 import Window from "../io/Window";
+import { KeyType, TabFocus } from "../io/Keyboard";
 
-export class UIWorldSelect extends UIElement implements UIState{
+export class UIWorldSelect extends UIElement implements UIState {
 
     constructor(){
         super(world_sprites());
         this.channel_go_button.state = Button.State.DISABLED;
+
+        this.tab_focus = new TabFocus([this.world_button]);
+        this.channel_tab_focus = new TabFocus([...this.channel_buttons]);
+        this.channel_tab_focus.add(this.channel_go_button);
+        this.channel_go_button.focus = () => {
+            if(this.selected_channel !== null){
+                this.channel_go_button.focused = true;
+            }else{
+                this.channel_go_button.blur();
+                TabFocus.update(KeyType.Tab);
+            }
+        }
+        this.tab_focus.add(this.return_button);
+        this.channel_tab_focus.deactivate();
     }
 
     enter_world(): void {
-        // TODO: channel select api
-        console.log(this.selected_channel);
+        if(this.selected_channel !== null){
+            // TODO: channel select api
+            console.log(this.selected_channel);
+                
+        }
     }
 
     return_login(): void {
+        this.tab_focus.remove();
+        this.channel_tab_focus.remove();
         Window.fade_out(() => {
             UI.change_state(new UILogin);
         })
@@ -98,7 +118,14 @@ export class UIWorldSelect extends UIElement implements UIState{
         }
     }
 
+    key_up(key: KeyType): void {
+        TabFocus.update(key);
+    }
+
     selected_channel: number = null;
+
+    private tab_focus: TabFocus;
+    private channel_tab_focus: TabFocus;
 
     private channel_click(index: number){
         this.channel_go_button.state = Button.State.NORMAL;
@@ -108,7 +135,16 @@ export class UIWorldSelect extends UIElement implements UIState{
     }
 
     private world_click(){
-        this.state = (this.state == UIWorldSelect.State.SELECT_WORLD) ? UIWorldSelect.State.SELECT_CHANNEL : UIWorldSelect.State.SELECT_WORLD;
+        switch(this.state){
+            case UIWorldSelect.State.SELECT_WORLD:
+                this.state = UIWorldSelect.State.SELECT_CHANNEL;
+                this.channel_tab_focus.activate();
+            break;
+            case UIWorldSelect.State.SELECT_CHANNEL:
+                this.state = UIWorldSelect.State.SELECT_WORLD;
+                this.channel_tab_focus.deactivate();
+            break;
+        }
         this.sprites[1] = this.scroll_sprite[this.state];
     }
 
@@ -117,23 +153,26 @@ export class UIWorldSelect extends UIElement implements UIState{
         normal: new Texture("UI/WorldSelect/WorldSelect.BtWorld.normal.png", new Point, new Size(28, 95)),
         hovered: new Texture("UI/WorldSelect/WorldSelect.BtWorld.mouseOver.png", new Point, new Size(28, 100)),
         disabled: new Texture("UI/WorldSelect/WorldSelect.BtWorld.disabled.png", new Point, new Size(28, 100)),
-    }, new Point(212, 615));
+        focused: new Texture("UI/WorldSelect/WorldSelect.BtWorld.mouseOver.png", new Point, new Size(28, 100)),
+    }, new Point(212, 615), this.world_click.bind(this));
 
     private channel_go_button: MapleButton = new MapleButton({
         pressed: new Texture("UI/WorldSelect/WorldSelect.BtGoWorld.pressed.png", new Point, new Size(199, 54)),
         normal: new Texture("UI/WorldSelect/WorldSelect.BtGoWorld.normal.png", new Point, new Size(199, 54)),
         hovered: new Texture("UI/WorldSelect/WorldSelect.BtGoWorld.mouseOver.png", new Point, new Size(199, 54)),
         disabled: new Texture("UI/WorldSelect/WorldSelect.BtGoWorld.disabled.png", new Point, new Size(199, 54)),
-    }, new Point(725, 449));
+        focused: new Texture("UI/WorldSelect/WorldSelect.BtGoWorld.mouseOver.png", new Point, new Size(199, 54)),
+    }, new Point(725, 449), this.enter_world.bind(this));
 
-    private channel_buttons: MapleButton[] = create_channel_buttons();
+    private channel_buttons: MapleButton[] = this.create_channel_buttons();
 
     private return_button: MapleButton = new MapleButton({
         pressed: new Texture("UI/WorldSelect/Common.BtToLogin.pressed.png", new Point, new Size(136, 57)),
         normal: new Texture("UI/WorldSelect/Common.BtToLogin.normal.png", new Point, new Size(136, 57)),
         hovered: new Texture("UI/WorldSelect/Common.BtToLogin.mouseOver.png", new Point, new Size(136, 57)),
         disabled: new Texture("UI/WorldSelect/Common.BtToLogin.disabled.png", new Point, new Size(136, 57)),
-    }, new Point(73, 125));
+        focused: new Texture("UI/WorldSelect/Common.BtToLogin.mouseOver.png", new Point, new Size(136, 57)),
+    }, new Point(73, 125), this.return_login.bind(this));
 
     private select_animation: Animation = new Animation([
         new Frame(new Texture("UI/WorldSelect/WorldSelect.channel.chSelect.0.png",
@@ -154,6 +193,24 @@ export class UIWorldSelect extends UIElement implements UIState{
 
     private world_title: Texture = new Texture("UI/WorldSelect/WorldSelect.world.t0.png", new Point(325, 452), new Size(169, 70));
     private channel_back: Texture = new Texture("UI/WorldSelect/WorldSelect.chBackgrn.png", new Point(529, 320), new Size(682, 330));
+
+    private create_channel_buttons(): MapleButton[] {
+        let results = []
+        for(let i = 0; i < Setting.ServerChannels; ++i){
+            results.push(new MapleButton(
+                {
+                    pressed: new Texture(`UI/WorldSelect/WorldSelect.channel.${i}.normal.png`, new Point, new Size(134, 44)),
+                    hovered: new Texture(`UI/WorldSelect/WorldSelect.channel.${i}.normal.png`, new Point, new Size(134, 44)),
+                    disabled: new Texture(`UI/WorldSelect/WorldSelect.channel.${i}.disabled.png`, new Point, new Size(134, 44)),
+                    normal: new Texture(`UI/WorldSelect/WorldSelect.channel.${i}.disabled.png`, new Point, new Size(134, 44)),
+                    focused: new Texture(`UI/WorldSelect/WorldSelect.channel.${i}.normal.png`, new Point, new Size(134, 44)),
+                },
+                new Point(320 + 136 * (i % 4), 384 - 46 * Math.floor(i / 4)),
+                this.channel_click.bind(this, i)
+            ));
+        }
+        return results;
+    };
 }
 
 export namespace UIWorldSelect{
@@ -174,18 +231,5 @@ const world_sprites = (): Sprite[] => {
     }
     results.push(new Sprite(new Texture("UI/Login/1024frame.png", new Point(512, 384), new Size(1024, 768))));
     results.push(new Sprite(new Texture("UI/WorldSelect/Common.step.1.png", new Point(75, 700), new Size(165, 63))));
-    return results;
-};
-
-const create_channel_buttons = (): MapleButton[] => {
-    let results = []
-    for(let i = 0; i < Setting.ServerChannels; ++i){
-        results.push(new MapleButton({
-            pressed: new Texture(`UI/WorldSelect/WorldSelect.channel.${i}.normal.png`, new Point, new Size(134, 44)),
-            hovered: new Texture(`UI/WorldSelect/WorldSelect.channel.${i}.normal.png`, new Point, new Size(134, 44)),
-            disabled: new Texture(`UI/WorldSelect/WorldSelect.channel.${i}.disabled.png`, new Point, new Size(134, 44)),
-            normal: new Texture(`UI/WorldSelect/WorldSelect.channel.${i}.disabled.png`, new Point, new Size(134, 44)),
-        }, new Point(320 + 136 * (i % 4), 384 - 46 * Math.floor(i / 4))));
-    }
     return results;
 };
