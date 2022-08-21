@@ -13,14 +13,15 @@ import { Texture } from "../graphics/Texture";
 import { KeyType, TabFocus } from "../io/Keyboard";
 import Window from "../io/Window";
 import { Point, Size } from "../Types";
-import UI, { UIState } from "./UI";
 import { UIElement } from "./UIElement";
+import { UILoginState, LoginState } from "./UILoginState";
 import { UIWorldSelect } from "./UIWorldSelect";
 
-export class UILogin extends UIElement implements UIState {
+export class UILogin extends UIElement implements LoginState {
 
-    constructor(){
+    constructor(parent: UILoginState){
         super(login_sprites());
+        this.parent = parent;
         Music.play("Login", 1, true);
         this.login_button.state = Button.State.DISABLED;
         this.login_button.focus = () => {
@@ -68,11 +69,13 @@ export class UILogin extends UIElement implements UIState {
         // Clean input
         this.account_input.clean();
         this.password_input.clean();
+
         // TODO: login api
-        Window.fade_out(() => {
-            this.tab_focus.remove();
-            UI.change_state(new UIWorldSelect);
-        })
+        this.tab_focus.remove();
+        this.parent.change_state(
+            new UIWorldSelect(this.parent),
+            UILoginState.Direction.Down
+        )
         console.log(`
             ${this.account_input.value()}
             ${this.password_input.value()}
@@ -85,11 +88,14 @@ export class UILogin extends UIElement implements UIState {
 
     draw(transform: Transform): void {
         super.draw(transform);
+        this.account_save_button.draw(transform.concat(new Transform({scale: new Size(1.25, 1.25)})));
+        GL.draw_texture(this.account_save_status[this.save_account ? 1 : 0], transform.concat(new Transform({scale: new Size(1.25, 1.25)})));
+    }
+
+    fg_draw(transform: Transform): void {
         this.login_button.state = (this.account_input.value() && this.password_input.value()) ? Button.State.NORMAL : Button.State.DISABLED;
         this.login_button.draw(transform.concat(new Transform({scale: new Size(1.25, 1.25)})));
         this.quit_button.draw(transform.concat(new Transform({scale: new Size(1.3, 1.3)})));
-        this.account_save_button.draw(transform.concat(new Transform({scale: new Size(1.25, 1.25)})));
-        GL.draw_texture(this.account_save_status[this.save_account ? 1 : 0], transform.concat(new Transform({scale: new Size(1.25, 1.25)})));
     }
 
     mouse_move(position: Point): void {
@@ -157,6 +163,8 @@ export class UILogin extends UIElement implements UIState {
         new Texture("UI/Login/Title.check.0.png", new Point(567, 338)),
         new Texture("UI/Login/Title.check.1.png", new Point(567, 338)),
     ];
+
+    parent: UILoginState;
 }
 
 const login_sprites = (): Sprite[] => [
@@ -190,5 +198,4 @@ const login_sprites = (): Sprite[] => [
     ], true, true)),
     new Sprite(new Texture("UI/Login/Title.logo.png", new Point(507, 595), new Size(556, 307))),
     new Sprite(new Texture("UI/Login/Title.signboard.png", new Point(676, 320), new Size(471, 302))),
-    new Sprite(new Texture("UI/Login/1024frame.png", new Point(512, 384), new Size(1024, 768))),
 ];

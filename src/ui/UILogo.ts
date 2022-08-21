@@ -10,7 +10,7 @@ import { Point, Size } from "../Types";
 import { Texture } from "../graphics/Texture";
 import Setting from "../Setting";
 import { Music } from "../audio/Audio";
-import { UILogin } from "./UILogin";
+import { UILoginState } from "./UILoginState";
 
 export class UILogo implements UIState {
 
@@ -43,7 +43,8 @@ export class UILogo implements UIState {
     private animation: Animation;
     private next(){
         this.animation.stop();
-        UI.change_state(new UILogin);
+        GL.set_clear_color(0, 0, 0, 1);
+        UI.change_state(new UILoginState);
     }
 }
 

@@ -8,20 +8,19 @@ import { Point, Size } from "../Types";
 import GL, { Transform } from "../graphics/GL";
 import { Sprite } from "../graphics/Sprite";
 import { Texture } from "../graphics/Texture";
-import UI, { UIState } from "./UI";
 import { Button, MapleButton } from "../components/Button";
 import Setting from "../Setting";
 import Animation, { Frame } from "../graphics/Animation";
 import { UILogin } from "./UILogin";
-import Window from "../io/Window";
 import { KeyType, TabFocus } from "../io/Keyboard";
+import { LoginState, UILoginState } from "./UILoginState";
 
-export class UIWorldSelect extends UIElement implements UIState {
+export class UIWorldSelect extends UIElement implements LoginState {
 
-    constructor(){
+    constructor(parent: UILoginState){
         super(world_sprites());
+        this.parent = parent;
         this.channel_go_button.state = Button.State.DISABLED;
-
         this.tab_focus = new TabFocus([this.world_button]);
         this.channel_tab_focus = new TabFocus([...this.channel_buttons]);
         this.channel_tab_focus.add(this.channel_go_button);
@@ -41,22 +40,21 @@ export class UIWorldSelect extends UIElement implements UIState {
         if(this.selected_channel !== null){
             // TODO: channel select api
             console.log(this.selected_channel);
-                
         }
     }
 
     return_login(): void {
         this.tab_focus.remove();
         this.channel_tab_focus.remove();
-        Window.fade_out(() => {
-            UI.change_state(new UILogin);
-        })
+        this.parent.change_state(
+            new UILogin(this.parent),
+            UILoginState.Direction.Up
+        );
     }
 
     draw(transform: Transform): void {
         super.draw(transform);
         this.world_button.draw(transform);
-        this.return_button.draw(transform);
         if(this.state == UIWorldSelect.State.SELECT_CHANNEL){
             GL.draw_texture(this.channel_back, transform);
             GL.draw_texture(this.world_title, transform);
@@ -72,6 +70,11 @@ export class UIWorldSelect extends UIElement implements UIState {
                 });
             }
         }
+    }
+
+    fg_draw(transform: Transform): void {
+        GL.draw_texture(this.step_texture);
+        this.return_button.draw(transform);
     }
 
     mouse_move(position: Point): void {
@@ -193,6 +196,7 @@ export class UIWorldSelect extends UIElement implements UIState {
 
     private world_title: Texture = new Texture("UI/WorldSelect/WorldSelect.world.t0.png", new Point(325, 452), new Size(169, 70));
     private channel_back: Texture = new Texture("UI/WorldSelect/WorldSelect.chBackgrn.png", new Point(529, 320), new Size(682, 330));
+    private step_texture: Texture = new Texture("UI/WorldSelect/Common.step.1.png", new Point(75, 700), new Size(165, 63));
 
     private create_channel_buttons(): MapleButton[] {
         let results = []
@@ -211,6 +215,8 @@ export class UIWorldSelect extends UIElement implements UIState {
         }
         return results;
     };
+
+    parent: UILoginState;
 }
 
 export namespace UIWorldSelect{
@@ -229,7 +235,5 @@ const world_sprites = (): Sprite[] => {
     for(let i = 0; i < 19; ++i){
         results.push(new Sprite(new Texture("UI/WorldSelect/WorldSelect.BtWorld.empty.png", new Point(246 + (32 * i), 615), new Size(28, 95))));
     }
-    results.push(new Sprite(new Texture("UI/Login/1024frame.png", new Point(512, 384), new Size(1024, 768))));
-    results.push(new Sprite(new Texture("UI/WorldSelect/Common.step.1.png", new Point(75, 700), new Size(165, 63))));
     return results;
 };
