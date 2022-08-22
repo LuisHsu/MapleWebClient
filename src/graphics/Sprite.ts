@@ -4,7 +4,7 @@
  */
 
 import Animation from "./Animation";
-import GL, { Drawable, Transform } from "./GL";
+import Canvas, { Drawable, Transform } from "./Canvas";
 import { Texture } from "./Texture";
 
 export class Sprite implements Drawable {
@@ -18,7 +18,7 @@ export class Sprite implements Drawable {
         if(this.sprite instanceof Animation){
             this.sprite.draw(transform);
         }else{
-            GL.draw_texture(this.sprite, transform);
+            Canvas.draw_texture(this.sprite, transform);
         }
     }
 }

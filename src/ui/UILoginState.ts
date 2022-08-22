@@ -3,7 +3,7 @@
  * @module UILoginState
  */
 
-import { Transform } from "../graphics/GL";
+import { Transform } from "../graphics/Canvas";
 import { Point, Size } from "../Types";
 import { UIState } from "./UI";
 import { UILogin } from "./UILogin";
@@ -13,6 +13,7 @@ import { Sprite } from "../graphics/Sprite";
 import { Texture } from "../graphics/Texture";
 import Window from "../io/Window";
 import Setting from "../Setting";
+import { UICharSelect } from "./UICharSelect";
 
 export interface LoginState extends UIState{
     readonly parent: UILoginState;
@@ -23,9 +24,9 @@ export class UILoginState extends UIElement implements UIState {
 
     constructor(){
         super([
-            new Sprite(new Texture("UI/Login/1024frame.png", new Point(512, 384), new Size(1024, 768))),
+            new Sprite(new Texture("UI/Login/1024frame.png", {offset: new Point(512, 384), size: new Size(1024, 768)})),
         ])
-        this.login_state = new UILogin(this);
+        this.login_state = new UICharSelect(this);
     }
 
     draw(transform: Transform): void {

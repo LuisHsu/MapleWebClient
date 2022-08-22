@@ -7,7 +7,7 @@ import { Music } from "../audio/Audio";
 import { Button, MapleButton } from "../components/Button";
 import { TextInput } from "../components/TextInput";
 import Animation, { Frame } from "../graphics/Animation";
-import GL, { Transform } from "../graphics/GL";
+import Canvas, { Transform } from "../graphics/Canvas";
 import { Sprite } from "../graphics/Sprite";
 import { Texture } from "../graphics/Texture";
 import { KeyType, TabFocus } from "../io/Keyboard";
@@ -89,7 +89,7 @@ export class UILogin extends UIElement implements LoginState {
     draw(transform: Transform): void {
         super.draw(transform);
         this.account_save_button.draw(transform.concat(new Transform({scale: new Size(1.25, 1.25)})));
-        GL.draw_texture(this.account_save_status[this.save_account ? 1 : 0], transform.concat(new Transform({scale: new Size(1.25, 1.25)})));
+        Canvas.draw_texture(this.account_save_status[this.save_account ? 1 : 0], transform.concat(new Transform({scale: new Size(1.25, 1.25)})));
     }
 
     fg_draw(transform: Transform): void {
@@ -160,42 +160,42 @@ export class UILogin extends UIElement implements LoginState {
     }, new Point(615, 338), this.toggle_save_account.bind(this));
 
     private account_save_status: Texture[] = [
-        new Texture("UI/Login/Title.check.0.png", new Point(567, 338)),
-        new Texture("UI/Login/Title.check.1.png", new Point(567, 338)),
+        new Texture("UI/Login/Title.check.0.png", {offset: new Point(567, 338)}),
+        new Texture("UI/Login/Title.check.1.png", {offset: new Point(567, 338)}),
     ];
 
     parent: UILoginState;
 }
 
 const login_sprites = (): Sprite[] => [
-    new Sprite(new Texture("Map/Back/back.11.png", new Point(475, 360), new Size(1080, 810))),
+    new Sprite(new Texture("Map/Back/back.11.png", {size: new Size(1080, 810), offset: new Point(475, 360)})),
     new Sprite(new Animation([
-        new Frame(new Texture("UI/Login/Title.effect.0.0.png", new Point(935, 565)), 4.5, new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0, scale: new Size(1.5, 1.5)})),
-        new Frame(new Texture("UI/Login/Title.effect.0.2.png", new Point(935, 565)), 3, new Transform({scale: new Size(1.5, 1.5), opacity: 0.9})),
-        new Frame(new Texture("UI/Login/Title.effect.0.1.png", new Point(935, 565)), 4.5, new Transform({opacity: 0, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)})),
+        new Frame(new Texture("UI/Login/Title.effect.0.0.png", {offset: new Point(935, 565)}), 4.5, new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0, scale: new Size(1.5, 1.5)})),
+        new Frame(new Texture("UI/Login/Title.effect.0.2.png", {offset: new Point(935, 565)}), 3, new Transform({scale: new Size(1.5, 1.5), opacity: 0.9})),
+        new Frame(new Texture("UI/Login/Title.effect.0.1.png", {offset: new Point(935, 565)}), 4.5, new Transform({opacity: 0, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)})),
     ], true, true)),
     new Sprite(new Animation([
-        new Frame(new Texture("UI/Login/Title.effect.1.0.png", new Point(830, 625)), 7.5, new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.04, scale: new Size(1.5, 1.5)})),
-        new Frame(new Texture("UI/Login/Title.effect.1.1.png", new Point(830, 625)), 7.5, new Transform({opacity: 0.04, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}))
+        new Frame(new Texture("UI/Login/Title.effect.1.0.png", {offset: new Point(830, 625)}), 7.5, new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.04, scale: new Size(1.5, 1.5)})),
+        new Frame(new Texture("UI/Login/Title.effect.1.1.png", {offset: new Point(830, 625)}), 7.5, new Transform({opacity: 0.04, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}))
     ], true, true)),
     new Sprite(new Animation([
-        new Frame(new Texture("UI/Login/Title.effect.2.0.png", new Point(770, 608)), 5.1, new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0, scale: new Size(1.5, 1.5)})),
-        new Frame(new Texture("UI/Login/Title.effect.2.2.png", new Point(770, 608)), 5.1, new Transform({scale: new Size(1.5, 1.5), opacity: 0.9})),
-        new Frame(new Texture("UI/Login/Title.effect.2.1.png", new Point(770, 608)), 5.1, new Transform({opacity: 0, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)})),
+        new Frame(new Texture("UI/Login/Title.effect.2.0.png", {offset: new Point(770, 608)}), 5.1, new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0, scale: new Size(1.5, 1.5)})),
+        new Frame(new Texture("UI/Login/Title.effect.2.2.png", {offset: new Point(770, 608)}), 5.1, new Transform({scale: new Size(1.5, 1.5), opacity: 0.9})),
+        new Frame(new Texture("UI/Login/Title.effect.2.1.png", {offset: new Point(770, 608)}), 5.1, new Transform({opacity: 0, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)})),
     ], true, true)),
     new Sprite(new Animation([
-        new Frame(new Texture("UI/Login/Title.effect.3.0.png", new Point(846, 585)), 9.0, new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.04, scale: new Size(1.5, 1.5)})),
-        new Frame(new Texture("UI/Login/Title.effect.3.1.png", new Point(846, 585)), 9.0, new Transform({opacity: 0.04, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}))
+        new Frame(new Texture("UI/Login/Title.effect.3.0.png", {offset: new Point(846, 585)}), 9.0, new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.04, scale: new Size(1.5, 1.5)})),
+        new Frame(new Texture("UI/Login/Title.effect.3.1.png", {offset: new Point(846, 585)}), 9.0, new Transform({opacity: 0.04, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}))
     ], true, true)),
     new Sprite(new Animation([
-        new Frame(new Texture("UI/Login/Title.effect.4.0.png", new Point(866, 562)), 8.4, new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.04, scale: new Size(1.5, 1.5)})),
-        new Frame(new Texture("UI/Login/Title.effect.4.1.png", new Point(866, 562)), 8.4, new Transform({opacity: 0.04, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}))
+        new Frame(new Texture("UI/Login/Title.effect.4.0.png", {offset: new Point(866, 562)}), 8.4, new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.04, scale: new Size(1.5, 1.5)})),
+        new Frame(new Texture("UI/Login/Title.effect.4.1.png", {offset: new Point(866, 562)}), 8.4, new Transform({opacity: 0.04, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}))
     ], true, true)),
     new Sprite(new Animation([
-        new Frame(new Texture("UI/Login/Title.effect.5.0.png", new Point(875, 587)), 3.0, new Transform({opacity: 0.8, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0, scale: new Size(1.5, 1.5)})),
-        new Frame(new Texture("UI/Login/Title.effect.5.2.png", new Point(875, 587)), 7.5, new Transform({opacity: 0.8, scale: new Size(1.5, 1.5)})),
-        new Frame(new Texture("UI/Login/Title.effect.5.1.png", new Point(875, 587)), 3.0, new Transform({opacity: 0, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.8, scale: new Size(1.5, 1.5)})),
+        new Frame(new Texture("UI/Login/Title.effect.5.0.png", {offset: new Point(875, 587)}), 3.0, new Transform({opacity: 0.8, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0, scale: new Size(1.5, 1.5)})),
+        new Frame(new Texture("UI/Login/Title.effect.5.2.png", {offset: new Point(875, 587)}), 7.5, new Transform({opacity: 0.8, scale: new Size(1.5, 1.5)})),
+        new Frame(new Texture("UI/Login/Title.effect.5.1.png", {offset: new Point(875, 587)}), 3.0, new Transform({opacity: 0, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.8, scale: new Size(1.5, 1.5)})),
     ], true, true)),
-    new Sprite(new Texture("UI/Login/Title.logo.png", new Point(507, 595), new Size(556, 307))),
-    new Sprite(new Texture("UI/Login/Title.signboard.png", new Point(676, 320), new Size(471, 302))),
+    new Sprite(new Texture("UI/Login/Title.logo.png", {offset: new Point(507, 595), size: new Size(556, 307)})),
+    new Sprite(new Texture("UI/Login/Title.signboard.png", {offset: new Point(676, 320), size: new Size(471, 302)})),
 ];

@@ -1,10 +1,6 @@
-import GL from "./graphics/GL";
+import Canvas from "./graphics/Canvas";
 import UI from "./ui/UI";
 import Window from "./io/Window";
-
-function draw(){
-    UI.draw();
-}
 
 function main(){
     try{
@@ -12,9 +8,11 @@ function main(){
             document.getElementById("play-button").remove();
         }
         Window.init();
-        GL.init();
         UI.init();
-        GL.start(draw);
+        Canvas.init(() => {
+            UI.draw();
+        });
+        Canvas.start();
     }catch(err){
         console.error(`[ERROR] ${err.name}: ${err.message}`);
     }

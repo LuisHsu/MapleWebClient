@@ -3,7 +3,7 @@
  * @module UI
  */
 
-import { Drawable, Transform } from "../graphics/GL";
+import { Drawable, Transform } from "../graphics/Canvas";
 import { NeedInit, Point } from "../Types";
 import { Cursor, CursorState, MouseHandler } from "../io/Cursor";
 import { UILogo } from "./UILogo";

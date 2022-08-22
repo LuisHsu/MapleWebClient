@@ -3,7 +3,7 @@
  * @module UILogo
  */
 
-import GL, { Transform } from "../graphics/GL";
+import Canvas, { Transform } from "../graphics/Canvas";
 import UI, { UIState } from "./UI";
 import { Animation, Frame } from "../graphics/Animation";
 import { Point, Size } from "../Types";
@@ -36,28 +36,26 @@ export class UILogo implements UIState {
             this.next();
         }
         this.animation = new Animation(frames, false);
-        GL.set_clear_color(1, 1, 1, 1);
         this.animation.start();
     }
 
     private animation: Animation;
     private next(){
         this.animation.stop();
-        GL.set_clear_color(0, 0, 0, 1);
         UI.change_state(new UILoginState);
     }
 }
 
 function create_logo_frame(id: string, delay: number, transform?: Transform, callback?: () => void): Frame{
-    return new Frame(new Texture(id,
-        new Point(Setting.ScreenSize.width / 2, Setting.ScreenSize.height / 2),
-        new Size(Setting.ScreenSize.width, Setting.ScreenSize.height)
-    ), delay, transform, null, callback);
+    return new Frame(new Texture(id, {
+        size: new Size(Setting.ScreenSize.width, Setting.ScreenSize.height),
+        offset: new Point(Setting.ScreenSize.width / 2, Setting.ScreenSize.height / 2),
+    }), delay, transform, null, callback);
 }
 function create_wizet_frame(index: number): Frame {
     return new Frame(new Texture(
-        `UI/Logo/Wizet.${index}.png`,
-        new Point(352, 499),
-        new Size(704, 538),
-    ), 0.1);
+        `UI/Logo/Wizet.${index}.png`, {
+        size: new Size(704, 538),
+        offset: new Point(352, 499),
+    }), 0.1);
 }

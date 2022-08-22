@@ -4,7 +4,7 @@
  */
 
 import Animation, { Frame } from "../graphics/Animation";
-import { Drawable, Transform } from "../graphics/GL";
+import { Drawable, Transform } from "../graphics/Canvas";
 import { Texture } from "../graphics/Texture";
 import { NeedInit, Point, Size } from "../Types";
 import Window from "./Window";
@@ -22,7 +22,7 @@ export class Cursor implements Drawable, NeedInit {
             this._animation.stop();
         }
         this._animation = new Animation(CursorData[state].map(data => new Frame(
-            new Texture(`UI/Cursor/${data.path}`, data.offset, data.size),
+            new Texture(`UI/Cursor/${data.path}`, {size: data.size, offset: data.offset}),
             data.delay
         )), true);
         this._animation.start();

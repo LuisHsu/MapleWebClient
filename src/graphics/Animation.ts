@@ -5,7 +5,7 @@
 
 import Setting from "../Setting";
 import { Texture } from "./Texture";
-import gl, { Drawable, Transform } from "./GL";
+import gl, { Drawable, Transform } from "./Canvas";
 import { Point, Size } from "../Types";
 
 export class Frame implements Drawable {

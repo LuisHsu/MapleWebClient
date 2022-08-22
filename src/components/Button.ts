@@ -4,7 +4,7 @@
  */
 
 import { Sound } from "../audio/Audio";
-import GL, { Drawable, Transform } from "../graphics/GL";
+import Canvas, { Drawable, Transform } from "../graphics/Canvas";
 import { Texture } from "../graphics/Texture";
 import { TabHandler } from "../io/Keyboard";
 import { Point, Rect } from "../Types";
@@ -136,17 +136,17 @@ export class MapleButton extends Button {
     draw(transform?: Transform): void {
         if(this.active){
             let offset = new Transform({offset: this.position});
-            GL.draw_texture(this.textures[this.state], transform ? transform.concat(offset) : offset);
+            Canvas.draw_texture(this.textures[this.state], transform ? transform.concat(offset) : offset);
             if(this.focused && this.focus_texture){
-                GL.draw_texture(this.focus_texture, transform ? transform.concat(offset) : offset);
+                Canvas.draw_texture(this.focus_texture, transform ? transform.concat(offset) : offset);
             }
         }
     }
 
     bounds(offset: Point = new Point): Rect {
         let origin = this.position.concat(offset);
-        if(this.textures[this.state] && this.textures[this.state].size){
-            let half_size = this.textures[this.state].size.div(2);
+        if(this.textures[this.state] && this.textures[this.state].bitmap){
+            let half_size = this.textures[this.state].size().div(2);
             return new Rect(
                 origin.y + half_size.height,
                 origin.y - half_size.height,

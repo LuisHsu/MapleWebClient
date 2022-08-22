@@ -126,5 +126,5 @@ export class Window implements NeedInit {
     }
 }
 
-let _Window = new Window;
-export default _Window;
+let instance = new Window;
+export default instance;

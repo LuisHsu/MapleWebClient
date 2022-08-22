@@ -1,4 +1,4 @@
-import { Transform } from "./graphics/GL";
+import { Transform } from "./graphics/Canvas";
 import { KeyType } from "./io/Keyboard";
 
 /**
@@ -57,5 +57,5 @@ export class Rect{
 }
 
 export interface NeedInit {
-    init(): void;
+    init(...args: any[]): void;
 }
