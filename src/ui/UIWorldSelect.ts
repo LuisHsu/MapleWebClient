@@ -42,7 +42,7 @@ export class UIWorldSelect extends UIElement implements LoginState {
             this.tab_focus.remove();
             this.channel_tab_focus.remove();
             this.parent.change_state(
-                new UICharSelect(this.parent),
+                new UICharSelect(this.parent, this.selected_channel),
                 UILoginState.Direction.Down
             );
             // TODO: channel select api

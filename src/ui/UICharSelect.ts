@@ -7,15 +7,16 @@ import { MapleButton } from "../components/Button";
 import Canvas, { Transform } from "../graphics/Canvas";
 import { Sprite } from "../graphics/Sprite";
 import { Texture } from "../graphics/Texture";
-import { Point, Size } from "../Types";
+import { Color, Point, Size, TextAlign } from "../Types";
 import { UIElement } from "./UIElement";
 import { LoginState, UILoginState } from "./UILoginState";
 import { UIWorldSelect } from "./UIWorldSelect";
 
 export class UICharSelect extends UIElement implements LoginState {
-    constructor(parent: UILoginState){
+    constructor(parent: UILoginState, selected_channel: number){
         super(char_select_sprites());
         this.parent = parent;
+        this.selected_channel = selected_channel;
     }
 
     return_world_select(){
@@ -32,6 +33,8 @@ export class UICharSelect extends UIElement implements LoginState {
     fg_draw(transform: Transform): void {
         Canvas.draw_texture(this.step_texture, transform);
         Canvas.draw_texture(this.selected_world_texture, transform);
+        Canvas.draw_text(this.selected_world, 15, new Point(105, 631), new Color(255, 255, 255), TextAlign.Center);
+        Canvas.draw_text(`Ch. ${this.selected_channel + 1}`, 15, new Point(105, 611), new Color(255, 255, 255), TextAlign.Center);
         this.return_button.draw(transform);
     }
 
@@ -51,6 +54,8 @@ export class UICharSelect extends UIElement implements LoginState {
         this.return_button.handle_click(position, new Point, this.return_world_select.bind(this));
     }
 
+    private selected_world: string = "測試機";
+    private selected_channel: number;
     private step_texture: Texture = new Texture("UI/CharSelect/Common.step.2.png", {offset: new Point(75, 700), size: new Size(165, 63)});
     private selected_world_texture: Texture = new Texture("UI/CharSelect/Common.selectWorld.png", {offset: new Point(75, 630), size: new Size(165, 63)});
 
@@ -68,10 +73,11 @@ export class UICharSelect extends UIElement implements LoginState {
 const char_select_sprites = (): Sprite[] => {
     let results = [
         new Sprite(new Texture("Map/Back/back.1.png", {offset: new Point(512, 364), size: new Size(1024, 768)})),
-        new Sprite(new Texture("Map/Back/back.13.png", {offset: new Point(250, -70), size: new Size(500, 448)})),
-        new Sprite(new Texture("Map/Back/back.14.png", {offset: new Point(450, 250), size: new Size(860, 196)})),
-        new Sprite(new Texture("Map/Back/back.15.png", {offset: new Point(252, 579), size: new Size(468, 462)})),
-        new Sprite(new Texture("Map/Back/WorldSelect.signboard.1.0.png", {offset: new Point(520, 146), size: new Size(470, 201)})),
+        new Sprite(new Texture("Map/Back/back.13.png", {offset: new Point(285, -83), size: new Size(535, 464)})),
+        new Sprite(new Texture("Map/Back/back.14.png", {offset: new Point(500, 250), size: new Size(921, 203)})),
+        new Sprite(new Texture("Map/Back/back.15.png", {offset: new Point(288, 595), size: new Size(501, 488)})),
+        new Sprite(new Texture("Map/Back/WorldSelect.signboard.1.0.png", {offset: new Point(520, 146), size: new Size(445, 201)})),
+        new Sprite(new Texture("UI/CharSelect/CharSelect.signboard.png", {offset: new Point(818, 421), size: new Size(166, 298)})),
     ]
     return results;
 };

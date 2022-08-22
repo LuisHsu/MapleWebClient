@@ -10,7 +10,7 @@
 import Setting from "../Setting";
 import {Texture} from "./Texture";
 import Window from "../io/Window";
-import {NeedInit, Point, Size} from "../Types";
+import {Color, NeedInit, Point, Size, TextAlign} from "../Types";
 
 const ctx = (document.getElementById("screen") as HTMLCanvasElement).getContext("2d");
 ctx.textBaseline = "bottom";
@@ -85,10 +85,12 @@ export class Canvas implements NeedInit{
             ctx.restore();
         }
     }
-    draw_text(text: string, size: number, offset: Point){
+    draw_text(text: string, size: number, offset: Point, color: Color, align: TextAlign = TextAlign.Left){
         ctx.save();
-        ctx.font = `${size}px sans-serif`;
-        ctx.fillText(text, offset.x, offset.y)
+        ctx.textAlign = align;
+        ctx.fillStyle = color.toString();
+        ctx.font = `${size}px serif`;
+        ctx.fillText(text, offset.x, Window.size.height - offset.y)
         ctx.restore();
     }
     private interval: ReturnType<typeof setInterval> = null;
