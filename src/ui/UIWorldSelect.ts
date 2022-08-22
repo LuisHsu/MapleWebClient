@@ -14,6 +14,7 @@ import Animation, { Frame } from "../graphics/Animation";
 import { UILogin } from "./UILogin";
 import { KeyType, TabFocus } from "../io/Keyboard";
 import { LoginState, UILoginState } from "./UILoginState";
+import { UICharSelect } from "./UICharSelect";
 
 export class UIWorldSelect extends UIElement implements LoginState {
 
@@ -38,6 +39,12 @@ export class UIWorldSelect extends UIElement implements LoginState {
 
     enter_world(): void {
         if(this.selected_channel !== null){
+            this.tab_focus.remove();
+            this.channel_tab_focus.remove();
+            this.parent.change_state(
+                new UICharSelect(this.parent),
+                UILoginState.Direction.Down
+            );
             // TODO: channel select api
             console.log(this.selected_channel);
         }
@@ -73,7 +80,7 @@ export class UIWorldSelect extends UIElement implements LoginState {
     }
 
     fg_draw(transform: Transform): void {
-        GL.draw_texture(this.step_texture);
+        GL.draw_texture(this.step_texture, transform);
         this.return_button.draw(transform);
     }
 
