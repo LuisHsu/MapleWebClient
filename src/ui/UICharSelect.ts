@@ -7,6 +7,7 @@ import { MapleButton } from "../components/Button";
 import Canvas, { Transform } from "../graphics/Canvas";
 import { Sprite } from "../graphics/Sprite";
 import { Texture } from "../graphics/Texture";
+import { TabFocus, KeyType } from "../io/Keyboard";
 import { Color, Point, Size, TextAlign } from "../Types";
 import { UIElement } from "./UIElement";
 import { LoginState, UILoginState } from "./UILoginState";
@@ -17,6 +18,14 @@ export class UICharSelect extends UIElement implements LoginState {
         super(char_select_sprites());
         this.parent = parent;
         this.selected_channel = selected_channel;
+        this.tab_focus = new TabFocus([
+            this.delete_char_button,
+        ]);
+    }
+
+    delete_character(){
+        // TODO:
+        console.log("Delete character");
     }
 
     return_world_select(){
@@ -28,6 +37,7 @@ export class UICharSelect extends UIElement implements LoginState {
 
     draw(transform?: Transform): void {
         super.draw(transform);
+        this.delete_char_button.draw(transform);
     }
 
     fg_draw(transform: Transform): void {
@@ -40,20 +50,29 @@ export class UICharSelect extends UIElement implements LoginState {
 
     mouse_move(position: Point): void {
         this.return_button.update_hover(position);
+        this.delete_char_button.update_hover(position);
     }
 
     mouse_down(position: Point): void {
         this.return_button.update_pressed(position);
+        this.delete_char_button.update_pressed(position);
     }
 
     mouse_up(position: Point): void {
         this.return_button.update_released(position);
+        this.delete_char_button.update_released(position);
     }
 
     left_click(position: Point): void {
-        this.return_button.handle_click(position, new Point, this.return_world_select.bind(this));
+        this.return_button.handle_click(position, this.return_world_select.bind(this));
+        this.delete_char_button.handle_click(position, this.delete_character.bind(this));
     }
 
+    key_up(key: KeyType): void {
+        TabFocus.update(key);
+    }
+
+    private tab_focus: TabFocus;
     private selected_world: string = "測試機";
     private selected_channel: number;
     private step_texture: Texture = new Texture("UI/CharSelect/Common.step.2.png", {offset: new Point(75, 700), size: new Size(165, 63)});
@@ -66,6 +85,14 @@ export class UICharSelect extends UIElement implements LoginState {
         disabled: new Texture("UI/CharSelect/Common.BtStart.disabled.png", {size: new Size(136, 57)}),
         focused: new Texture("UI/CharSelect/Common.BtStart.mouseOver.png", {size: new Size(136, 57)}),
     }, new Point(73, 125), this.return_world_select.bind(this));
+
+    private delete_char_button: MapleButton = new MapleButton({
+        pressed: new Texture("UI/CharSelect/CharSelect.BtDelete.pressed.0.png", {size: new Size(126, 53)}),
+        normal: new Texture("UI/CharSelect/CharSelect.BtDelete.normal.0.png", {size: new Size(126, 53)}),
+        hovered: new Texture("UI/CharSelect/CharSelect.BtDelete.mouseOver.0.png", {size: new Size(126, 53)}),
+        disabled: new Texture("UI/CharSelect/CharSelect.BtDelete.disabled.0.png", {size: new Size(126, 53)}),
+        focused: new Texture("UI/CharSelect/CharSelect.BtDelete.focused.0.png", {size: new Size(160, 54), offset:new Point(17, 1)}),
+    }, new Point(818, 410), this.delete_character.bind(this));
 
     parent: UILoginState;
 }

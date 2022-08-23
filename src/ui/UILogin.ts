@@ -117,9 +117,9 @@ export class UILogin extends UIElement implements LoginState {
     }
 
     left_click(position: Point): void {
-        this.login_button.handle_click(position, new Point, this.login.bind(this));
-        this.quit_button.handle_click(position, new Point, Window.quit);
-        this.account_save_button.handle_click(position, new Point, this.toggle_save_account.bind(this));
+        this.login_button.handle_click(position, this.login.bind(this));
+        this.quit_button.handle_click(position, Window.quit);
+        this.account_save_button.handle_click(position, this.toggle_save_account.bind(this));
         this.account_input.handle_click();
         this.password_input.handle_click();
     }

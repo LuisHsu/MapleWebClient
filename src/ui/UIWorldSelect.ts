@@ -118,12 +118,12 @@ export class UIWorldSelect extends UIElement implements LoginState {
     }
 
     left_click(position: Point): void {
-        this.world_button.handle_click(position, new Point, this.world_click.bind(this));
-        this.channel_go_button.handle_click(position, new Point, this.enter_world.bind(this));
-        this.return_button.handle_click(position, new Point, this.return_login.bind(this));
+        this.world_button.handle_click(position, this.world_click.bind(this));
+        this.channel_go_button.handle_click(position, this.enter_world.bind(this));
+        this.return_button.handle_click(position, this.return_login.bind(this));
         if(this.state == UIWorldSelect.State.SELECT_CHANNEL){
             this.channel_buttons.forEach((button, index) => {
-                button.handle_click(position, new Point, this.channel_click.bind(this, index));
+                button.handle_click(position, this.channel_click.bind(this, index));
             });
         }
     }

@@ -82,8 +82,8 @@ export abstract class Button implements Drawable, TabHandler {
 
     handle_click(
         mouse_pos: Point,
-        base_pos: Point = new Point,
-        callback: () => void
+        callback: () => void,
+        base_pos: Point = new Point
     ): void {
         if(this.active && this.state != Button.State.DISABLED && this.state != Button.State.IDENTITY){
             let bounds = this.bounds(base_pos);
