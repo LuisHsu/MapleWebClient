@@ -5,7 +5,7 @@
 
 import Setting from "../Setting";
 import { Texture } from "./Texture";
-import gl, { Drawable, Transform } from "./Canvas";
+import canvas, { Drawable, Transform } from "./Canvas";
 import { Point, Size } from "../Types";
 
 export class Frame implements Drawable {
@@ -34,32 +34,18 @@ export class Frame implements Drawable {
     }
     draw(transform: Transform = new Transform): void {
         if(this.delay && this.from && (this.counter <= this.delay)){
-            gl.draw_texture(this.texture, new Transform({
+            canvas.draw_texture(this.texture, transform.concat(new Transform({
                 rotate: this.from.rotate + ((this.transform.rotate - this.from.rotate) * this.counter / this.delay),
                 opacity: this.from.opacity + ((this.transform.opacity - this.from.opacity) * this.counter / this.delay),
                 scale: new Size(
                     this.from.scale.width + ((this.transform.scale.width - this.from.scale.width) * this.counter / this.delay),
                     this.from.scale.height + ((this.transform.scale.height - this.from.scale.height) * this.counter / this.delay)
                 ),
-                offset: new Point(
-                    this.from.offset.x + ((this.transform.offset.x - this.from.offset.x) * this.counter / this.delay),
-                    this.from.offset.y + ((this.transform.offset.y - this.from.offset.y) * this.counter / this.delay)
-                ),
-            }));
+                offset: this.from.offset.concat(this.transform.offset.concat(this.from.offset.mul(-1)).mul(this.counter).div(this.delay)),
+            })));
             this.counter += Setting.FPS;
         }else{
-            gl.draw_texture(this.texture, new Transform({
-                rotate: this.transform.rotate + transform.rotate,
-                opacity: this.transform.opacity * transform.opacity,
-                scale: new Size(
-                    this.transform.scale.width * transform.scale.width,
-                    this.transform.scale.height * transform.scale.height
-                ),
-                offset: new Point(
-                    this.transform.offset.x + transform.offset.x,
-                    this.transform.offset.y + transform.offset.y
-                ),
-            }));
+            canvas.draw_texture(this.texture, transform.concat(this.transform));
         }
     }
     reset(): void{

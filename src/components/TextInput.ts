@@ -1,10 +1,11 @@
+import { Drawable, Transform } from "../graphics/Canvas";
 import { TabHandler } from "../io/Keyboard";
 import Window from "../io/Window";
 import { Point, Size } from "../Types";
 
 const display = document.getElementById("display") as HTMLCanvasElement;
 
-export class TextInput implements TabHandler {
+export class TextInput implements TabHandler, Drawable {
     tab_active: boolean = true;
     active: boolean = true;
     element: HTMLInputElement;
@@ -22,8 +23,6 @@ export class TextInput implements TabHandler {
         this.focus_enter = option.focus_enter;
         this.element = document.createElement("input");
         this.element.className = "input";
-        this.element.style.width = `${size.width / Window.size.width * 100}%`;
-        this.element.style.height = `${size.height / Window.size.height * 100}%`;
         if(option){
             this.element.type = option.type ? option.type : "text";
             if(option.color){
@@ -37,7 +36,6 @@ export class TextInput implements TabHandler {
         }
         this.element.addEventListener("click", this.set_focus.bind(this));
         display.appendChild(this.element);
-        this.update_position();
     }
 
     focus(): void {
@@ -50,13 +48,14 @@ export class TextInput implements TabHandler {
 
     focus_enter?(): void;
 
-    update_position(base_pos?: Point): void {
-        let position = this.position;
-        if(base_pos){
-            position = base_pos.concat(position);
-        }
-        this.element.style.bottom = `${(position.y + this.size.height / 2) / Window.size.height * 100}%`;
-        this.element.style.left = `${(position.x - this.size.width / 2) / Window.size.width * 100}%`;
+    draw(transform: Transform = new Transform): void {
+        let position = this.position.concat(transform.offset);
+        let size = this.size.concat(transform.scale);
+        this.element.style.opacity = `${transform.opacity}`;
+        this.element.style.width = `${size.width / Window.size.width * 100}%`;
+        this.element.style.height = `${size.height / Window.size.height * 100}%`;
+        this.element.style.bottom = `${(position.y + size.height / 2) / Window.size.height * 100}%`;
+        this.element.style.left = `${(position.x - size.width / 2) / Window.size.width * 100}%`;
     }
 
     set_active(active: boolean): void{

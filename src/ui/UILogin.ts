@@ -88,6 +88,8 @@ export class UILogin extends UIElement implements LoginState {
 
     draw(transform: Transform): void {
         super.draw(transform);
+        this.account_input.draw(transform);
+        this.password_input.draw(transform);
         this.account_save_button.draw(transform.concat(new Transform({scale: new Size(1.25, 1.25)})));
         Canvas.draw_texture(this.account_save_status[this.save_account ? 1 : 0], transform.concat(new Transform({scale: new Size(1.25, 1.25)})));
     }
