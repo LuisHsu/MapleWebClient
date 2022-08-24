@@ -26,7 +26,7 @@ export class UILoginState extends UIElement implements UIState {
         super([
             new Sprite(new Texture("UI/Login/1024frame.png", {offset: new Point(512, 384), size: new Size(1024, 768)})),
         ])
-        this.login_state = new UICharSelect(this, 19);
+        this.login_state = new UICharSelect(this, 2);
     }
 
     draw(transform: Transform): void {

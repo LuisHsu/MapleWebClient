@@ -12,7 +12,7 @@ import { Sprite } from "../graphics/Sprite";
 import { Texture } from "../graphics/Texture";
 import { KeyType, TabFocus } from "../io/Keyboard";
 import Window from "../io/Window";
-import { Point, Size } from "../Types";
+import { Color, Point, Size } from "../Types";
 import { UIElement } from "./UIElement";
 import { UILoginState, LoginState } from "./UILoginState";
 import { UIWorldSelect } from "./UIWorldSelect";
@@ -57,6 +57,7 @@ export class UILogin extends UIElement implements LoginState {
             this.quit_button,
         ]);
         TabFocus.update(KeyType.Tab);
+        Window.set_background(new Color(0, 0, 0));
     }
 
     login(): void {

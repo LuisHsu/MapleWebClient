@@ -70,11 +70,11 @@ export class UIWorldSelect extends UIElement implements LoginState {
                 button.draw(transform);
             });
             if(this.selected_channel !== null){
-                this.select_animation.draw({...transform,
+                this.select_animation.draw(new Transform({...transform,
                     offset: transform.offset.concat(new Point(
                         245 + 136 * (this.selected_channel % 4), 374 - 46 * Math.floor(this.selected_channel / 4)
                     ))
-                });
+                }));
             }
         }
     }
@@ -193,7 +193,7 @@ export class UIWorldSelect extends UIElement implements LoginState {
             {offset: new Point(20, 18), size: new Size(49, 38)}), 0.05),
         new Frame(new Texture("UI/WorldSelect/WorldSelect.channel.chSelect.3.png",
             {offset: new Point(30, 18), size: new Size(68, 38)})),
-    ])
+    ]);
 
     private state: UIWorldSelect.State = UIWorldSelect.State.SELECT_WORLD;
     private scroll_sprite: {[state in UIWorldSelect.State]: Sprite} = {

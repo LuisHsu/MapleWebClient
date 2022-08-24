@@ -5,10 +5,10 @@
 
 import Setting from "../Setting";
 import UI from "../ui/UI";
-import { NeedInit, Point, Size } from "../Types";
+import { Color, NeedInit, Point, Size } from "../Types";
 import { KeyMap, SkipDefaultKeys } from "./Keyboard";
 
-const display = document.getElementById("display") as HTMLCanvasElement;
+const display = document.getElementById("display") as HTMLDivElement;
 
 export class Window implements NeedInit {
     size = new Size(Setting.ScreenSize.width, Setting.ScreenSize.height);
@@ -45,6 +45,10 @@ export class Window implements NeedInit {
                 window.location.reload();
             });
         }
+    }
+
+    set_background(color: Color): void {
+        display.style.backgroundColor = color.toString();
     }
 
     private map_cursor_position = (pos: Point): Point => {

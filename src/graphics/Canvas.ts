@@ -53,9 +53,7 @@ export class Canvas implements NeedInit{
     init(draw: () => void): void {
         this.draw = () => {
             ctx.clearRect(0, 0, Window.size.width, Window.size.height);
-            ctx.save();
             draw();
-            ctx.restore();
         };
     }
     start(): void {
