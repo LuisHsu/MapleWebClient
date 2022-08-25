@@ -4,4 +4,4 @@ package-lock.json
 dist/
 data
 docs/
-private/
+dev/
