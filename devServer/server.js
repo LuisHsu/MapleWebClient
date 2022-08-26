@@ -7,7 +7,7 @@ const app = Express();
 const config = require("../webpack.config")(process.env);
 const compiler = Webpack(config);
 
-app.use("/", Express.static(Path.resolve(__dirname, "..", "dist")));
 app.use(WebpackDevMiddleware(compiler, {publicPath: config.output.publicPath}));
+app.use(Express.static(Path.resolve(__dirname, "..", "dist")));
 
 app.listen(8080)

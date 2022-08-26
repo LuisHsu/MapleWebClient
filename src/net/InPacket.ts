@@ -4,7 +4,6 @@
  */
 
 export abstract class InPacket{
-    static type: InPacket.Type = null;
     static decode = (data: ArrayBuffer): InPacket => null;
 }
 
