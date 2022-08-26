@@ -12,6 +12,7 @@ import { Sprite } from "../graphics/Sprite";
 import { Texture } from "../graphics/Texture";
 import { KeyType, TabFocus } from "../io/Keyboard";
 import Window from "../io/Window";
+import LoginSession from "../net/LoginSession";
 import { Color, Point, Size } from "../Types";
 import { UIElement } from "./UIElement";
 import { UILoginState, LoginState } from "./UILoginState";
@@ -67,20 +68,20 @@ export class UILogin extends UIElement implements LoginState {
         }else{
             window.localStorage.removeItem("account");
         }
+
+        // Login
+        LoginSession.open(() => {
+            LoginSession.login(this.account_input.value(), this.password_input.value());
+        });
+
         // Clean input
         this.account_input.clean();
         this.password_input.clean();
-
-        // TODO: login api
         this.tab_focus.remove();
         this.parent.change_state(
             new UIWorldSelect(this.parent),
             UILoginState.Direction.Down
         )
-        console.log(`
-            ${this.account_input.value()}
-            ${this.password_input.value()}
-        `);
     }
 
     private toggle_save_account(): void {

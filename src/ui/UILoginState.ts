@@ -14,6 +14,7 @@ import { Texture } from "../graphics/Texture";
 import Window from "../io/Window";
 import Setting from "../Setting";
 import { UICharSelect } from "./UICharSelect";
+import LoginSession from "../net/LoginSession";
 
 export interface LoginState extends UIState{
     readonly parent: UILoginState;
@@ -27,6 +28,7 @@ export class UILoginState extends UIElement implements UIState {
             new Sprite(new Texture("UI/Login/1024frame.png", {offset: new Point(512, 384), size: new Size(1024, 768)})),
         ])
         this.login_state = new UICharSelect(this, 2);
+        LoginSession.init(this);
     }
 
     draw(transform: Transform): void {

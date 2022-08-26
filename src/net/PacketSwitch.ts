@@ -23,7 +23,7 @@ export class PacketSwitch {
         }
     }
 
-    private handlers: {[type in InPacket.Type]?: PacketSwitch.Entry}
+    private handlers: {[type in InPacket.Type]?: PacketSwitch.Entry} = {};
 }
 
 export namespace PacketSwitch{
