@@ -10,6 +10,4 @@ const compiler = Webpack(config);
 app.use("/", Express.static(Path.resolve(__dirname, "..", "dist")));
 app.use(WebpackDevMiddleware(compiler, {publicPath: config.output.publicPath}));
 
-app.listen(8080, () => {
-    console.log("Dev server started")
-})
+app.listen(8080)
