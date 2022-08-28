@@ -1,6 +1,12 @@
+const { 
+    login,
+} = require("./login");
 
 function Switch(data){
-    console.log(data)
+    let opcode = data.readInt16BE();
+    if(opcode in handler_map){
+        handler_map[opcode](data.slice(2));
+    }
 }
 
 function Session(ws){
@@ -9,3 +15,7 @@ function Session(ws){
 }
 
 module.exports = Session
+
+const handler_map = {
+    1: login
+}
