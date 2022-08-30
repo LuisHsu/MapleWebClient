@@ -4,7 +4,9 @@
  */
 
 import { NeedInit } from "../Types";
+import { UILoginNotice } from "../ui/UILoginNotice";
 import { UILoginState } from "../ui/UILoginState";
+import { UIWorldSelect } from "../ui/UIWorldSelect";
 import { InPacket } from "./InPacket";
 import { LoginPacket } from "./packet/LoginPacket";
 import { PacketHandler, PacketSwitch } from "./PacketSwitch";
@@ -33,7 +35,18 @@ class LoginSession extends Session implements NeedInit{
     
     private ui: UILoginState;
     private login_handler: PacketHandler = (packet: LoginPacket.Login.In) => {
-        // TODO:
+        switch(packet.reason){
+            case LoginPacket.Login.Reason.success:
+                this.ui.change_state(new UIWorldSelect(this.ui), UILoginState.Direction.Down);
+            break;
+            case LoginPacket.Login.Reason.not_regstered:
+                this.ui.set_notice(UILoginNotice.Type.error, UILoginNotice.MessageID.account_not_match);
+            break;
+            case LoginPacket.Login.Reason.already_logged_in:
+                this.ui.set_notice(UILoginNotice.Type.error, UILoginNotice.MessageID.already_logged_in);
+            break;
+            default:
+        }
     }
 }
 

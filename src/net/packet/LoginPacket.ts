@@ -10,11 +10,34 @@ import { sizeof, String, Type } from "../Type";
 export namespace LoginPacket {
     export namespace Login{
         export class In extends InPacket{
+            reason: Reason;
             static decode(data: ArrayBuffer): InPacket{
-                // TODO:
-                return this;
+                let packet = new Login.In;
+                let view = new DataView(data);
+                switch(view.getUint32(0, false)){
+                    case Reason.success:
+                        packet.reason = Reason.success;
+                    break;
+                    case Reason.not_regstered:
+                        packet.reason = Reason.not_regstered;
+                    break;
+                    case Reason.already_logged_in:
+                        packet.reason = Reason.already_logged_in;
+                    break;
+                    default:
+                        packet.reason = Reason.unknown;
+                }
+                return packet;
             }
         }
+
+        export enum Reason {
+            success = 0,
+            not_regstered = 5,
+            already_logged_in = 7,
+            unknown = 23,
+        }
+
         export class Out extends OutPacket{
             account: String;
             password: String;

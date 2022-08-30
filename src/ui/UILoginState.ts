@@ -30,12 +30,6 @@ export class UILoginState extends UIElement implements UIState {
         ])
         this.login_state = new UILogin(this);
         LoginSession.init(this);
-
-        this.notice = new UILoginNotice(
-            UILoginNotice.Type.notice,
-            UILoginNotice.MessageID.account_not_match,
-            this.notice_confirm.bind(this)
-        );
     }
 
     draw(transform: Transform): void {
@@ -67,12 +61,33 @@ export class UILoginState extends UIElement implements UIState {
 
     change_state(next: LoginState, direction: UILoginState.Direction){
         this.login_state.clean();
-        this.notice.tab_focus.remove();
         this.context = new UILoginState.TransformContext(next, direction);
         setTimeout(() => {
             this.login_state = this.context.next;
             this.context = null;
         }, 1000);
+    }
+
+    set_notice(
+        type: UILoginNotice.Type,
+        message: UILoginNotice.MessageID,
+        onConfirm?: () => void,
+        onCancel?: () => void,
+    ){
+        this.notice = new UILoginNotice(type, message,
+            () => {
+                this.notice_cloce();
+                if(onConfirm){
+                    onConfirm();
+                }
+            },
+            onCancel? (() => {
+                this.notice_cloce();
+                if(onCancel){
+                    onCancel();
+                }
+            }) : null
+        );
     }
 
     mouse_move(position: Point): void {
@@ -141,7 +156,7 @@ export class UILoginState extends UIElement implements UIState {
         }
     }
 
-    private notice_confirm(): void{
+    notice_cloce(): void{
         this.notice.tab_focus.remove();
         this.notice = null;
     }

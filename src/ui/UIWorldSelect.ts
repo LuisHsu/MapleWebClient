@@ -15,6 +15,7 @@ import { UILogin } from "./UILogin";
 import { KeyType, TabFocus } from "../io/Keyboard";
 import { LoginState, UILoginState } from "./UILoginState";
 import { UICharSelect } from "./UICharSelect";
+import { UILoginNotice } from "./UILoginNotice";
 
 export class UIWorldSelect extends UIElement implements LoginState {
 
@@ -44,16 +45,20 @@ export class UIWorldSelect extends UIElement implements LoginState {
                 new UICharSelect(this.parent, this.selected_channel),
                 UILoginState.Direction.Down
             );
-            // TODO: channel select api
-            console.log(this.selected_channel);
         }
     }
 
     return_login(): void {
-        this.clean();
-        this.parent.change_state(
-            new UILogin(this.parent),
-            UILoginState.Direction.Up
+        this.parent.set_notice(
+            UILoginNotice.Type.notice, UILoginNotice.MessageID.back_to_login,
+            () => {
+                this.clean();
+                this.parent.change_state(
+                    new UILogin(this.parent),
+                    UILoginState.Direction.Up
+                );
+            },
+            () => {}
         );
     }
 
