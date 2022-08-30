@@ -13,12 +13,13 @@ import { Sprite } from "../graphics/Sprite";
 import { Texture } from "../graphics/Texture";
 import Window from "../io/Window";
 import Setting from "../Setting";
-import { UICharSelect } from "./UICharSelect";
 import LoginSession from "../net/LoginSession";
+import { UILoginNotice } from "./UILoginNotice";
 
-export interface LoginState extends UIState{
+export interface LoginState extends UIState {
     readonly parent: UILoginState;
     fg_draw?(transform: Transform): void;
+    clean(): void;
 }
 
 export class UILoginState extends UIElement implements UIState {
@@ -27,8 +28,14 @@ export class UILoginState extends UIElement implements UIState {
         super([
             new Sprite(new Texture("UI/Login/1024frame.png", {offset: new Point(512, 384), size: new Size(1024, 768)})),
         ])
-        this.login_state = new UICharSelect(this, 2);
+        this.login_state = new UILogin(this);
         LoginSession.init(this);
+
+        this.notice = new UILoginNotice(
+            UILoginNotice.Type.notice,
+            UILoginNotice.MessageID.account_not_match,
+            this.notice_confirm.bind(this)
+        );
     }
 
     draw(transform: Transform): void {
@@ -53,9 +60,14 @@ export class UILoginState extends UIElement implements UIState {
         if(this.context === null && this.login_state.fg_draw){
             this.login_state.fg_draw(transform);
         }
+        if(this.notice != null){
+            this.notice.draw(transform);
+        }
     }
 
     change_state(next: LoginState, direction: UILoginState.Direction){
+        this.login_state.clean();
+        this.notice.tab_focus.remove();
         this.context = new UILoginState.TransformContext(next, direction);
         setTimeout(() => {
             this.login_state = this.context.next;
@@ -67,17 +79,26 @@ export class UILoginState extends UIElement implements UIState {
         if((this.context === null) && this.login_state.mouse_move){
             this.login_state.mouse_move(position);
         }
+        if(this.notice !== null){
+            this.notice.mouse_move(position);
+        }
     }
 
     mouse_down(position: Point): void {
         if((this.context === null) && this.login_state.mouse_down){
             this.login_state.mouse_down(position);
         }
+        if(this.notice !== null){
+            this.notice.mouse_down(position);
+        }
     }
 
     mouse_up(position: Point): void {
         if((this.context === null) && this.login_state.mouse_up){
             this.login_state.mouse_up(position);
+        }
+        if(this.notice !== null){
+            this.notice.mouse_up(position);
         }
     }
 
@@ -103,6 +124,9 @@ export class UILoginState extends UIElement implements UIState {
         if((this.context === null) && this.login_state.left_click){
             this.login_state.left_click(position);
         }
+        if(this.notice !== null){
+            this.notice.left_click(position);
+        }
     }
 
     key_down(key: KeyType): void {
@@ -117,6 +141,12 @@ export class UILoginState extends UIElement implements UIState {
         }
     }
 
+    private notice_confirm(): void{
+        this.notice.tab_focus.remove();
+        this.notice = null;
+    }
+
+    public notice: UILoginNotice = null;
     private login_state: LoginState;
     private context: UILoginState.TransformContext = null;
 }

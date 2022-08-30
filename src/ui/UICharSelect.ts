@@ -42,6 +42,10 @@ export class UICharSelect extends UIElement implements LoginState {
         console.log("Select character");
     }
 
+    clean(): void {
+        // TODO:
+    }
+
     return_world_select(){
         this.tab_focus.remove();
         this.parent.change_state(

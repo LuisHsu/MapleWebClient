@@ -49,13 +49,18 @@ export class TextInput implements TabHandler, Drawable {
     focus_enter?(): void;
 
     draw(transform: Transform = new Transform): void {
-        let position = this.position.concat(transform.offset);
-        let size = this.size.concat(transform.scale);
-        this.element.style.opacity = `${transform.opacity}`;
-        this.element.style.width = `${size.width / Window.size.width * 100}%`;
-        this.element.style.height = `${size.height / Window.size.height * 100}%`;
-        this.element.style.bottom = `${(position.y + size.height / 2) / Window.size.height * 100}%`;
-        this.element.style.left = `${(position.x - size.width / 2) / Window.size.width * 100}%`;
+        if(this.active){
+            let position = this.position.concat(transform.offset);
+            let size = this.size.concat(transform.scale);
+            this.element.style.display = "inline";
+            this.element.style.opacity = `${transform.opacity}`;
+            this.element.style.width = `${size.width / Window.size.width * 100}%`;
+            this.element.style.height = `${size.height / Window.size.height * 100}%`;
+            this.element.style.bottom = `${(position.y + size.height / 2) / Window.size.height * 100}%`;
+            this.element.style.left = `${(position.x - size.width / 2) / Window.size.width * 100}%`;
+        }else{
+            this.element.style.display = "none";
+        }
     }
 
     set_active(active: boolean): void{

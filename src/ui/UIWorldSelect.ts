@@ -39,8 +39,7 @@ export class UIWorldSelect extends UIElement implements LoginState {
 
     enter_world(): void {
         if(this.selected_channel !== null){
-            this.tab_focus.remove();
-            this.channel_tab_focus.remove();
+            this.clean();
             this.parent.change_state(
                 new UICharSelect(this.parent, this.selected_channel),
                 UILoginState.Direction.Down
@@ -51,12 +50,16 @@ export class UIWorldSelect extends UIElement implements LoginState {
     }
 
     return_login(): void {
-        this.tab_focus.remove();
-        this.channel_tab_focus.remove();
+        this.clean();
         this.parent.change_state(
             new UILogin(this.parent),
             UILoginState.Direction.Up
         );
+    }
+
+    clean(): void {
+        this.tab_focus.remove();
+        this.channel_tab_focus.remove();
     }
 
     draw(transform: Transform): void {

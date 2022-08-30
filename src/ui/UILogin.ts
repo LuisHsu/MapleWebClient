@@ -16,7 +16,6 @@ import LoginSession from "../net/LoginSession";
 import { Color, Point, Size } from "../Types";
 import { UIElement } from "./UIElement";
 import { UILoginState, LoginState } from "./UILoginState";
-import { UIWorldSelect } from "./UIWorldSelect";
 
 export class UILogin extends UIElement implements LoginState {
 
@@ -73,15 +72,12 @@ export class UILogin extends UIElement implements LoginState {
         LoginSession.open(() => {
             LoginSession.login(this.account_input.value(), this.password_input.value());
         });
+    }
 
-        // Clean input
+    clean(): void {
         this.account_input.clean();
         this.password_input.clean();
         this.tab_focus.remove();
-        this.parent.change_state(
-            new UIWorldSelect(this.parent),
-            UILoginState.Direction.Down
-        )
     }
 
     private toggle_save_account(): void {
@@ -90,6 +86,13 @@ export class UILogin extends UIElement implements LoginState {
 
     draw(transform: Transform): void {
         super.draw(transform);
+        this.account_input.set_active(this.parent.notice === null);
+        this.password_input.set_active(this.parent.notice === null);
+        if(this.parent.notice === null){
+            this.tab_focus.activate();
+        }else{
+            this.tab_focus.deactivate();
+        }
         this.account_input.draw(transform);
         this.password_input.draw(transform);
         this.account_save_button.draw(transform.concat(new Transform({scale: new Size(1.25, 1.25)})));
