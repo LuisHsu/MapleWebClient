@@ -71,10 +71,11 @@ export class Canvas implements NeedInit{
         if(texture.bitmap !== null){
             ctx.save();
             if(transform.rotate){
-                ctx.rotate(transform.rotate  * Math.PI / 180);
+                ctx.rotate(transform.rotate * Math.PI / 180);
             }
             let offset = texture.offset.concat(transform.offset);
             let size = texture.size().concat(transform.scale);
+            ctx.globalAlpha = transform.opacity;
             ctx.drawImage(texture.bitmap, 
                 offset.x - size.width / 2,
                 Window.size.height - (offset.y + size.height / 2),

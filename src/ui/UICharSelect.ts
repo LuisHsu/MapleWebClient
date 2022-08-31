@@ -59,6 +59,11 @@ export class UICharSelect extends UIElement implements LoginState {
         this.delete_char_button.draw(transform);
         this.new_char_button.draw(transform);
         this.select_char_button.draw(transform);
+        for(let index = 0; index < 3; ++index){
+            if((this.page * 3 + index) >= this.cheracters.length){
+                this.empty_character.draw(transform.concat(new Transform({offset: new Point(150 * index, 0)})));
+            }
+        }
     }
 
     fg_draw(transform: Transform): void {
@@ -101,6 +106,8 @@ export class UICharSelect extends UIElement implements LoginState {
         TabFocus.update(key);
     }
 
+    private page: number = 0;
+    private cheracters: any[] = [];
     private tab_focus: TabFocus;
     private selected_world: string = "測試機";
     private selected_channel: number;
@@ -138,6 +145,11 @@ export class UICharSelect extends UIElement implements LoginState {
         disabled: new Texture("UI/CharSelect/CharSelect.BtSelect.disabled.0.png", {size: new Size(126, 37)}),
         focused: new Texture("UI/CharSelect/CharSelect.BtSelect.focused.0.png", {size: new Size(166, 44), offset:new Point(18, 2)}),
     }, new Point(819, 529), this.select_character.bind(this));
+
+    private empty_character: UIElement = new UIElement([
+        new Sprite(new Texture("UI/CharSelect/CharSelect.character.0.7.png", {offset: new Point(360, 275), size: new Size(74, 10)})),
+        new Sprite(new Texture("UI/CharSelect/CharSelect.character.1.0.png", {offset: new Point(360, 316), size: new Size(60, 84)}))
+    ])
 
     parent: UILoginState;
 }
