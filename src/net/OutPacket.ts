@@ -9,6 +9,7 @@ export abstract class OutPacket {
 
 export namespace OutPacket{
     export enum Type {
-        LOGIN = 1,
+        Login = 1,
+        Character_list = 5,
     }
 }

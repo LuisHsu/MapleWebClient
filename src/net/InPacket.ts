@@ -9,6 +9,6 @@ export abstract class InPacket{
 
 export namespace InPacket{
     export enum Type {
-        LOGIN = 0,
+        Login = 0,
     }
 }

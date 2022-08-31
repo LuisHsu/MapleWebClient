@@ -53,9 +53,32 @@ export namespace LoginPacket {
                     this.password.size()
                 );
                 let view = new DataView(buffer);
-                view.setUint16(0, OutPacket.Type.LOGIN);
+                view.setUint16(0, OutPacket.Type.Login);
                 this.account.encode(buffer, sizeof(Type.UInt16));
                 this.password.encode(buffer, sizeof(Type.UInt16) + this.account.size());
+                return buffer;
+            }
+        }
+    }
+
+    export namespace CharList {
+        export class Out extends OutPacket{
+            world: number;
+            channel: number;
+            constructor(channel: number, world: number = 0){
+                super();
+                this.world = world;
+                this.channel = channel;
+            }
+            encode(): ArrayBuffer {
+                let buffer = new ArrayBuffer(
+                    sizeof(Type.UInt16) +
+                    sizeof(Type.UInt8) * 2
+                );
+                let view = new DataView(buffer);
+                view.setUint16(0, OutPacket.Type.Character_list);
+                view.setUint8(2, this.world);
+                view.setUint8(3, this.channel);
                 return buffer;
             }
         }

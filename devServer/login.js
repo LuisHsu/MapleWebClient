@@ -15,6 +15,14 @@ function login_handler(data, send){
     send(packet);
 }
 
+function char_list_handler(data, send){
+    let world = data.readUint8(0);
+    let channel = data.readUint8(1);
+    console.log(world)
+    console.log(channel)
+}
+
 module.exports = {
-    login: login_handler
+    login: login_handler,
+    char_list: char_list_handler,
 }

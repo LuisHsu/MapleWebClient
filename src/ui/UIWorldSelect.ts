@@ -16,6 +16,7 @@ import { KeyType, TabFocus } from "../io/Keyboard";
 import { LoginState, UILoginState } from "./UILoginState";
 import { UICharSelect } from "./UICharSelect";
 import { UILoginNotice } from "./UILoginNotice";
+import LoginSession from "../net/LoginSession";
 
 export class UIWorldSelect extends UIElement implements LoginState {
 
@@ -41,10 +42,11 @@ export class UIWorldSelect extends UIElement implements LoginState {
     enter_world(): void {
         if(this.selected_channel !== null){
             this.clean();
-            this.parent.change_state(
-                new UICharSelect(this.parent, this.selected_channel),
-                UILoginState.Direction.Down
-            );
+            LoginSession.character_list(this.selected_channel);
+            // this.parent.change_state(
+            //     new UICharSelect(this.parent, this.selected_channel),
+            //     UILoginState.Direction.Down
+            // );
         }
     }
 

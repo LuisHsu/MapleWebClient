@@ -1,11 +1,14 @@
 const { 
     login,
+    char_list,
 } = require("./login");
 
 function Switch(data){
     let opcode = data.readInt16BE();
     if(opcode in handler_map){
         handler_map[opcode](data.slice(2), this.send);
+    }else{
+        console.log(`Unknown packet: ${data}`);
     }
 }
 
@@ -18,4 +21,5 @@ module.exports = Session
 
 const handler_map = {
     1: login,
+    5: char_list,
 }
