@@ -10,5 +10,6 @@ export abstract class InPacket{
 export namespace InPacket{
     export enum Type {
         Login = 0,
+        Character_list = 11,
     }
 }

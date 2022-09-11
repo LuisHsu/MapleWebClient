@@ -52,4 +52,10 @@ export class String {
         let encoder = new TextEncoder();
         string_view.set(encoder.encode(this.data));
     }
+
+    static decode(buffer: ArrayBuffer, length: number, byteOffset: number = 0): String{
+        let sliced = buffer.slice(byteOffset, byteOffset + length);
+        let decoder = new TextDecoder();
+        return new String(decoder.decode(sliced));
+    }
 }

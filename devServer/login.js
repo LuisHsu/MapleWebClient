@@ -29,7 +29,7 @@ function char_list_handler(data, send){
     packet.writeUint8(1, 3); // char_list length
     mock_char.copy(packet, 4);
 
-    console.log(packet);
+    send(packet);
 }
 
 module.exports = {

@@ -17,8 +17,9 @@ class LoginSession extends Session implements NeedInit{
     constructor(){
         super();
         this.packet_switch = new PacketSwitch([
-            [InPacket.Type.Login, {decode: LoginPacket.Login.In.decode, handle: this.login_handler.bind(this)}]
-        ])
+            [InPacket.Type.Login, {decode: LoginPacket.Login.In.decode, handle: this.login_handler.bind(this)}],
+            [InPacket.Type.Character_list, {decode: LoginPacket.CharList.In.decode, handle: this.char_list_handler.bind(this)}],
+        ]);
     }
 
     init(ui: UILoginState): void {
@@ -52,6 +53,10 @@ class LoginSession extends Session implements NeedInit{
             break;
             default:
         }
+    }
+
+    private char_list_handler: PacketHandler = (packet: LoginPacket.CharList.In) => {
+        console.log(packet);
     }
 }
 
