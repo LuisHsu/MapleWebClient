@@ -43,10 +43,7 @@ export class UIWorldSelect extends UIElement implements LoginState {
         if(this.selected_channel !== null){
             this.clean();
             LoginSession.character_list(this.selected_channel);
-            // this.parent.change_state(
-            //     new UICharSelect(this.parent, this.selected_channel),
-            //     UILoginState.Direction.Down
-            // );
+            this.state = UIWorldSelect.State.LOADING;
         }
     }
 
@@ -72,7 +69,7 @@ export class UIWorldSelect extends UIElement implements LoginState {
     draw(transform: Transform): void {
         super.draw(transform);
         this.world_button.draw(transform);
-        if(this.state == UIWorldSelect.State.SELECT_CHANNEL){
+        if(this.state == UIWorldSelect.State.SELECT_CHANNEL || this.state == UIWorldSelect.State.LOADING){
             Canvas.draw_texture(this.channel_back, transform);
             Canvas.draw_texture(this.world_title, transform);
             this.channel_go_button.draw(transform);
@@ -86,6 +83,9 @@ export class UIWorldSelect extends UIElement implements LoginState {
                     ))
                 }));
             }
+            if(this.state == UIWorldSelect.State.LOADING){
+                this.loading_notice.draw(transform);
+            }
         }
     }
 
@@ -95,51 +95,61 @@ export class UIWorldSelect extends UIElement implements LoginState {
     }
 
     mouse_move(position: Point): void {
-        this.world_button.update_hover(position);
-        this.return_button.update_hover(position);
-        if(this.state == UIWorldSelect.State.SELECT_CHANNEL){
-            this.channel_go_button.update_hover(position);
-            this.channel_buttons.forEach(button => {
-                button.update_hover(position);
-            });
+        if(this.state != UIWorldSelect.State.LOADING){
+            this.world_button.update_hover(position);
+            this.return_button.update_hover(position);
+            if(this.state == UIWorldSelect.State.SELECT_CHANNEL){
+                this.channel_go_button.update_hover(position);
+                this.channel_buttons.forEach(button => {
+                    button.update_hover(position);
+                });
+            }
         }
     }
 
     mouse_down(position: Point): void {
-        this.world_button.update_pressed(position);
-        this.return_button.update_pressed(position);
-        if(this.state == UIWorldSelect.State.SELECT_CHANNEL){
-            this.channel_go_button.update_pressed(position);
-            this.channel_buttons.forEach(button => {
-                button.update_pressed(position);
-            });
+        if(this.state != UIWorldSelect.State.LOADING){
+            this.world_button.update_pressed(position);
+            this.return_button.update_pressed(position);
+            if(this.state == UIWorldSelect.State.SELECT_CHANNEL){
+                this.channel_go_button.update_pressed(position);
+                this.channel_buttons.forEach(button => {
+                    button.update_pressed(position);
+                });
+            }
         }
     }
 
     mouse_up(position: Point): void {
-        this.world_button.update_released(position);
-        this.return_button.update_released(position);
-        if(this.state == UIWorldSelect.State.SELECT_CHANNEL){
-            this.channel_go_button.update_released(position);
-            this.channel_buttons.forEach(button => {
-                button.update_released(position);
-            });
+        if(this.state != UIWorldSelect.State.LOADING){
+            this.world_button.update_released(position);
+            this.return_button.update_released(position);
+            if(this.state == UIWorldSelect.State.SELECT_CHANNEL){
+                this.channel_go_button.update_released(position);
+                this.channel_buttons.forEach(button => {
+                    button.update_released(position);
+                });
+            }
         }
     }
 
     left_click(position: Point): void {
-        this.world_button.handle_click(position, this.world_click.bind(this));
-        this.channel_go_button.handle_click(position, this.enter_world.bind(this));
-        this.return_button.handle_click(position, this.return_login.bind(this));
-        if(this.state == UIWorldSelect.State.SELECT_CHANNEL){
-            this.channel_buttons.forEach((button, index) => {
-                button.handle_click(position, this.channel_click.bind(this, index));
-            });
+        if(this.state != UIWorldSelect.State.LOADING){
+            this.world_button.handle_click(position, this.world_click.bind(this));
+            this.channel_go_button.handle_click(position, this.enter_world.bind(this));
+            this.return_button.handle_click(position, this.return_login.bind(this));
+            if(this.state == UIWorldSelect.State.SELECT_CHANNEL){
+                this.channel_buttons.forEach((button, index) => {
+                    button.handle_click(position, this.channel_click.bind(this, index));
+                });
+            }
         }
     }
 
     key_up(key: KeyType): void {
-        TabFocus.update(key);
+        if(this.state != UIWorldSelect.State.LOADING){
+            TabFocus.update(key);
+        }
     }
 
     selected_channel: number = null;
@@ -206,7 +216,7 @@ export class UIWorldSelect extends UIElement implements LoginState {
     ]);
 
     private state: UIWorldSelect.State = UIWorldSelect.State.SELECT_WORLD;
-    private scroll_sprite: {[state in UIWorldSelect.State]: Sprite} = {
+    private scroll_sprite: {[state in UIWorldSelect.State]?: Sprite} = {
         [UIWorldSelect.State.SELECT_WORLD]: new Sprite(new Texture("UI/WorldSelect/WorldSelect.scroll.0.png", {offset: new Point(520, 580), size: new Size(780, 210)})),
         [UIWorldSelect.State.SELECT_CHANNEL]: new Sprite(new Texture("UI/WorldSelect/WorldSelect.scroll.1.png", {offset: new Point(520, 405), size: new Size(780, 560)})),
     }
@@ -233,6 +243,23 @@ export class UIWorldSelect extends UIElement implements LoginState {
         return results;
     };
 
+    private loading_notice = new UIElement([
+        new Sprite(new Texture("UI/WorldSelect/Notice.Loading.backgrnd.png", {offset: new Point(512, 384), size: new Size(353, 180)})),
+        new Sprite(new Animation([
+            new Frame(new Texture("UI/WorldSelect/Notice.Loading.bar.0.png", {offset: new Point(568, 347), size: new Size(136, 10)}), 0.2),
+            new Frame(new Texture("UI/WorldSelect/Notice.Loading.bar.1.png", {offset: new Point(568, 347), size: new Size(136, 10)}), 0.2),
+            new Frame(new Texture("UI/WorldSelect/Notice.Loading.bar.2.png", {offset: new Point(568, 347), size: new Size(136, 10)}), 0.2),
+            new Frame(new Texture("UI/WorldSelect/Notice.Loading.bar.3.png", {offset: new Point(568, 347), size: new Size(136, 10)}), 0.2),
+            new Frame(new Texture("UI/WorldSelect/Notice.Loading.bar.4.png", {offset: new Point(568, 347), size: new Size(136, 10)}), 0.2),
+            new Frame(new Texture("UI/WorldSelect/Notice.Loading.bar.5.png", {offset: new Point(568, 347), size: new Size(136, 10)}), 0.2),
+            new Frame(new Texture("UI/WorldSelect/Notice.Loading.bar.6.png", {offset: new Point(568, 347), size: new Size(136, 10)}), 0.2),
+            new Frame(new Texture("UI/WorldSelect/Notice.Loading.bar.7.png", {offset: new Point(568, 347), size: new Size(136, 10)}), 0.2),
+            new Frame(new Texture("UI/WorldSelect/Notice.Loading.bar.8.png", {offset: new Point(568, 347), size: new Size(136, 10)}), 0.2),
+            new Frame(new Texture("UI/WorldSelect/Notice.Loading.bar.9.png", {offset: new Point(568, 347), size: new Size(136, 10)}), 0.2),
+            new Frame(new Texture("UI/WorldSelect/Notice.Loading.bar.10.png", {offset: new Point(568, 347), size: new Size(136, 10)}), 0.2),
+        ], true, true)),
+    ])
+
     parent: UILoginState;
 }
 
@@ -240,6 +267,7 @@ export namespace UIWorldSelect{
     export enum State{
         SELECT_WORLD,
         SELECT_CHANNEL,
+        LOADING,
     }
 }
 

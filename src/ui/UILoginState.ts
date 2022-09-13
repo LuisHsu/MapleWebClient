@@ -65,7 +65,7 @@ export class UILoginState extends UIElement implements UIState {
         setTimeout(() => {
             this.login_state = this.context.next;
             this.context = null;
-        }, 1000);
+        }, 900);
     }
 
     set_notice(
