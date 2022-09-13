@@ -4,6 +4,7 @@
  */
 
 import { NeedInit } from "../Types";
+import { UICharSelect } from "../ui/UICharSelect";
 import { UILoginNotice } from "../ui/UILoginNotice";
 import { UILoginState } from "../ui/UILoginState";
 import { UIWorldSelect } from "../ui/UIWorldSelect";
@@ -56,7 +57,10 @@ class LoginSession extends Session implements NeedInit{
     }
 
     private char_list_handler: PacketHandler = (packet: LoginPacket.CharList.In) => {
-        console.log(packet);
+        this.ui.change_state(
+            new UICharSelect(this.ui, packet.channel, packet.characters),
+            UILoginState.Direction.Down
+        )
     }
 }
 

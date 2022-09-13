@@ -3,6 +3,7 @@
  * @module UICharSelect
  */
 
+import { CharEntry } from "../character/CharEntry";
 import { MapleButton } from "../components/Button";
 import Animation, { Frame } from "../graphics/Animation";
 import Canvas, { Transform } from "../graphics/Canvas";
@@ -15,7 +16,11 @@ import { LoginState, UILoginState } from "./UILoginState";
 import { UIWorldSelect } from "./UIWorldSelect";
 
 export class UICharSelect extends UIElement implements LoginState {
-    constructor(parent: UILoginState, selected_channel: number){
+    constructor(
+        parent: UILoginState,
+        selected_channel: number,
+        characters: CharEntry[]
+    ){
         super(char_select_sprites());
         this.parent = parent;
         this.selected_channel = selected_channel;
@@ -107,7 +112,7 @@ export class UICharSelect extends UIElement implements LoginState {
     }
 
     private page: number = 0;
-    private cheracters: any[] = [];
+    private cheracters: CharEntry[] = [];
     private tab_focus: TabFocus;
     private selected_world: string = "測試機";
     private selected_channel: number;
