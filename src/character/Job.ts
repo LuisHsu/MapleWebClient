@@ -10,7 +10,11 @@ export class Job {
 
 export namespace Job {
     export enum Grade {
-        Beginner, First, Second, Third, Fourth,
+        Beginner = 0,
+        First = 1,
+        Second = 2,
+        Third = 3,
+        Fourth = 4,
     }
     export enum ID {
         beginner = 0,
@@ -55,6 +59,12 @@ export namespace Job {
         gunslinger = 520,
         outlaw = 521,
         corsair = 522,
-        aran = 200,
+        Noblesse = 1000,
+        dawn_warrior = 1100,
+        blaze_wizard = 1200,
+        wind_archer = 1300,
+        night_walker = 1400,
+        thunder_breaker = 1500,
+        aran = 2000,
     }
 }

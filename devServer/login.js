@@ -38,7 +38,7 @@ module.exports = {
 }
 
 function create_mock_character(){
-    let buffer = Buffer.alloc(77);
+    let buffer = Buffer.alloc(78);
 
     buffer.writeInt32BE(123); // cid: 4 = 123
     buffer.writeUint16BE(8, 4); // name_length: 2 = 8
@@ -51,26 +51,27 @@ function create_mock_character(){
     // pet_id: 2
     buffer.writeUint16BE(20, 21) // level: 2 = 20
     buffer.writeUint16BE(200, 23) // job: 2 = magician
-    buffer.writeUint16BE(4, 25) // str: 2 = 4
-    buffer.writeUint16BE(4, 27) // dex: 2 = 4
-    buffer.writeUint16BE(86, 29) // inte: 2 = 86
-    buffer.writeUint16BE(23, 31) // luk: 2 = 23
-    buffer.writeUint32BE(1000, 33) // hp: 4 = 1000
-    buffer.writeUint32BE(1200, 37) // max_hp: 4 = 1200
-    buffer.writeUint32BE(5000, 41) // mp: 4 = 5000
-    buffer.writeUint32BE(5600, 45) // max_mp: 4 = 5600
-    buffer.writeUint16BE(5, 49) // ap: 2 = 5
-    buffer.writeUint16BE(3, 51) // sp: 2 = 3
-    buffer.writeUint32BE(72000, 53) // exp: 4 = 72000
-    buffer.writeUint16BE(15, 57) // fame: 2 = 15
-    buffer.writeUint32BE(0, 59) // map_id: 4 = 0
-    buffer.writeUint8(0, 63) // portal: 1 = 0
-    buffer.writeUint8(0xFF, 64) // equip_slot: 1 = none
-    buffer.writeUint8(0xFF, 65) // masked_equip_slot: 1 = none
-    buffer.writeUint8(1, 66) // has rankinfo: 1 = true
-    buffer.writeUint32BE(345, 67) // rank_value: 4 = 345
-    buffer.writeInt8(-1, 71) // rank_trend: 1 = -
-    buffer.writeUint32BE(234, 72) // job_rank_value: 4 = 234
-    buffer.writeInt8(1, 76) // job_rank_trend: 1 = +
+    buffer.writeUint8(1, 25) // grade: 1 = first
+    buffer.writeUint16BE(4, 26) // str: 2 = 4
+    buffer.writeUint16BE(4, 28) // dex: 2 = 4
+    buffer.writeUint16BE(86, 30) // inte: 2 = 86
+    buffer.writeUint16BE(23, 32) // luk: 2 = 23
+    buffer.writeUint32BE(1000, 34) // hp: 4 = 1000
+    buffer.writeUint32BE(1200, 38) // max_hp: 4 = 1200
+    buffer.writeUint32BE(5000, 42) // mp: 4 = 5000
+    buffer.writeUint32BE(5600, 46) // max_mp: 4 = 5600
+    buffer.writeUint16BE(5, 50) // ap: 2 = 5
+    buffer.writeUint16BE(3, 52) // sp: 2 = 3
+    buffer.writeUint32BE(72000, 54) // exp: 4 = 72000
+    buffer.writeUint16BE(15, 58) // fame: 2 = 15
+    buffer.writeUint32BE(0, 60) // map_id: 4 = 0
+    buffer.writeUint8(0, 64) // portal: 1 = 0
+    buffer.writeUint8(0xFF, 65) // equip_slot: 1 = none
+    buffer.writeUint8(0xFF, 66) // masked_equip_slot: 1 = none
+    buffer.writeUint8(1, 67) // has rankinfo: 1 = true
+    buffer.writeUint32BE(345, 68) // rank_value: 4 = 345
+    buffer.writeInt8(-1, 72) // rank_trend: 1 = -
+    buffer.writeUint32BE(234, 73) // job_rank_value: 4 = 234
+    buffer.writeInt8(1, 77) // job_rank_trend: 1 = +
     return buffer;
 }

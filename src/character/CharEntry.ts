@@ -8,7 +8,7 @@ import { Job } from "./Job";
 export class CharEntry {
     cid: number;
     name: string;
-    pet_ids: number[];
+    pet_ids: number[] = [];
     exp: number;
     map_id: number;
     portal: number;
@@ -24,7 +24,7 @@ export class CharEntry {
     job: Job;
     str: number;
     dex: number;
-    inte: number;
+    int: number;
     luk: number;
     hp: number;
     max_hp: number;
@@ -38,7 +38,9 @@ export class CharEntry {
 
 export namespace CharEntry {
     export enum Trend {
-        increase, decrease, even,
+        increase = 1,
+        decrease = -1,
+        even = 0,
     }
     export class Rank {
         value: number;
