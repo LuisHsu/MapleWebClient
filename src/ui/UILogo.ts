@@ -22,10 +22,10 @@ export class UILogo implements UIState {
 
     constructor(){
         let frames = [
-            create_logo_frame("UI/Logo/Gamania.0.png", 2, undefined, () => {
+            create_logo_frame("UI/Logo/Gamania.0.png", 2, () => {
                 Music.play("NxLogo");
             }),
-            create_logo_frame("UI/Logo/Nexon.0.png", 2, undefined, () => {
+            create_logo_frame("UI/Logo/Nexon.0.png", 2, () => {
                 Music.play("WzLogo");
             })
         ];
@@ -46,11 +46,11 @@ export class UILogo implements UIState {
     }
 }
 
-function create_logo_frame(id: string, delay: number, transform?: Transform, callback?: () => void): Frame{
+function create_logo_frame(id: string, delay: number, callback?: () => void): Frame{
     return new Frame(new Texture(id, {
         size: new Size(Setting.ScreenSize.width, Setting.ScreenSize.height),
         offset: new Point(Setting.ScreenSize.width / 2, Setting.ScreenSize.height / 2),
-    }), delay, transform, null, callback);
+    }), delay, undefined, null, callback);
 }
 function create_wizet_frame(index: number): Frame {
     return new Frame(new Texture(
