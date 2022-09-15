@@ -20,7 +20,13 @@ export interface Drawable {
 }
 
 export class Transform {
-    constructor(initializer?: {rotate?: number, offset?: Point, scale?: Size, opacity?: number}){
+    constructor(initializer?: {
+        rotate?: number,
+        offset?: Point,
+        scale?: Size,
+        opacity?: number,
+        flip?: [boolean, boolean]
+    }){
         if(initializer){
             if(typeof(initializer.rotate) !== "undefined"){
                 this.rotate = initializer.rotate;
@@ -34,18 +40,23 @@ export class Transform {
             if(typeof(initializer.opacity) !== "undefined"){
                 this.opacity = initializer.opacity;
             }
+            if(typeof(initializer.flip) !== "undefined"){
+                this.flip = initializer.flip;
+            }
         }
     }
     rotate: number = 0.0;
     offset: Point = new Point(0, 0);
     scale: Size = new Size(1, 1);
     opacity: number = 1.0;
+    flip: [boolean, boolean] = [false, false];
 
     concat = (transform: Transform) => new Transform({
         rotate: this.rotate + transform.rotate,
         offset: this.offset.concat(transform.offset),
         scale: this.scale.concat(transform.scale),
         opacity: this.opacity * transform.opacity,
+        flip: [this.flip[0] !== transform.flip[0], this.flip[1] !== transform.flip[1]],
     });
 };
 
@@ -73,8 +84,17 @@ export class Canvas implements NeedInit{
             if(transform.rotate){
                 ctx.rotate(transform.rotate * Math.PI / 180);
             }
-            let offset = texture.offset.concat(transform.offset);
+            if(transform.offset){
+                ctx.translate(transform.offset.x, -transform.offset.y);
+            }
+            let offset = texture.offset;
             let size = texture.size().concat(transform.scale);
+            if(transform.flip[0] || transform.flip[1]){
+                ctx.scale(
+                    transform.flip[0] ? -1 : 1,
+                    transform.flip[1] ? -1 : 1,
+                );
+            }
             ctx.globalAlpha = transform.opacity;
             ctx.drawImage(texture.bitmap, 
                 offset.x - size.width / 2,
