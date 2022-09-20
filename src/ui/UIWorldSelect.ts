@@ -205,14 +205,14 @@ export class UIWorldSelect extends UIElement implements LoginState {
     }, new Point(73, 125), this.return_login.bind(this));
 
     private select_animation: Animation = new Animation([
-        new Frame(new Texture("UI/WorldSelect/WorldSelect.channel.chSelect.0.png",
-            {offset: new Point(29, 5.5), size: new Size(27, 13)}), 0.1),
-        new Frame(new Texture("UI/WorldSelect/WorldSelect.channel.chSelect.1.png",
-            {offset: new Point(20, 11), size: new Size(44, 24)}), 0.05),
-        new Frame(new Texture("UI/WorldSelect/WorldSelect.channel.chSelect.2.png",
-            {offset: new Point(20, 18), size: new Size(49, 38)}), 0.05),
-        new Frame(new Texture("UI/WorldSelect/WorldSelect.channel.chSelect.3.png",
-            {offset: new Point(30, 18), size: new Size(68, 38)})),
+        new Frame([new Texture("UI/WorldSelect/WorldSelect.channel.chSelect.0.png",
+            {offset: new Point(29, 5.5), size: new Size(27, 13)})], 0.1),
+        new Frame([new Texture("UI/WorldSelect/WorldSelect.channel.chSelect.1.png",
+            {offset: new Point(20, 11), size: new Size(44, 24)})], 0.05),
+        new Frame([new Texture("UI/WorldSelect/WorldSelect.channel.chSelect.2.png",
+            {offset: new Point(20, 18), size: new Size(49, 38)})], 0.05),
+        new Frame([new Texture("UI/WorldSelect/WorldSelect.channel.chSelect.3.png",
+            {offset: new Point(30, 18), size: new Size(68, 38)})]),
     ]);
 
     private state: UIWorldSelect.State = UIWorldSelect.State.SELECT_WORLD;
@@ -246,17 +246,17 @@ export class UIWorldSelect extends UIElement implements LoginState {
     private loading_notice = new UIElement([
         new Sprite(new Texture("UI/WorldSelect/Notice.Loading.backgrnd.png", {offset: new Point(512, 384), size: new Size(353, 180)})),
         new Sprite(new Animation([
-            new Frame(new Texture("UI/WorldSelect/Notice.Loading.bar.0.png", {offset: new Point(568, 347), size: new Size(136, 10)}), 0.2),
-            new Frame(new Texture("UI/WorldSelect/Notice.Loading.bar.1.png", {offset: new Point(568, 347), size: new Size(136, 10)}), 0.2),
-            new Frame(new Texture("UI/WorldSelect/Notice.Loading.bar.2.png", {offset: new Point(568, 347), size: new Size(136, 10)}), 0.2),
-            new Frame(new Texture("UI/WorldSelect/Notice.Loading.bar.3.png", {offset: new Point(568, 347), size: new Size(136, 10)}), 0.2),
-            new Frame(new Texture("UI/WorldSelect/Notice.Loading.bar.4.png", {offset: new Point(568, 347), size: new Size(136, 10)}), 0.2),
-            new Frame(new Texture("UI/WorldSelect/Notice.Loading.bar.5.png", {offset: new Point(568, 347), size: new Size(136, 10)}), 0.2),
-            new Frame(new Texture("UI/WorldSelect/Notice.Loading.bar.6.png", {offset: new Point(568, 347), size: new Size(136, 10)}), 0.2),
-            new Frame(new Texture("UI/WorldSelect/Notice.Loading.bar.7.png", {offset: new Point(568, 347), size: new Size(136, 10)}), 0.2),
-            new Frame(new Texture("UI/WorldSelect/Notice.Loading.bar.8.png", {offset: new Point(568, 347), size: new Size(136, 10)}), 0.2),
-            new Frame(new Texture("UI/WorldSelect/Notice.Loading.bar.9.png", {offset: new Point(568, 347), size: new Size(136, 10)}), 0.2),
-            new Frame(new Texture("UI/WorldSelect/Notice.Loading.bar.10.png", {offset: new Point(568, 347), size: new Size(136, 10)}), 0.2),
+            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.0.png", {offset: new Point(568, 347), size: new Size(136, 10)})], 0.2),
+            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.1.png", {offset: new Point(568, 347), size: new Size(136, 10)})], 0.2),
+            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.2.png", {offset: new Point(568, 347), size: new Size(136, 10)})], 0.2),
+            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.3.png", {offset: new Point(568, 347), size: new Size(136, 10)})], 0.2),
+            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.4.png", {offset: new Point(568, 347), size: new Size(136, 10)})], 0.2),
+            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.5.png", {offset: new Point(568, 347), size: new Size(136, 10)})], 0.2),
+            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.6.png", {offset: new Point(568, 347), size: new Size(136, 10)})], 0.2),
+            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.7.png", {offset: new Point(568, 347), size: new Size(136, 10)})], 0.2),
+            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.8.png", {offset: new Point(568, 347), size: new Size(136, 10)})], 0.2),
+            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.9.png", {offset: new Point(568, 347), size: new Size(136, 10)})], 0.2),
+            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.10.png", {offset: new Point(568, 347), size: new Size(136, 10)})], 0.2),
         ], true, true)),
     ])
 

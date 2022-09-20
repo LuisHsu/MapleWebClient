@@ -4,6 +4,7 @@
  */
 
 import { CharEntry } from "../character/CharEntry";
+import { CharLook } from "../character/CharLook";
 import { MapleButton } from "../components/Button";
 import Animation, { Frame } from "../graphics/Animation";
 import Canvas, { Transform } from "../graphics/Canvas";
@@ -23,6 +24,7 @@ export class UICharSelect extends UIElement implements LoginState {
     ){
         super(char_select_sprites());
         this.parent = parent;
+        this.cheracters = characters.map(entry => ({entry, look: new CharLook(entry)}));
         this.selected_channel = selected_channel;
         this.tab_focus = new TabFocus([
             this.select_char_button,
@@ -112,7 +114,7 @@ export class UICharSelect extends UIElement implements LoginState {
     }
 
     private page: number = 0;
-    private cheracters: CharEntry[] = [];
+    private cheracters: {entry: CharEntry, look: CharLook}[] = [];
     private tab_focus: TabFocus;
     private selected_world: string = "測試機";
     private selected_channel: number;
@@ -163,7 +165,7 @@ const char_select_sprites = (): Sprite[] => {
     let results = [
         new Sprite(new Texture("Map/Back/back.1.png", {offset: new Point(512, 364), size: new Size(1024, 768)})),
         new Sprite(new Animation([
-            new Frame(new Texture("Map/Back/back.3.png", {offset: new Point(-112, 51), size: new Size(224, 102)}),
+            new Frame([new Texture("Map/Back/back.3.png", {offset: new Point(-112, 51), size: new Size(224, 102)})],
                 10, new Transform({offset: new Point(1136, 0)}), new Transform({offset: new Point(0, 0)})
             ),
         ], true, true)),

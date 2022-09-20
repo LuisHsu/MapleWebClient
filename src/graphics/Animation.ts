@@ -10,20 +10,19 @@ import { Point, Size } from "../Types";
 
 export class Frame implements Drawable {
     /**
-     * 
-     * @param texture Frame texture
+     * @param textures Frame texture
      * @param delay Frame delay in seconds
      * @param transform Frame transformation
      * @param from Frame transformation that begins from
      * @param callback Callback function after frame expired
      */
-    constructor(texture: Texture,
+    constructor(textures: Texture[],
             delay?: number,
             transform: Transform = new Transform,
             from?: Transform,
             callback?: () => void
         ){
-        this.texture = texture;
+        this.textures = textures;
         this.delay = delay ? (delay * 1000) : null;
         this.transform = transform;
         this.callback = callback;
@@ -34,18 +33,22 @@ export class Frame implements Drawable {
     }
     draw(transform: Transform = new Transform): void {
         if(this.delay && this.from && (this.counter <= this.delay)){
-            canvas.draw_texture(this.texture, transform.concat(new Transform({
-                rotate: this.from.rotate + ((this.transform.rotate - this.from.rotate) * this.counter / this.delay),
-                opacity: this.from.opacity + ((this.transform.opacity - this.from.opacity) * this.counter / this.delay),
-                scale: new Size(
-                    this.from.scale.width + ((this.transform.scale.width - this.from.scale.width) * this.counter / this.delay),
-                    this.from.scale.height + ((this.transform.scale.height - this.from.scale.height) * this.counter / this.delay)
-                ),
-                offset: this.from.offset.concat(this.transform.offset.concat(this.from.offset.mul(-1)).mul(this.counter).div(this.delay)),
-            })));
+            this.textures.forEach(texture => {
+                canvas.draw_texture(texture, transform.concat(new Transform({
+                    rotate: this.from.rotate + ((this.transform.rotate - this.from.rotate) * this.counter / this.delay),
+                    opacity: this.from.opacity + ((this.transform.opacity - this.from.opacity) * this.counter / this.delay),
+                    scale: new Size(
+                        this.from.scale.width + ((this.transform.scale.width - this.from.scale.width) * this.counter / this.delay),
+                        this.from.scale.height + ((this.transform.scale.height - this.from.scale.height) * this.counter / this.delay)
+                    ),
+                    offset: this.from.offset.concat(this.transform.offset.concat(this.from.offset.mul(-1)).mul(this.counter).div(this.delay)),
+                })));
+            })
             this.counter += Setting.FPS;
         }else{
-            canvas.draw_texture(this.texture, transform.concat(this.transform));
+            this.textures.forEach(texture => {
+                canvas.draw_texture(texture, transform.concat(this.transform));
+            })
         }
     }
     reset(): void{
@@ -53,7 +56,7 @@ export class Frame implements Drawable {
     }
     delay?: number;
     callback?: () => void;
-    private texture: Texture;
+    private textures: Texture[];
     private transform: Transform;
     private counter?: number;
     private from?: Transform;

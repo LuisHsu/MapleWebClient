@@ -47,15 +47,15 @@ export class UILogo implements UIState {
 }
 
 function create_logo_frame(id: string, delay: number, callback?: () => void): Frame{
-    return new Frame(new Texture(id, {
+    return new Frame([new Texture(id, {
         size: new Size(Setting.ScreenSize.width, Setting.ScreenSize.height),
         offset: new Point(Setting.ScreenSize.width / 2, Setting.ScreenSize.height / 2),
-    }), delay, undefined, null, callback);
+    })], delay, undefined, null, callback);
 }
 function create_wizet_frame(index: number): Frame {
-    return new Frame(new Texture(
+    return new Frame([new Texture(
         `UI/Logo/Wizet.${index}.png`, {
         size: new Size(704, 538),
         offset: new Point(352, 499),
-    }), 0.1);
+    })], 0.1);
 }
