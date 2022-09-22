@@ -1,6 +1,3 @@
-import { Transform } from "./graphics/Canvas";
-import { KeyType } from "./io/Keyboard";
-
 /**
  * Point: 2D location
  */
