@@ -7,16 +7,16 @@ import { Fetch } from "../Fetch";
 import { Stance } from "./Look";
 import Setting from "../Setting";
 import { Texture } from "../graphics/Texture";
+import { Size } from "../Types";
 
 export class Body {
 
     stances: {[id in Stance.Id]?: Stance[]}
 
     constructor(skin_id: number){
-        Promise.all([
-            Fetch.Json(`${Setting.DataPath}Character/body/${skin_id}.json`)]
-        ).then(([body_json]) => {
-            let body_frames = Body.map_stances(body_json, skin_id);
+        Fetch.Json(`${Setting.DataPath}Character/skin/${skin_id}.json`)
+        .then(skin_json => {
+            let body_frames = Body.map_stances(skin_json, skin_id);
             console.log(body_frames); // FIXME:
         })
     }
@@ -50,13 +50,25 @@ export class Body {
                                 result.has_face = frame["face"];
                                 delete frame["face"];
                             }
-                            result.layers = Object.entries(frame).reduce((prev: any, [layer, part]) => {
+                            result.layers = Object.entries(frame).reduce((prev: any, [layer, part]: [string, any]) => {
                                 if(typeof(part) == "string"){
                                     prev[layer as Body.Layer] = part;
                                 }else{
-                                    prev[layer as Body.Layer] = new Texture(
-                                        `Character/body/${skin_id}/${stance}.${frame_key}.${layer}.png`
-                                    );
+                                    if(["head", "ear"].includes(layer)){
+                                        prev[layer as Body.Layer] = new Texture(
+                                            `Character/skin/${skin_id}/${part.side}.${layer}.png`,
+                                            {
+                                                size: new Size(part.width, part.height)
+                                            }
+                                        );
+                                    }else{
+                                        prev[layer as Body.Layer] = new Texture(
+                                            `Character/skin/${skin_id}/${stance}.${frame_key}.${layer}.png`,
+                                            {
+                                                size: new Size(part.width, part.height)
+                                            }
+                                        );
+                                    }
                                     // TODO: origin
                                     // TODO: map
                                 }
@@ -69,12 +81,15 @@ export class Body {
                 );
                 return stances;
             }, {})
-
         // Resolve reference & action
         Object.values(stances).forEach((frames: any) => {
             Object.values(frames).forEach((frame: any) => {
                 if(frame.type == "action"){
-                    // Action TODO:
+                    // Action
+                    frame.layers = stances[frame.action][frame.frame].layers;
+                    frame.has_face = stances[frame.action][frame.frame].has_face;
+                    delete frame.action;
+                    delete frame.frame;
                 }else{
                     // Frame
                     Object.entries(frame.layers).forEach(([name, layer]) => {
@@ -89,6 +104,7 @@ export class Body {
                         }
                     })
                 }
+                delete frame.type;
             });
         });
         return stances;
