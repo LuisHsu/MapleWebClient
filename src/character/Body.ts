@@ -30,13 +30,17 @@ export class Body {
                     ((entry: any, [frame_key, frame]: [string, any]) => {
                         if(frame.hasOwnProperty("action")){
                             // Action
-                            entry[frame_key] = {...frame}
+                            entry[frame_key] = {
+                                ...frame,
+                                type: "action",
+                            }
                         }else{
                             // Frame
                             let result = {
                                 delay: 0,
                                 layers: {},
                                 has_face: true,
+                                type: "frame",
                             };
                             if(frame.hasOwnProperty("delay")){
                                 result.delay = frame["delay"];
@@ -67,14 +71,25 @@ export class Body {
             }, {})
 
         // Resolve reference & action
-        Object.entries(stances).forEach(([stance, frames]) => {
-            Object.entries(frames).forEach(([index, frame]) => {
-                Object.entries(frame).forEach(([layer, part]) => {
-                    if(typeof(part) == "string"){
-                        console.log(part);
-                    }
-                })
-            })
+        Object.values(stances).forEach((frames: any) => {
+            Object.values(frames).forEach((frame: any) => {
+                if(frame.type == "action"){
+                    // Action TODO:
+                }else{
+                    // Frame
+                    Object.entries(frame.layers).forEach(([name, layer]) => {
+                        if(typeof(layer) == "string"){
+                            if(layer.startsWith("../../")){
+                                let [stance, index, part] = layer.substring(6).split("/");
+                                frame.layers[name] = stances[stance][index].layers[part];
+                            }else if(layer.startsWith("../")){
+                                let [index, part] = layer.substring(3).split("/");
+                                frame.layers[name] = frames[index].layers[part]
+                            }
+                        }
+                    })
+                }
+            });
         });
         return stances;
     }
