@@ -66,9 +66,17 @@ export class UICharSelect extends UIElement implements LoginState {
         this.delete_char_button.draw(transform);
         this.new_char_button.draw(transform);
         this.select_char_button.draw(transform);
-        for(let index = 0; index < 3; ++index){
-            if((this.page * 3 + index) >= this.cheracters.length){
-                this.empty_character.draw(transform.concat(new Transform({offset: new Point(150 * index, 0)})));
+        for(let slot_index = 0; slot_index < 3; ++slot_index){
+            let index = (this.page * 3 + slot_index);
+            if(index >= this.cheracters.length){
+                this.empty_character.draw(transform.concat(new Transform({
+                    offset: new Point(150 * slot_index, 0)
+                })));
+            }else{
+                this.cheracters[index].look.draw(transform.concat(new Transform({
+                    offset: new Point(150 * slot_index + 366, 257),
+                    flip: [true, false],
+                })));
             }
         }
     }
@@ -155,7 +163,7 @@ export class UICharSelect extends UIElement implements LoginState {
 
     private empty_character: UIElement = new UIElement([
         new Sprite(new Texture("UI/CharSelect/CharSelect.character.0.7.png", {offset: new Point(360, 275), size: new Size(74, 10)})),
-        new Sprite(new Texture("UI/CharSelect/CharSelect.character.1.0.png", {offset: new Point(360, 316), size: new Size(60, 84)}))
+        new Sprite(new Texture("UI/CharSelect/CharSelect.character.1.0.png", {offset: new Point(360, 308)}))
     ])
 
     parent: UILoginState;
