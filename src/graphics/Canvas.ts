@@ -89,6 +89,10 @@ export class Canvas implements NeedInit{
             }
             let offset = texture.offset;
             let size = texture.size().concat(transform.scale);
+            ctx.translate(
+                offset.x - size.width / 2,
+                Window.size.height - (offset.y + size.height / 2)
+            );
             if(transform.flip[0] || transform.flip[1]){
                 ctx.scale(
                     transform.flip[0] ? -1 : 1,
@@ -96,9 +100,7 @@ export class Canvas implements NeedInit{
                 );
             }
             ctx.globalAlpha = transform.opacity;
-            ctx.drawImage(texture.bitmap, 
-                offset.x - size.width / 2,
-                Window.size.height - (offset.y + size.height / 2),
+            ctx.drawImage(texture.bitmap, 0, 0,
                 size.width, size.height
             );
             ctx.restore();
