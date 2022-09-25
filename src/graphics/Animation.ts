@@ -6,7 +6,7 @@
 import Setting from "../Setting";
 import { Texture } from "./Texture";
 import canvas, { Drawable, Transform } from "./Canvas";
-import { Point, Size } from "../Types";
+import { Size } from "../Types";
 
 export class Frame implements Drawable {
     /**
@@ -88,7 +88,7 @@ export class Animation implements Drawable{
     draw(transform: Transform = new Transform){
         this.frames[this.index].draw(transform);
     }
-    private repeat: boolean;
+    repeat: boolean;
     private frames: Frame[];
     private index: number = 0;
     private timeout: ReturnType<typeof setTimeout> = null;
