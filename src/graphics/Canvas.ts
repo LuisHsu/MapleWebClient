@@ -98,6 +98,10 @@ export class Canvas implements NeedInit{
                     transform.flip[0] ? -1 : 1,
                     transform.flip[1] ? -1 : 1,
                 );
+                ctx.translate(
+                    transform.flip[0] ? -size.width : 0,
+                    transform.flip[1] ? -size.height : 0,
+                );
             }
             ctx.globalAlpha = transform.opacity;
             ctx.drawImage(texture.bitmap, 0, 0,
