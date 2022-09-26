@@ -7,17 +7,17 @@ import { Fetch } from "../Fetch";
 import { Stance } from "./Look";
 import Setting from "../Setting";
 import { Texture } from "../graphics/Texture";
-import { Size } from "../Types";
+import { Point, Size } from "../Types";
 
 export class Body {
-    
+
     stances: {[id in Stance.Id]?: Stance[]} = {};
 
-    constructor(skin_id: number){
+    constructor(skin_id: number, callback: () => void){
         Fetch.Json(`${Setting.DataPath}Character/skin/${skin_id}.json`)
         .then(skin_json => {
             // Retrieve immediate stance
-            let stances = Object.entries(skin_json)
+            return Object.entries(skin_json)
                 .filter(([stance, _]) => Object.values(Stance.Id).includes(stance as Stance.Id))
                 .reduce((stances: any, [stance, frames]: [string, any]) => {
                     stances[stance as Stance.Id] = Object.entries(frames).reduce(
@@ -37,7 +37,7 @@ export class Body {
                                     type: "frame",
                                 };
                                 if(frame.hasOwnProperty("delay")){
-                                    result.delay = frame["delay"];
+                                    result.delay = frame["delay"] / 1000;
                                     delete frame["delay"];
                                 }
                                 if(frame.hasOwnProperty("face")){
@@ -48,23 +48,10 @@ export class Body {
                                     if(typeof(part) == "string"){
                                         prev[layer as Body.Layer] = part;
                                     }else{
-                                        if(["head", "ear"].includes(layer)){
-                                            prev[layer as Body.Layer] = new Texture(
-                                                `Character/skin/${skin_id}/${part.side}.${layer}.png`,
-                                                {
-                                                    size: new Size(part.width, part.height)
-                                                }
-                                            );
-                                        }else{
-                                            prev[layer as Body.Layer] = new Texture(
-                                                `Character/skin/${skin_id}/${stance}.${frame_key}.${layer}.png`,
-                                                {
-                                                    size: new Size(part.width, part.height)
-                                                }
-                                            );
-                                        }
-                                        // TODO: origin
-                                        // TODO: map
+                                        prev[layer as Body.Layer] = generate_texture(
+                                            layer as Body.Layer,
+                                            skin_id, part, stance, frame_key, frame
+                                        );
                                     }
                                     return prev;
                                 }, {});
@@ -75,6 +62,7 @@ export class Body {
                     );
                     return stances;
                 }, {})
+        }).then(stances => {
             // Resolve reference & action
             Object.values(stances).forEach((frames: any) => {
                 Object.values(frames).forEach((frame: any) => {
@@ -112,6 +100,7 @@ export class Body {
                 })
             })
         })
+        .then(callback);
     }
 }
 
@@ -132,4 +121,48 @@ export namespace Body {
         human_ear = "humanEar",
         lef_ear = "lefEar",
     }
+}
+
+function generate_texture(
+    layer: Body.Layer,
+    skin_id: number,
+    part: any,
+    stance: string,
+    frame_key: string,
+    frame: any
+){
+    let url: string;
+    if([Body.Layer.head, Body.Layer.ear].includes(layer)){
+        url = `Character/skin/${skin_id}/${part.side}.${layer}.png`;
+    }else{
+        url = `Character/skin/${skin_id}/${stance}.${frame_key}.${layer}.png`;
+    }
+    let option = {
+        size: new Size(part.width, part.height),
+        offset: new Point(
+            (part.origin.x - (part.width / 2)),
+            (part.origin.y - (part.height / 2))
+        )
+    };
+    option.offset = option.offset.concat(new Point(512, 384)) // FIXME:
+    switch(layer){
+        case Body.Layer.head:
+            if(part.map.neck &&
+                (frame[Body.Layer.body].map && frame[Body.Layer.body].map.neck)
+            ){
+                option.offset.x += part.map.neck.x - frame[Body.Layer.body].map.neck.x;
+                option.offset.y += part.map.neck.y - frame[Body.Layer.body].map.neck.y;
+            }
+        break;
+        case Body.Layer.arm:
+        case Body.Layer.arm_over_hair:
+            if(part.map.navel && part.map.hand &&
+                (frame[Body.Layer.body].map && frame[Body.Layer.body].map.navel)
+            ){
+                option.offset.x += part.map.navel.x - part.map.hand.x - frame[Body.Layer.body].map.navel.x;
+                option.offset.y += part.map.navel.y - part.map.hand.x - frame[Body.Layer.body].map.navel.y;
+            }
+        break;
+    }
+    return new Texture(url, option);
 }
