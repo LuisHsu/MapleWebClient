@@ -4,6 +4,7 @@
  */
 
 import { InPacket } from "./InPacket";
+import { endian } from "./Type";
 
 export type PacketHandler = (packet:InPacket) => void;
 
@@ -17,7 +18,7 @@ export class PacketSwitch {
     handle(blob: Blob){
         blob.arrayBuffer().then(buffer => {
             let data = new DataView(buffer);
-            let opcode = data.getUint16(0, false);
+            let opcode = data.getUint16(0, endian);
             if(opcode in this.handlers){
                 let entry = this.handlers[opcode as InPacket.Type];
                 entry.handle(entry.decode(buffer.slice(2)));

@@ -3,6 +3,8 @@
  * @module Type
  */
 
+export const endian = false; // true: little, false: big
+
 export enum Type {
     UInt8,
     Int8,
