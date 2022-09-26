@@ -118,6 +118,18 @@ export class Canvas implements NeedInit{
         ctx.fillText(text, offset.x, Window.size.height - offset.y)
         ctx.restore();
     }
+    draw_axis(color: Color){
+        ctx.save();
+        ctx.strokeStyle = color.toString();
+        ctx.beginPath();
+        ctx.moveTo(512, 0);
+        ctx.lineTo(512, 768);
+        ctx.stroke();
+        ctx.moveTo(0, 384);
+        ctx.lineTo(1024, 384);
+        ctx.stroke();
+        ctx.restore();
+    }
     private interval: ReturnType<typeof setInterval> = null;
     private draw: () => void;
 }

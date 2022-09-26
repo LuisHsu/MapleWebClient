@@ -1,6 +1,9 @@
 import Canvas from "./graphics/Canvas";
 import UI from "./ui/UI";
 import Window from "./io/Window";
+import { Color } from "./Types";
+
+const DEV = true;
 
 function main(){
     try{
@@ -11,6 +14,9 @@ function main(){
         UI.init();
         Canvas.init(() => {
             UI.draw();
+            if(DEV){
+                Canvas.draw_axis(new Color(255, 0, 0));
+            }
         });
         Canvas.start();
     }catch(err){
