@@ -9,16 +9,20 @@ import { Drawable, Transform } from "../graphics/Canvas";
 import { Stance } from "./Look";
 import Animation, { Frame } from "../graphics/Animation";
 import { Texture } from "../graphics/Texture";
+import { Hair } from "./Hair";
 
 export class CharLook implements Drawable{
     body: Body;
+    hair: Hair;
     animation: Animation;
 
     constructor(entry: CharEntry){
         this.body = new Body(entry.skin_id, () => {
-            this.make_animation(Stance.Id.stand1);
-            this.animation.repeat = true;
-            this.animation.start();
+            this.hair = new Hair(entry.hair_id, () => {
+                this.make_animation(Stance.Id.stand1);
+                this.animation.repeat = true;
+                this.animation.start();
+            })
         });
     }
 

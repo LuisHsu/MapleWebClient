@@ -3,15 +3,6 @@
  * @module Look
  */
 
-import { Texture } from "../graphics/Texture";
-import { Body } from "./Body";
-
-export class Stance {
-    delay: number = 0;
-    layers: {[layer in Body.Layer]?: Texture} = {};
-    has_face: boolean = true;
-};
-
 export namespace Stance {
     export enum Id{
         alert = "alert",
