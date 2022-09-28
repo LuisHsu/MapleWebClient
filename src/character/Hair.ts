@@ -14,40 +14,38 @@ export class Hair {
 
     stances: {[id in Stance.Id]?: Hair.Stance[]} = {};
 
-    constructor(hair_id: number, callback: () => void){
-        Fetch.Json(`${Setting.DataPath}Character/hair/${hair_id}.json`)
+    static create(hair_id: number){
+        return Fetch.Json(`${Setting.DataPath}Character/hair/${hair_id}.json`)
         .then(hair_json => {
             // Retrieve immediate stance
-            let defaults = {
-                default: hair_json.default,
-                backDefault: hair_json.backDefault,
-            };
-            
-            resolve_defaults(defaults, hair_id);
-            
-            return [defaults, Object.entries(hair_json)
-                .filter(([stance, _]) => Object.values(Stance.Id).includes(stance as Stance.Id))
+            resolve_defaults(hair_json, hair_id);
+
+            return Object.entries(hair_json)
                 .reduce((stances: any, [stance, frames]: [string, any]) => {
-                    stances[stance as Stance.Id] = Object.entries(frames).reduce(
-                        ((entry: any, [frame_key, frame]: [string, any]) => {
-                            // Frame
-                            entry[frame_key] = Object.entries(frame).reduce((prev: any, [layer, part]: [string, any]) => {
-                                if(typeof(part) == "string"){
-                                    prev[layer as Hair.Layer] = part;
-                                }else{
-                                    prev[layer as Hair.Layer] = generate_texture(
-                                        `Character/hair/${hair_id}/${stance}.${frame_key}.${layer}.png`,
-                                        part
-                                    );
-                                }
-                                return prev;
-                            }, {});
-                            return entry;
-                        }), {}
-                    );
+                    if(is_defaults(stance)){
+                        stances[stance as Stance.Id] = frames;
+                    }else{
+                        stances[stance as Stance.Id] = Object.entries(frames).reduce(
+                            ((entry: any, [frame_key, frame]: [string, any]) => {
+                                // Frame
+                                entry[frame_key] = Object.entries(frame).reduce((prev: any, [layer, part]: [string, any]) => {
+                                    if(typeof(part) == "string"){
+                                        prev[layer as Hair.Layer] = part;
+                                    }else{
+                                        prev[layer as Hair.Layer] = generate_texture(
+                                            `Character/hair/${hair_id}/${stance}.${frame_key}.${layer}.png`,
+                                            part
+                                        );
+                                    }
+                                    return prev;
+                                }, {});
+                                return entry;
+                            }), {}
+                        );
+                    }
                     return stances;
-                }, {})]
-        }).then(([defaults, stances]) => {
+                }, {})
+        }).then(stances => {
             // Resolve reference & action
             Object.values(stances).forEach((frames: any) => {
                 Object.values(frames).forEach((frame: any) => {
@@ -58,7 +56,7 @@ export class Hair {
                                 switch(dest[0]){
                                     case "default":
                                     case "backDefault":
-                                        frame[name] = defaults[dest[0]][dest[1]];
+                                        frame[name] = stances[dest[0]][dest[1]];
                                     break;
                                     default:
                                         frame[name] = stances[dest[0]][dest[1]][dest[2]];
@@ -73,7 +71,7 @@ export class Hair {
                 });
             });
             // Make animation of hairShade
-            Object.entries(stances).forEach(([stance, frames]) => {
+            Object.values(stances).forEach(frames => {
                 Object.values(frames).forEach((frame: any) => {
                     if(frame.hairShade){
                         frame.hairShade = new Animation(
@@ -82,14 +80,8 @@ export class Hair {
                     }
                 })
             })
-            // Map to Stance
-            Object.entries(stances).forEach(([stance, frames]) => {
-                this.stances[stance as Stance.Id] = Object.values(frames);
-            })
-            return this.stances;
-        })
-        .then(console.log)
-        .then(callback);
+            return stances;
+        });
     }
 }
 
@@ -107,9 +99,11 @@ export namespace Hair {
     export type Stance = {[layer in Hair.Layer]?: Texture};
 }
 
-function resolve_defaults(defaults: any, hair_id: number){
+function resolve_defaults(json: any, hair_id: number){
     // Create texture
-    Object.entries(defaults).forEach(([key, layer]: [any, any]) => {
+    let defaults = Object.entries(json).filter(([key, _]) => is_defaults(key));
+        
+    defaults.forEach(([key, layer]: [any, any]) => {
         Object.entries(layer).forEach(([name, part]: [any, any]) => {
             if(name == "hairShade"){
                 Object.entries(part).forEach(([index, shade]: [any, any]) => {
@@ -130,8 +124,8 @@ function resolve_defaults(defaults: any, hair_id: number){
         
     })
     // Resolve reference
-    Object.values(defaults).forEach(layer => {
-        Object.values(layer).forEach(part => {
+    defaults.forEach(layer => {
+        Object.values(layer).forEach((part: any) => {
             Object.entries(part).forEach(([index, shade]: [any, any]) => {
                 if((typeof(shade) == "string") && /^\d+$/.test(shade)){
                     part[index] = part[shade.split("/")[0]];
@@ -139,6 +133,10 @@ function resolve_defaults(defaults: any, hair_id: number){
             })
         })
     })
+}
+
+function is_defaults(key: string){
+    return ["default", "backDefault"].includes(key);
 }
 
 function generate_texture(url: string, part: any){

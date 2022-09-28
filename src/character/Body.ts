@@ -11,10 +11,10 @@ import { Point, Size } from "../Types";
 
 export class Body {
 
-    stances: {[id in Stance.Id]?: Stance[]} = {};
+    stances: {[id in Stance.Id]?: Body.Stance[]} = {};
 
-    constructor(skin_id: number, callback: () => void){
-        Fetch.Json(`${Setting.DataPath}Character/skin/${skin_id}.json`)
+    static create(skin_id: number){
+        return Fetch.Json(`${Setting.DataPath}Character/skin/${skin_id}.json`)
         .then(skin_json => {
             // Retrieve immediate stance
             return Object.entries(skin_json)
@@ -58,10 +58,9 @@ export class Body {
                                 entry[frame_key] = result;
                             }
                             return entry;
-                        }), {}
-                    );
+                        }), {});
                     return stances;
-                }, {})
+                }, {});
         }).then(stances => {
             // Resolve reference & action
             Object.values(stances).forEach((frames: any) => {
@@ -91,16 +90,19 @@ export class Body {
             });
             // Map to Stance
             Object.entries(stances).forEach(([stance, frames]) => {
-                this.stances[stance as Stance.Id] = Object.values(frames).map(elem => {
-                    let new_stance = new Stance();
-                    new_stance.delay = elem.delay;
-                    new_stance.layers = elem.layers;
-                    new_stance.has_face = elem.has_face;
-                    return new_stance;
-                })
+                stances[stance as Stance.Id] = Object.entries(frames).reduce(
+                    (result: any, entry) => {
+                        let [index, elem] = entry;
+                        result[index] = new Body.Stance();
+                        result[index].delay = elem.delay;
+                        result[index].layers = elem.layers;
+                        result[index].has_face = elem.has_face;
+                        return result;
+                    },
+                {});
             })
+            return stances;
         })
-        .then(callback);
     }
 }
 
@@ -121,6 +123,11 @@ export namespace Body {
         human_ear = "humanEar",
         lef_ear = "lefEar",
     }
+    export class Stance {
+        delay: number = 0;
+        layers: {[layer in Body.Layer]?: Texture} = {};
+        has_face: boolean = true;
+    };
 }
 
 function generate_texture(
@@ -144,7 +151,6 @@ function generate_texture(
             (part.origin.y - (part.height / 2))
         )
     };
-    option.offset = option.offset.concat(new Point(512, 384)) // FIXME:
     switch(layer){
         case Body.Layer.head:
             if(part.map.neck &&
