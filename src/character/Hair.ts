@@ -12,7 +12,7 @@ import Animation, { Frame } from "../graphics/Animation";
 
 export class Hair {
 
-    stances: {[id in Stance.Id]?: Hair.Stance[]} = {};
+    stances: {[id in Stance.Id]?: {[index in number]: Hair.Stance}} = {};
 
     static create(hair_id: number){
         return Fetch.Json(`${Setting.DataPath}Character/hair/${hair_id}.json`)
@@ -23,22 +23,24 @@ export class Hair {
             return Object.entries(hair_json)
                 .reduce((stances: any, [stance, frames]: [string, any]) => {
                     if(is_defaults(stance)){
-                        stances[stance as Stance.Id] = frames;
+                        stances[stance as Stance.Id] = {0: (frames as Hair.Stance)};
                     }else{
                         stances[stance as Stance.Id] = Object.entries(frames).reduce(
                             ((entry: any, [frame_key, frame]: [string, any]) => {
-                                // Frame
-                                entry[frame_key] = Object.entries(frame).reduce((prev: any, [layer, part]: [string, any]) => {
-                                    if(typeof(part) == "string"){
-                                        prev[layer as Hair.Layer] = part;
-                                    }else{
-                                        prev[layer as Hair.Layer] = generate_texture(
-                                            `Character/hair/${hair_id}/${stance}.${frame_key}.${layer}.png`,
-                                            part
-                                        );
-                                    }
-                                    return prev;
-                                }, {});
+                                if(!isNaN(parseInt(frame_key))){
+                                    // Frame
+                                    entry[parseInt(frame_key)] = (Object.entries(frame).reduce((prev: any, [layer, part]: [string, any]) => {
+                                        if(typeof(part) == "string"){
+                                            prev[layer as Hair.Layer] = part;
+                                        }else{
+                                            prev[layer as Hair.Layer] = generate_texture(
+                                                `Character/hair/${hair_id}/${stance}.${frame_key}.${layer}.png`,
+                                                part
+                                            );
+                                        }
+                                        return prev;
+                                    }, {}) as Hair.Stance);
+                                }
                                 return entry;
                             }), {}
                         );
@@ -56,7 +58,7 @@ export class Hair {
                                 switch(dest[0]){
                                     case "default":
                                     case "backDefault":
-                                        frame[name] = stances[dest[0]][dest[1]];
+                                        frame[name] = stances[dest[0]][0][dest[1]];
                                     break;
                                     default:
                                         frame[name] = stances[dest[0]][dest[1]][dest[2]];
@@ -80,7 +82,10 @@ export class Hair {
                     }
                 })
             })
-            return stances;
+            // Wrap hair
+            let hair = new Hair;
+            hair.stances = stances;
+            return hair;
         });
     }
 }

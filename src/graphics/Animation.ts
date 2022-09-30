@@ -8,6 +8,8 @@ import { Texture } from "./Texture";
 import canvas, { Drawable, Transform } from "./Canvas";
 import { Size } from "../Types";
 
+export type FrameItem = (Texture | ((transform: Transform) => void));
+
 export class Frame implements Drawable {
     /**
      * @param textures Frame texture
@@ -16,16 +18,18 @@ export class Frame implements Drawable {
      * @param from Frame transformation that begins from
      * @param callback Callback function after frame expired
      */
-    constructor(textures: Texture[],
+    constructor(textures: FrameItem[],
             delay?: number,
             transform: Transform = new Transform,
             from?: Transform,
-            callback?: () => void
+            callback?: () => void,
+            init?: () => void
         ){
         this.textures = textures;
         this.delay = delay ? (delay * 1000) : null;
         this.transform = transform;
         this.callback = callback;
+        this.init = init;
         if(from){
             this.counter = 0;
             this.from = from;
@@ -34,7 +38,7 @@ export class Frame implements Drawable {
     draw(transform: Transform = new Transform): void {
         if(this.delay && this.from && (this.counter <= this.delay)){
             this.textures.forEach(texture => {
-                canvas.draw_texture(texture, transform.concat(new Transform({
+                const composed = transform.concat(new Transform({
                     rotate: this.from.rotate + ((this.transform.rotate - this.from.rotate) * this.counter / this.delay),
                     opacity: this.from.opacity + ((this.transform.opacity - this.from.opacity) * this.counter / this.delay),
                     scale: new Size(
@@ -42,12 +46,21 @@ export class Frame implements Drawable {
                         this.from.scale.height + ((this.transform.scale.height - this.from.scale.height) * this.counter / this.delay)
                     ),
                     offset: this.from.offset.concat(this.transform.offset.concat(this.from.offset.mul(-1)).mul(this.counter).div(this.delay)),
-                })));
+                }));
+                if(texture instanceof Texture){
+                    canvas.draw_texture(texture, composed);
+                }else{
+                    texture(composed);
+                }
             })
             this.counter += Setting.FPS;
         }else{
             this.textures.forEach(texture => {
-                canvas.draw_texture(texture, transform.concat(this.transform));
+                if(texture instanceof Texture){
+                    canvas.draw_texture(texture, transform.concat(this.transform));
+                }else{
+                    texture(transform.concat(this.transform))
+                }
             })
         }
     }
@@ -56,7 +69,8 @@ export class Frame implements Drawable {
     }
     delay?: number;
     callback?: () => void;
-    private textures: Texture[];
+    init?: () => void;
+    private textures: (Texture | ((transform: Transform) => void))[];
     private transform: Transform;
     private counter?: number;
     private from?: Transform;
@@ -72,6 +86,9 @@ export class Animation implements Drawable{
     }
     start(){
         if((this.frames.length > 1) && (this.timeout === null)){
+            if(this.frames[this.index].init){
+                this.frames[this.index].init();
+            }
             this.frames[this.index].reset();
             this.timeout = setTimeout(this.update.bind(this), this.frames[this.index].delay);
         }
@@ -107,6 +124,9 @@ export class Animation implements Drawable{
                 }
             }else{
                 this.index += 1;
+            }
+            if(this.frames[this.index].init){
+                this.frames[this.index].init();
             }
             this.frames[this.index].reset();
             this.timeout = setTimeout(this.update.bind(this), this.frames[this.index].delay);

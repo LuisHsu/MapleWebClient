@@ -11,7 +11,7 @@ import { Point, Size } from "../Types";
 
 export class Body {
 
-    stances: {[id in Stance.Id]?: Body.Stance[]} = {};
+    stances: {[id in Stance.Id]?: {[index in number]: Body.Stance}} = {};
 
     static create(skin_id: number){
         return Fetch.Json(`${Setting.DataPath}Character/skin/${skin_id}.json`)
@@ -34,6 +34,7 @@ export class Body {
                                     delay: 0,
                                     layers: {},
                                     has_face: true,
+                                    positions: {},
                                     type: "frame",
                                 };
                                 if(frame.hasOwnProperty("delay")){
@@ -44,13 +45,14 @@ export class Body {
                                     result.has_face = (frame["face"] == 1);
                                     delete frame["face"];
                                 }
+                                result.positions = retrieve_positions(frame);
                                 result.layers = Object.entries(frame).reduce((prev: any, [layer, part]: [string, any]) => {
                                     if(typeof(part) == "string"){
-                                        prev[layer as Body.Layer] = part;
+                                        prev[layer] = part;
                                     }else{
-                                        prev[layer as Body.Layer] = generate_texture(
-                                            layer as Body.Layer,
-                                            skin_id, part, stance, frame_key, frame
+                                        prev[part.layer? part.layer: layer] = generate_texture(
+                                            layer,
+                                            skin_id, part, stance, frame_key, result.positions
                                         );
                                     }
                                     return prev;
@@ -89,19 +91,22 @@ export class Body {
                 });
             });
             // Map to Stance
+            let body = new Body;
             Object.entries(stances).forEach(([stance, frames]) => {
-                stances[stance as Stance.Id] = Object.entries(frames).reduce(
+                body.stances[stance as Stance.Id] = Object.entries(frames).reduce(
                     (result: any, entry) => {
                         let [index, elem] = entry;
                         result[index] = new Body.Stance();
                         result[index].delay = elem.delay;
                         result[index].layers = elem.layers;
                         result[index].has_face = elem.has_face;
+                        result[index].positions = elem.positions;
                         return result;
                     },
                 {});
             })
-            return stances;
+            body.stances[Stance.Id.default] = body.stances[Stance.Id.stand1];
+            return body;
         })
     }
 }
@@ -109,6 +114,7 @@ export class Body {
 export namespace Body {
     export enum Layer {
         body = "body",
+        back_body = "backBody",
         arm = "arm",
         arm_below_head = "armBelowHead",
         arm_below_head_over_mail = "armBelowHeadOverMail",
@@ -127,19 +133,26 @@ export namespace Body {
         delay: number = 0;
         layers: {[layer in Body.Layer]?: Texture} = {};
         has_face: boolean = true;
+        positions: {
+            body?: Point,
+            arm?: Point,
+            hand?: Point,
+            head?: Point,
+            face?: Point,
+        };
     };
 }
 
 function generate_texture(
-    layer: Body.Layer,
+    layer: string,
     skin_id: number,
     part: any,
     stance: string,
     frame_key: string,
-    frame: any
+    positions: any,
 ){
     let url: string;
-    if([Body.Layer.head, Body.Layer.ear].includes(layer)){
+    if([Body.Layer.head as string, Body.Layer.ear as string].includes(layer)){
         url = `Character/skin/${skin_id}/${part.side}.${layer}.png`;
     }else{
         url = `Character/skin/${skin_id}/${stance}.${frame_key}.${layer}.png`;
@@ -151,24 +164,95 @@ function generate_texture(
             (part.origin.y - (part.height / 2))
         )
     };
-    switch(layer){
+    switch(part.layer? part.layer: layer){
         case Body.Layer.head:
-            if(part.map.neck &&
-                (frame[Body.Layer.body].map && frame[Body.Layer.body].map.neck)
-            ){
-                option.offset.x += part.map.neck.x - frame[Body.Layer.body].map.neck.x;
-                option.offset.y += part.map.neck.y - frame[Body.Layer.body].map.neck.y;
+            if(positions.head){
+                option.offset = option.offset.concat(positions.head);
             }
         break;
         case Body.Layer.arm:
         case Body.Layer.arm_over_hair:
-            if(part.map.navel && part.map.hand &&
-                (frame[Body.Layer.body].map && frame[Body.Layer.body].map.navel)
-            ){
-                option.offset.x += part.map.navel.x - part.map.hand.x - frame[Body.Layer.body].map.navel.x;
-                option.offset.y += part.map.navel.y - part.map.hand.x - frame[Body.Layer.body].map.navel.y;
+        case Body.Layer.arm_below_head:
+            if(positions.arm){
+                option.offset = option.offset.concat(positions.arm);
+            }
+        break;
+        case Body.Layer.hand_over_hair:
+            if(positions.arm && part.map && part.map.navel){
+                option.offset = option.offset.concat(new Point(
+                    part.map.navel.x * 2,
+                    positions.arm.y
+                ));
             }
         break;
     }
     return new Texture(url, option);
+}
+
+function retrieve_positions(frame_json: any){
+    let positions = {
+        body: new Point,
+        arm: new Point,
+        hand: new Point,
+        head: new Point,
+        face: new Point,
+    };
+    const frame = {...frame_json};
+    Object.entries(frame).forEach(([name, part]: [string, any]) => {
+        if(typeof(part) != "string" && part.layer != name){
+            frame[part.layer] = frame[name];
+            delete frame[name];
+        }
+    })
+    let body_layer = [
+        Body.Layer.body,
+        Body.Layer.back_body,
+    ].find(layer => (frame.hasOwnProperty(layer) && frame[layer].map));
+    if(body_layer && frame[body_layer].map){
+        const body_map = frame[body_layer].map;
+        // Body
+        if(body_map.navel){
+            positions.body = new Point(
+                body_map.navel.x,
+                body_map.navel.y
+            );
+            let arm_layer = [
+                Body.Layer.arm,
+                Body.Layer.arm_over_hair,
+                Body.Layer.arm_below_head,
+            ].find(layer => (frame.hasOwnProperty(layer) && frame[layer].map));
+            if(arm_layer && frame[arm_layer].map &&frame[arm_layer].map.navel){
+                // Arm
+                positions.arm = new Point(
+                    frame[arm_layer].map.navel.x - body_map.navel.x,
+                    frame[arm_layer].map.navel.y - body_map.navel.y,
+                );
+            }
+        }
+        if(frame.hasOwnProperty(Body.Layer.head) && frame[Body.Layer.head].map){
+            const head_map = frame[Body.Layer.head].map;
+            if(head_map.neck && body_map.neck){
+                // Head
+                positions.head = new Point(
+                    -body_map.neck.x + head_map.neck.x,
+                    -body_map.neck.y + head_map.neck.y
+                );
+                if(head_map.brow){
+                    // Face
+                    positions.face = positions.head.concat(new Point(
+                        head_map.brow.x,
+                        head_map.brow.y
+                    ));
+                }
+            }
+        }
+    }
+    if(frame.hasOwnProperty(Body.Layer.hand_below_weapon) && frame[Body.Layer.hand_below_weapon].map){
+        const hand_map = frame[Body.Layer.hand_below_weapon].map;
+        // hand
+        if(hand_map.handMove){
+            positions.hand = new Point(hand_map.handMove.x, -hand_map.handMove.y);
+        }
+    }
+    return positions;
 }
