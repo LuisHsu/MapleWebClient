@@ -46,7 +46,7 @@ function create_mock_character(){
     buffer.writeUint8(1, 14) // gender: 1 = female
     buffer.writeUint8(0, 15) // skin: 1 = Light
     buffer.writeUint16BE(3, 16) // face: 2 = Smile
-    buffer.writeUint16BE(3, 18) // hair: 2 = Smile
+    buffer.writeUint16BE(100, 18) // hair: 2 = Smile
     buffer.writeUint8(0, 20) // pet_count: 1 = 0
     // pet_id: 2
     buffer.writeUint16BE(20, 21) // level: 2 = 20
