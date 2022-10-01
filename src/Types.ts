@@ -18,6 +18,7 @@ export class Point{
     sub = (value: number) => this.add(-value);
     mul = (value: number) => new Point(this.x * value, this.y * value);
     div = (value: number) => new Point(this.x / value, this.y / value);
+    neg = () => new Point(-this.x, -this.y);
 }
 
 /**
