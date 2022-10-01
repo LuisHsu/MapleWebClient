@@ -24,7 +24,14 @@ export class UICharSelect extends UIElement implements LoginState {
     ){
         super(char_select_sprites());
         this.parent = parent;
-        this.cheracters = characters.map(entry => ({entry, look: new CharLook(entry)}));
+        this.cheracters = characters.map(((entry: any) => (
+            {entry, look: new CharLook(entry, (() => {
+                this.cheracters.forEach(character => {
+                    character.look.set_repeat(true);
+                    character.look.start();
+                })
+            }).bind(this))}
+        )).bind(this));
         this.selected_channel = selected_channel;
         this.tab_focus = new TabFocus([
             this.select_char_button,
@@ -74,8 +81,8 @@ export class UICharSelect extends UIElement implements LoginState {
                 })));
             }else{
                 this.cheracters[index].look.draw(transform.concat(new Transform({
-                    offset: new Point(150 * slot_index + 366, 257),
-                    flip: [true, false],
+                    offset: new Point(512, 384), //new Point(150 * (slot_index + 1) + 360, 310), FIXME:
+                    flip: [false, false],
                 })));
             }
         }
