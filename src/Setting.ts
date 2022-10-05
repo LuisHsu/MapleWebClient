@@ -19,10 +19,6 @@ export default {
         height: 768,
     },
     /**
-     * Frames per second
-     */
-    FPS: 60,
-    /**
      * Using fullscreen
      */
     Fullscreen: false,
