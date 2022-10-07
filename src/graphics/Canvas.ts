@@ -98,11 +98,9 @@ export class Canvas implements NeedInit{
     }
 
     open_scope(callback: () => void){
-        return () => {
-            ctx.save();
-            callback();
-            ctx.restore();
-        }
+        ctx.save();
+        callback();
+        ctx.restore();
     }
 
     draw_texture(texture: Texture, transform?: Transform): void {

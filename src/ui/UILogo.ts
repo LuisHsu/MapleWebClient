@@ -14,9 +14,11 @@ import canvas, { Transform } from "../graphics/Canvas";
 
 export class UILogo implements UIState {
 
-    draw: () => void = canvas.open_scope(() => {
-        this.animation.draw();
-    });
+    draw(): void{
+        canvas.open_scope(() => {
+            this.animation.draw()
+        })
+    };
 
     left_click = this.next;
 

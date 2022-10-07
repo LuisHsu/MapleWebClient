@@ -28,10 +28,12 @@ export class Cursor implements Drawable, NeedInit {
         this._animation.start();
         this._state = state;
     }
-    draw: () => void = canvas.open_scope(() => {
-        canvas.apply_transform(new Transform({translate: this.position}));
-        this._animation.draw();
-    })
+    draw(){
+        canvas.open_scope(() => {
+            canvas.apply_transform(new Transform({translate: this.position}));
+            this._animation.draw();
+        })
+    }
     private _state: CursorState;
     private _animation: Animation = null;
 };
