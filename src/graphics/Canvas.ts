@@ -84,7 +84,7 @@ export class Canvas implements NeedInit{
     apply_transform(transform: Transform){
         // TODO: flip
         if(transform.translate){
-            ctx.translate(transform.translate.x, transform.translate.y);
+            ctx.translate(transform.translate.x, -transform.translate.y);
         }
         if(transform.rotate){
             ctx.rotate(transform.rotate * Math.PI / 180);
@@ -108,10 +108,10 @@ export class Canvas implements NeedInit{
     draw_texture(texture: Texture, transform?: Transform): void {
         if(texture.bitmap !== null){
             if(transform){
-                this.apply_transform(transform)
+                this.apply_transform(transform);
             }
-            const origin = texture.origin.neg();
-            ctx.translate(origin.x, Window.size.height + origin.y);
+            const origin = texture.origin;
+            ctx.translate(origin.x, Window.size.height - origin.y);
             ctx.drawImage(texture.bitmap, 0, 0, texture.size().width, texture.size().height);
         }
     }
