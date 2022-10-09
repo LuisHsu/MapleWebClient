@@ -6,8 +6,7 @@
 import { Music } from "../audio/Audio";
 import { Button, MapleButton } from "../components/Button";
 import { TextInput } from "../components/TextInput";
-import Animation, { Frame } from "../graphics/Animation";
-import Canvas, { Transform } from "../graphics/Canvas";
+import canvas, { Transform } from "../graphics/Canvas";
 import { Sprite } from "../graphics/Sprite";
 import { Texture } from "../graphics/Texture";
 import { KeyType, TabFocus } from "../io/Keyboard";
@@ -32,14 +31,14 @@ export class UILogin extends UIElement implements LoginState {
             }
         }
         let saved_account = window.localStorage.getItem("account");
-        this.account_input = new TextInput(new Point(678, 401), new Size(185, 24), {
+        this.account_input = new TextInput(new Point(669, 410), new Size(185, 24), {
             color: "white",
             value: saved_account,
             focus_enter: () => {
                 TabFocus.update(KeyType.Tab);
             }
         });
-        this.password_input = new TextInput(new Point(678, 364), new Size(185, 24), {
+        this.password_input = new TextInput(new Point(669, 373), new Size(185, 24), {
             color: "white",
             type: "password",
             focus_enter: () => {
@@ -84,8 +83,17 @@ export class UILogin extends UIElement implements LoginState {
         this.save_account = !this.save_account;
     }
 
-    draw(transform: Transform): void {
-        super.draw(transform);
+    draw_state(offset?: Point): void {
+        canvas.open_scope(() => {
+            if(offset){
+                canvas.apply_transform(new Transform({translate: offset}))
+            }
+            this.draw();
+        });
+    }
+
+    draw(){
+        super.draw();
         this.account_input.set_active(this.parent.notice === null);
         this.password_input.set_active(this.parent.notice === null);
         if(this.parent.notice === null){
@@ -93,17 +101,17 @@ export class UILogin extends UIElement implements LoginState {
         }else{
             this.tab_focus.deactivate();
         }
-        this.account_input.draw(transform);
-        this.password_input.draw(transform);
-        this.account_save_button.draw(transform.concat(new Transform({scale: new Size(1.25, 1.25)})));
-        Canvas.draw_texture(this.account_save_status[this.save_account ? 1 : 0], transform.concat(new Transform({scale: new Size(1.25, 1.25)})));
-    }
+        this.account_input.draw();
+        this.password_input.draw();
+    };
 
-    fg_draw(transform: Transform): void {
+    draw_foreground(){
         this.login_button.state = (this.account_input.value() && this.password_input.value()) ? Button.State.NORMAL : Button.State.DISABLED;
-        this.login_button.draw(transform.concat(new Transform({scale: new Size(1.25, 1.25)})));
-        this.quit_button.draw(transform.concat(new Transform({scale: new Size(1.3, 1.3)})));
-    }
+        this.account_save_button.draw();
+        canvas.draw_texture(this.account_save_status[this.save_account ? 1 : 0]);
+        this.login_button.draw();
+        this.quit_button.draw();
+    };
 
     mouse_move(position: Point): void {
         this.login_button.update_hover(position);
@@ -148,7 +156,7 @@ export class UILogin extends UIElement implements LoginState {
         hovered: new Texture("UI/Login/Title.BtLogin.mouseOver.0.png"),
         disabled: new Texture("UI/Login/Title.BtLogin.disabled.0.png"),
         focused: new Texture("UI/Login/Title.BtLogin.mouseOver.0.png"),
-    }, new Point(842, 409), this.login.bind(this));
+    }, new Point(831, 418), this.login.bind(this), new Transform({scale: new Size(1.25, 1.25)}));
 
     private quit_button: MapleButton = new MapleButton({
         pressed: new Texture("UI/Login/Title.BtQuit.pressed.0.png"),
@@ -156,7 +164,7 @@ export class UILogin extends UIElement implements LoginState {
         hovered: new Texture("UI/Login/Title.BtQuit.mouseOver.0.png"),
         disabled: new Texture("UI/Login/Title.BtQuit.disabled.0.png"),
         focused: new Texture("UI/Login/Title.BtQuit.mouseOver.0.png"),
-    }, new Point(838, 264), Window.quit);
+    }, new Point(829, 274), Window.quit, new Transform({scale: new Size(1.3, 1.3)}));
 
     private account_save_button: MapleButton = new MapleButton({
         pressed: new Texture("UI/Login/Title.BtEmailSave.pressed.0.png"),
@@ -164,45 +172,18 @@ export class UILogin extends UIElement implements LoginState {
         hovered: new Texture("UI/Login/Title.BtEmailSave.mouseOver.0.png"),
         disabled: new Texture("UI/Login/Title.BtEmailSave.disabled.0.png"),
         focused: new Texture("UI/Login/Title.BtEmailSave.mouseOver.0.png"),
-    }, new Point(615, 338), this.toggle_save_account.bind(this));
+    }, new Point(605, 347), this.toggle_save_account.bind(this), new Transform({scale: new Size(1.25, 1.25)}));
 
     private account_save_status: Texture[] = [
-        new Texture("UI/Login/Title.check.0.png", {offset: new Point(567, 338)}),
-        new Texture("UI/Login/Title.check.1.png", {offset: new Point(567, 338)}),
+        new Texture("UI/Login/Title.check.0.png", {size: new Size(19, 16), origin: new Point(542, 354)}),
+        new Texture("UI/Login/Title.check.1.png", {size: new Size(19, 16), origin: new Point(542, 354)}),
     ];
 
     parent: UILoginState;
 }
 
 const login_sprites = (): Sprite[] => [
-    new Sprite(new Texture("Map/Back/back.11.png", {size: new Size(1080, 810), offset: new Point(475, 360)})),
-    new Sprite(new Animation([
-        new Frame([new Texture("UI/Login/Title.effect.0.0.png", {offset: new Point(935, 565)})], 4.5, new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0, scale: new Size(1.5, 1.5)})),
-        new Frame([new Texture("UI/Login/Title.effect.0.2.png", {offset: new Point(935, 565)})], 3, new Transform({scale: new Size(1.5, 1.5), opacity: 0.9})),
-        new Frame([new Texture("UI/Login/Title.effect.0.1.png", {offset: new Point(935, 565)})], 4.5, new Transform({opacity: 0, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)})),
-    ], true, true)),
-    new Sprite(new Animation([
-        new Frame([new Texture("UI/Login/Title.effect.1.0.png", {offset: new Point(830, 625)})], 7.5, new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.04, scale: new Size(1.5, 1.5)})),
-        new Frame([new Texture("UI/Login/Title.effect.1.1.png", {offset: new Point(830, 625)})], 7.5, new Transform({opacity: 0.04, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}))
-    ], true, true)),
-    new Sprite(new Animation([
-        new Frame([new Texture("UI/Login/Title.effect.2.0.png", {offset: new Point(770, 608)})], 5.1, new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0, scale: new Size(1.5, 1.5)})),
-        new Frame([new Texture("UI/Login/Title.effect.2.2.png", {offset: new Point(770, 608)})], 5.1, new Transform({scale: new Size(1.5, 1.5), opacity: 0.9})),
-        new Frame([new Texture("UI/Login/Title.effect.2.1.png", {offset: new Point(770, 608)})], 5.1, new Transform({opacity: 0, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)})),
-    ], true, true)),
-    new Sprite(new Animation([
-        new Frame([new Texture("UI/Login/Title.effect.3.0.png", {offset: new Point(846, 585)})], 9.0, new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.04, scale: new Size(1.5, 1.5)})),
-        new Frame([new Texture("UI/Login/Title.effect.3.1.png", {offset: new Point(846, 585)})], 9.0, new Transform({opacity: 0.04, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}))
-    ], true, true)),
-    new Sprite(new Animation([
-        new Frame([new Texture("UI/Login/Title.effect.4.0.png", {offset: new Point(866, 562)})], 8.4, new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.04, scale: new Size(1.5, 1.5)})),
-        new Frame([new Texture("UI/Login/Title.effect.4.1.png", {offset: new Point(866, 562)})], 8.4, new Transform({opacity: 0.04, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.9, scale: new Size(1.5, 1.5)}))
-    ], true, true)),
-    new Sprite(new Animation([
-        new Frame([new Texture("UI/Login/Title.effect.5.0.png", {offset: new Point(875, 587)})], 3.0, new Transform({opacity: 0.8, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0, scale: new Size(1.5, 1.5)})),
-        new Frame([new Texture("UI/Login/Title.effect.5.2.png", {offset: new Point(875, 587)})], 7.5, new Transform({opacity: 0.8, scale: new Size(1.5, 1.5)})),
-        new Frame([new Texture("UI/Login/Title.effect.5.1.png", {offset: new Point(875, 587)})], 3.0, new Transform({opacity: 0, scale: new Size(1.5, 1.5)}), new Transform({opacity: 0.8, scale: new Size(1.5, 1.5)})),
-    ], true, true)),
-    new Sprite(new Texture("UI/Login/Title.logo.png", {offset: new Point(507, 595), size: new Size(556, 307)})),
-    new Sprite(new Texture("UI/Login/Title.signboard.png", {offset: new Point(676, 320), size: new Size(471, 302)})),
+    new Sprite(new Texture("Map/Back/back.11.png", {size: new Size(1080, 810), origin: new Point(-60, 768)})),
+    new Sprite(new Texture("UI/Login/Title.signboard.png", {origin: new Point(430, 480), size: new Size(471, 302)})),
+    new Sprite(new Texture("UI/Login/Title.logo.png", {origin: new Point(250, 740), size: new Size(556, 307)})),
 ];

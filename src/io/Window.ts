@@ -44,6 +44,8 @@ export class Window implements NeedInit {
             document.exitFullscreen().catch(() => {}).finally(() => {
                 window.location.reload();
             });
+        }else{
+            window.location.reload();
         }
     }
 

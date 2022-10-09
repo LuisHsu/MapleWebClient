@@ -3,7 +3,7 @@
  * @module UIElement
  */
 
-import { Drawable, Transform } from "../graphics/Canvas";
+import { Drawable } from "../graphics/Canvas";
 import { Sprite } from "../graphics/Sprite";
 
 export class UIElement implements Drawable {
@@ -14,9 +14,9 @@ export class UIElement implements Drawable {
         this.sprites = sprites ? sprites : [];
     }
 
-    draw(transform: Transform = new Transform): void {
+    draw(): void {
         this.sprites.forEach(sprite => {
-            sprite.draw(transform);
+            sprite.draw();
         })
     }
 }

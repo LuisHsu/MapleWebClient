@@ -4,7 +4,7 @@
  */
 
 import { Sound } from "../audio/Audio";
-import Canvas, { Drawable, Transform } from "../graphics/Canvas";
+import canvas, { Drawable, Transform } from "../graphics/Canvas";
 import { Texture } from "../graphics/Texture";
 import { TabHandler } from "../io/Keyboard";
 import { Point, Rect } from "../Types";
@@ -15,7 +15,7 @@ export abstract class Button implements Drawable, TabHandler {
     position: Point;
     tab_active: boolean = true;
     
-    abstract draw(transform?: Transform): void;
+    abstract draw(): void;
     abstract bounds(offset: Point): Rect;
     abstract focus?(): void;
     abstract blur?(): void;
@@ -113,6 +113,7 @@ export class MapleButton extends Button {
     active: boolean = true;
     position: Point;
     focused: boolean = false;
+    transform?: Transform;
 
     constructor(textures: {
         pressed: Texture,
@@ -120,7 +121,7 @@ export class MapleButton extends Button {
         disabled: Texture,
         normal: Texture,
         focused?: Texture,
-    }, position: Point = new Point, focus_click?: () => void){
+    }, position: Point = new Point, focus_click?: () => void, transform?: Transform){
         super();
         this.textures = {
             [Button.State.PRESSED]: textures.pressed,
@@ -129,17 +130,26 @@ export class MapleButton extends Button {
             [Button.State.NORMAL]: textures.normal,
         }
         this.position = position;
+        this.transform = transform;
         this.focus_texture = textures.focused;
         this.focus_enter = focus_click;
     }
 
-    draw(transform?: Transform): void {
+    draw(): void {
         if(this.active){
-            let offset = new Transform({offset: this.position});
-            Canvas.draw_texture(this.textures[this.state], transform ? transform.concat(offset) : offset);
-            if(this.focused && this.focus_texture){
-                Canvas.draw_texture(this.focus_texture, transform ? transform.concat(offset) : offset);
-            }
+            canvas.open_scope(() => {
+                let transform;
+                if(this.transform){
+                    transform = this.transform.concat(new Transform({translate: this.position}));
+                }else{
+                    transform = new Transform({translate: this.position});
+                }
+                canvas.apply_transform(transform);
+                canvas.draw_texture(this.textures[this.state]);
+                if(this.focused && this.focus_texture){
+                    canvas.draw_texture(this.focus_texture);
+                }
+            })
         }
     }
 
