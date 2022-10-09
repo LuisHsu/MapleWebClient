@@ -7,24 +7,27 @@ import Setting from "../Setting";
 import { Point, Size } from "../Types";
 
 export class Texture {
-    offset: Point;
-    constructor(url: string, option: {size?: Size, offset?: Point} = {}){
-        this.offset = (option.offset) ? option.offset : new Point(0, 0);
+    constructor(url: string, option: {size?: Size, origin?: Point} = {}){
         let image = new Image();
         image.onload = () => {
+            let create_image_promise;
             if(option.size){
-                createImageBitmap(image, {
+                create_image_promise = createImageBitmap(image, {
                     resizeHeight: option.size.height,
                     resizeWidth: option.size.width,
                     resizeQuality: "medium",
-                }).then(bitmap => {
-                    this.bitmap = bitmap;
-                });
+                })
             }else{
-                createImageBitmap(image).then(bitmap => {
-                    this.bitmap = bitmap;
-                });
+                create_image_promise = createImageBitmap(image);
             }
+            create_image_promise.then(bitmap => {
+                this.bitmap = bitmap;
+                if(option.origin){
+                    this.origin = option.origin;
+                }else{
+                    this.origin = new Point(-this.bitmap.width / 2, this.bitmap.height / 2);
+                }
+            });
         }
         image.src = Setting.DataPath + url;
     }
@@ -32,4 +35,5 @@ export class Texture {
         return new Size(this.bitmap.width, this.bitmap.height);
     }
     bitmap: ImageBitmap = null;
+    origin: Point;
 }

@@ -3,11 +3,12 @@
  * @module UI
  */
 
-import { Drawable } from "../graphics/Canvas";
-import { NeedInit, Point } from "../Types";
+import canvas, { Drawable, Transform } from "../graphics/Canvas";
+import { NeedInit, Point, Size } from "../Types";
 import { Cursor, CursorState, MouseHandler } from "../io/Cursor";
 import { UILogo } from "./UILogo";
 import { KeyboardHandler, KeyType } from "../io/Keyboard";
+import Window from "../io/Window";
 
 export type UIState = Drawable & MouseHandler & KeyboardHandler;
 
@@ -26,8 +27,13 @@ export class UI implements Drawable, NeedInit, MouseHandler, KeyboardHandler{
     }
 
     draw(): void {
-        this.state.draw();
-        this.cursor.draw();
+        canvas.open_scope(() => {
+            canvas.apply_transform(new Transform({
+                translate: new Point(0, -Window.size.height),
+            }))
+            this.state.draw();
+            this.cursor.draw();
+        })
     }
 
     mouse_move(position: Point): void {

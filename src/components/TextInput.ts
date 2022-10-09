@@ -50,7 +50,7 @@ export class TextInput implements TabHandler, Drawable {
 
     draw(transform: Transform = new Transform): void {
         if(this.active){
-            let position = this.position.concat(transform.offset);
+            let position = this.position.concat(transform.translate);
             let size = this.size.concat(transform.scale);
             this.element.style.display = "inline";
             this.element.style.opacity = `${transform.opacity}`;

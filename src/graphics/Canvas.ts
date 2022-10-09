@@ -86,11 +86,11 @@ export class Canvas implements NeedInit{
         if(transform.translate){
             ctx.translate(transform.translate.x, -transform.translate.y);
         }
-        if(transform.rotate){
-            ctx.rotate(transform.rotate * Math.PI / 180);
-        }
         if(transform.scale){
             ctx.scale(transform.scale.width, transform.scale.height);
+        }
+        if(transform.rotate){
+            ctx.rotate(transform.rotate * Math.PI / 180);
         }
         if(transform.opacity){
             ctx.globalAlpha = transform.opacity;
@@ -109,8 +109,10 @@ export class Canvas implements NeedInit{
                 this.apply_transform(transform);
             }
             const origin = texture.origin;
-            ctx.translate(origin.x, Window.size.height - origin.y);
-            ctx.drawImage(texture.bitmap, 0, 0, texture.size().width, texture.size().height);
+            ctx.drawImage(texture.bitmap,
+                origin.x, -origin.y,
+                texture.size().width, texture.size().height
+            );
         }
     }
     // FIXME:

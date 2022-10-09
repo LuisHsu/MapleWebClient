@@ -3,22 +3,30 @@
  *  @module Sprite
  */
 
+import { Point } from "../Types";
 import Animation from "./Animation";
-import Canvas, { Drawable, Transform } from "./Canvas";
+import canvas, { Drawable, Transform } from "./Canvas";
 import { Texture } from "./Texture";
 
 export class Sprite implements Drawable {
-    sprite: Animation | Texture;
+    sprite: (Animation | Texture);
+    offset?: Point;
 
-    constructor(sprite: Animation | Texture){
+    constructor(sprite: (Animation | Texture), offset?: Point){
         this.sprite = sprite;
+        this.offset = offset;
     }
 
-    draw(transform: Transform = new Transform): void {
-        if(this.sprite instanceof Animation){
-            this.sprite.draw(transform);
-        }else{
-            Canvas.draw_texture(this.sprite, transform);
-        }
-    }
+    draw(): void{
+        canvas.open_scope(() => {
+            if(this.offset){
+                canvas.apply_transform(new Transform({translate: this.offset}));
+            }
+            if(this.sprite instanceof Animation){
+                this.sprite.draw();
+            }else{
+                canvas.draw_texture(this.sprite);
+            }
+        })
+    };
 }
