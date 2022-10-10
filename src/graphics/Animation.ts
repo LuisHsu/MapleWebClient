@@ -3,76 +3,79 @@
  * @module Animation
  */
 
-import Setting from "../Setting";
 import { Texture } from "./Texture";
 import canvas, { Drawable, Transform } from "./Canvas";
 import { Size } from "../Types";
 
-export type FrameItem = (Texture | ((transform: Transform) => void));
+export type FrameItem = (Texture | Animation);
 
 export class Frame implements Drawable {
     /**
-     * @param textures Frame texture
-     * @param delay Frame delay in seconds
+     * @param items Frame item
+     * @param delay Frame delay in milliseconds
      * @param transform Frame transformation
      * @param from Frame transformation that begins from
-     * @param callback Callback function after frame expired
+     * @param onEnd Callback function after frame end
+     * @param onBebin Callback function before frame begin
      */
-    constructor(textures: FrameItem[],
+    constructor(items: FrameItem[],
             delay?: number,
             transform: Transform = new Transform,
             from?: Transform,
-            callback?: () => void,
-            init?: () => void
+            callback?: () => void
         ){
-        this.textures = textures;
-        this.delay = delay ? (delay * 1000) : null;
+        this.items = items;
+        this.delay = delay;
         this.transform = transform;
         this.callback = callback;
-        this.init = init;
         if(from){
-            this.counter = 0;
             this.from = from;
         }
     }
-    draw(transform: Transform = new Transform): void {
-        if(this.delay && this.from && (this.counter <= this.delay)){
-            this.textures.forEach(texture => {
-                const composed = transform.concat(new Transform({
-                    rotate: this.from.rotate + ((this.transform.rotate - this.from.rotate) * this.counter / this.delay),
-                    opacity: this.from.opacity + ((this.transform.opacity - this.from.opacity) * this.counter / this.delay),
+    draw(): void {
+        const elapsed = Date.now() - this.timestamp;
+        if(this.delay && this.from && (elapsed <= this.delay)){
+            this.items.forEach(item => {
+                const composed = new Transform({
+                    rotate: this.from.rotate + ((this.transform.rotate - this.from.rotate) * elapsed / this.delay),
+                    opacity: this.from.opacity + ((this.transform.opacity - this.from.opacity) * elapsed / this.delay),
                     scale: new Size(
-                        this.from.scale.width + ((this.transform.scale.width - this.from.scale.width) * this.counter / this.delay),
-                        this.from.scale.height + ((this.transform.scale.height - this.from.scale.height) * this.counter / this.delay)
+                        this.from.scale.width + ((this.transform.scale.width - this.from.scale.width) * elapsed / this.delay),
+                        this.from.scale.height + ((this.transform.scale.height - this.from.scale.height) * elapsed / this.delay)
                     ),
-                    offset: this.from.offset.concat(this.transform.offset.concat(this.from.offset.mul(-1)).mul(this.counter).div(this.delay)),
-                }));
-                if(texture instanceof Texture){
-                    canvas.draw_texture(texture, composed);
+                    translate: this.from.translate.concat(this.transform.translate.concat(this.from.translate.mul(-1)).mul(elapsed).div(this.delay)),
+                });
+                if(item instanceof Texture){
+                    canvas.draw_texture(item, composed);
                 }else{
-                    texture(composed);
+                    canvas.apply_transform(this.transform);
+                    item.draw();
                 }
             })
-            this.counter += Setting.FPS;
         }else{
-            this.textures.forEach(texture => {
-                if(texture instanceof Texture){
-                    canvas.draw_texture(texture, transform.concat(this.transform));
+            this.items.forEach(item => {
+                if(item instanceof Texture){
+                    canvas.draw_texture(item, this.transform);
                 }else{
-                    texture(transform.concat(this.transform))
+                    canvas.apply_transform(this.transform);
+                    item.draw();
                 }
             })
         }
     }
     reset(): void{
-        this.counter = 0;
+        this.timestamp = Date.now();
+    }
+    start(): void{
+        this.items.filter(item => (item instanceof Animation)).forEach((item: Animation) => {
+            item.start();
+        })
     }
     delay?: number;
     callback?: () => void;
-    init?: () => void;
-    private textures: (Texture | ((transform: Transform) => void))[];
+    private items: FrameItem[];
     private transform: Transform;
-    private counter?: number;
+    private timestamp: number = Date.now();
     private from?: Transform;
 };
 
@@ -86,9 +89,6 @@ export class Animation implements Drawable{
     }
     start(){
         if((this.frames.length > 1) && (this.timeout === null)){
-            if(this.frames[this.index].init){
-                this.frames[this.index].init();
-            }
             this.frames[this.index].reset();
             this.timeout = setTimeout(this.update.bind(this), this.frames[this.index].delay);
         }
@@ -102,11 +102,11 @@ export class Animation implements Drawable{
     reset(){
         this.index = 0;
     }
-    draw(transform: Transform = new Transform){
-        this.frames[this.index].draw(transform);
+    draw(){
+        this.frames[this.index].draw();
     }
     repeat: boolean;
-    private frames: Frame[];
+    frames: Frame[];
     private index: number = 0;
     private timeout: ReturnType<typeof setTimeout> = null;
     private update(){
@@ -125,8 +125,8 @@ export class Animation implements Drawable{
             }else{
                 this.index += 1;
             }
-            if(this.frames[this.index].init){
-                this.frames[this.index].init();
+            if(this.frames[this.index] instanceof Animation){
+                this.frames[this.index].start();
             }
             this.frames[this.index].reset();
             this.timeout = setTimeout(this.update.bind(this), this.frames[this.index].delay);

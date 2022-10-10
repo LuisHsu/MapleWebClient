@@ -4,7 +4,7 @@
  */
 
 import { Button, MapleButton } from "../components/Button";
-import Canvas, { Drawable, Transform } from "../graphics/Canvas";
+import canvas, { Drawable, Transform } from "../graphics/Canvas";
 import { Texture } from "../graphics/Texture";
 import { MouseHandler } from "../io/Cursor";
 import { KeyboardHandler, KeyType, TabFocus } from "../io/Keyboard";
@@ -16,8 +16,8 @@ export class UILoginNotice implements Drawable, MouseHandler{
         type: UILoginNotice.Type, message: UILoginNotice.MessageID,
         onConfirm: () => void, onCancel?: () => void
     ){
-        this.background = new Texture(background_map[type], {offset: new Point(512, 384)});
-        this.message = new Texture(message_map[message], {offset: new Point(552, 415)});
+        this.background = new Texture(background_map[type]);
+        this.message = new Texture(message_map[message]);
         this.on_confirm = onConfirm;
         this.on_cancel = onCancel;
         if(this.on_cancel){
@@ -36,14 +36,18 @@ export class UILoginNotice implements Drawable, MouseHandler{
         }
     }
 
-    draw(transform: Transform): void {
-        Canvas.draw_texture(this.background, transform);
-        Canvas.draw_texture(this.message, transform);
-        this.confirm_button.draw(transform);
+    draw(): void{
+        canvas.open_scope(() => {
+            canvas.draw_texture(this.background, new Transform({translate: new Point(512, 384)}));
+        })
+        canvas.open_scope(() => {
+            canvas.draw_texture(this.message, new Transform({translate: new Point(552, 415)}));
+        })
+        this.confirm_button.draw();
         if(this.on_cancel){
-            this.cancel_button.draw(transform);
+            this.cancel_button.draw();
         }
-    }
+    };
 
     mouse_move(position: Point): void {
         this.confirm_button.update_hover(position);

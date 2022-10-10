@@ -115,13 +115,12 @@ export class Canvas implements NeedInit{
             );
         }
     }
-    // FIXME:
     draw_text(text: string, size: number, offset: Point, color: Color, align: TextAlign = TextAlign.Left){
         ctx.save();
         ctx.textAlign = align;
         ctx.fillStyle = color.toString();
         ctx.font = `${size}px serif`;
-        ctx.fillText(text, offset.x, Window.size.height - offset.y)
+        ctx.fillText(text, offset.x, -offset.y)
         ctx.restore();
     }
     draw_axis(color: Color){
