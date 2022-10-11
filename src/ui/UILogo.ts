@@ -10,7 +10,7 @@ import { Texture } from "../graphics/Texture";
 import Setting from "../Setting";
 import { Music } from "../audio/Audio";
 import { UILoginState } from "./UILoginState";
-import canvas, { Transform } from "../graphics/Canvas";
+import canvas from "../graphics/Canvas";
 
 export class UILogo implements UIState {
 
