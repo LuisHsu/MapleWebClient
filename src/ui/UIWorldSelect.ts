@@ -14,7 +14,6 @@ import Animation, { Frame } from "../graphics/Animation";
 import { UILogin } from "./UILogin";
 import { KeyType, TabFocus } from "../io/Keyboard";
 import { LoginState, UILoginState } from "./UILoginState";
-import { UICharSelect } from "./UICharSelect";
 import { UILoginNotice } from "./UILoginNotice";
 import LoginSession from "../net/LoginSession";
 
@@ -71,7 +70,7 @@ export class UIWorldSelect extends UIElement implements LoginState {
             if(translate){
                 canvas.apply_transform(new Transform({translate}))
             }
-            this.draw()
+            this.draw();
         })
     }
 
@@ -257,19 +256,19 @@ export class UIWorldSelect extends UIElement implements LoginState {
     };
 
     private loading_notice = new UIElement([
-        new Sprite(new Texture("UI/WorldSelect/Notice.Loading.backgrnd.png", {origin: new Point(512, 384), size: new Size(353, 180)})),
+        new Sprite(new Texture("UI/WorldSelect/Notice.Loading.backgrnd.png", {origin: new Point(336, 474), size: new Size(353, 180)})),
         new Sprite(new Animation([
-            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.0.png", {origin: new Point(568, 347), size: new Size(136, 10)})], 0.2),
-            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.1.png", {origin: new Point(568, 347), size: new Size(136, 10)})], 0.2),
-            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.2.png", {origin: new Point(568, 347), size: new Size(136, 10)})], 0.2),
-            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.3.png", {origin: new Point(568, 347), size: new Size(136, 10)})], 0.2),
-            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.4.png", {origin: new Point(568, 347), size: new Size(136, 10)})], 0.2),
-            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.5.png", {origin: new Point(568, 347), size: new Size(136, 10)})], 0.2),
-            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.6.png", {origin: new Point(568, 347), size: new Size(136, 10)})], 0.2),
-            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.7.png", {origin: new Point(568, 347), size: new Size(136, 10)})], 0.2),
-            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.8.png", {origin: new Point(568, 347), size: new Size(136, 10)})], 0.2),
-            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.9.png", {origin: new Point(568, 347), size: new Size(136, 10)})], 0.2),
-            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.10.png", {origin: new Point(568, 347), size: new Size(136, 10)})], 0.2),
+            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.0.png", {origin: new Point(500, 352), size: new Size(136, 10)})], 200),
+            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.1.png", {origin: new Point(500, 352), size: new Size(136, 10)})], 200),
+            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.2.png", {origin: new Point(500, 352), size: new Size(136, 10)})], 200),
+            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.3.png", {origin: new Point(500, 352), size: new Size(136, 10)})], 200),
+            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.4.png", {origin: new Point(500, 352), size: new Size(136, 10)})], 200),
+            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.5.png", {origin: new Point(500, 352), size: new Size(136, 10)})], 200),
+            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.6.png", {origin: new Point(500, 352), size: new Size(136, 10)})], 200),
+            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.7.png", {origin: new Point(500, 352), size: new Size(136, 10)})], 200),
+            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.8.png", {origin: new Point(500, 352), size: new Size(136, 10)})], 200),
+            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.9.png", {origin: new Point(500, 352), size: new Size(136, 10)})], 200),
+            new Frame([new Texture("UI/WorldSelect/Notice.Loading.bar.10.png", {origin: new Point(500, 352), size: new Size(136, 10)})], 200),
         ], true, true)),
     ])
 

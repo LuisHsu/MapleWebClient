@@ -94,8 +94,8 @@ export class UILogin extends UIElement implements LoginState {
 
     draw(){
         super.draw();
-        this.account_input.set_active(this.parent.notice === null);
-        this.password_input.set_active(this.parent.notice === null);
+        this.account_input.set_active(this.parent.notice === null && !this.parent.is_changing());
+        this.password_input.set_active(this.parent.notice === null && !this.parent.is_changing());
         if(this.parent.notice === null){
             this.tab_focus.activate();
         }else{
