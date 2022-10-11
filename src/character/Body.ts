@@ -38,7 +38,7 @@ export class Body {
                                     type: "frame",
                                 };
                                 if(frame.hasOwnProperty("delay")){
-                                    result.delay = frame["delay"] / 1000;
+                                    result.delay = frame["delay"];
                                     delete frame["delay"];
                                 }
                                 if(frame.hasOwnProperty("face")){
@@ -159,28 +159,31 @@ function generate_texture(
     }
     let option = {
         size: new Size(part.width, part.height),
-        offset: new Point(
-            (part.origin.x - (part.width / 2)),
-            (part.origin.y - (part.height / 2))
+        origin: new Point(
+            -part.origin.x,
+            part.origin.y
         )
     };
+    if(positions.body){
+        option.origin = option.origin.concat(positions.body);
+    }
     switch(part.layer? part.layer: layer){
         case Body.Layer.head:
             if(positions.head){
-                option.offset = option.offset.concat(positions.head);
+                option.origin = option.origin.concat(positions.head);
             }
         break;
         case Body.Layer.arm:
         case Body.Layer.arm_over_hair:
         case Body.Layer.arm_below_head:
             if(positions.arm){
-                option.offset = option.offset.concat(positions.arm);
+                option.origin = option.origin.concat(positions.arm);
             }
         break;
         case Body.Layer.hand_over_hair:
             if(positions.arm && part.map && part.map.navel){
-                option.offset = option.offset.concat(new Point(
-                    part.map.navel.x * 2,
+                option.origin = option.origin.concat(new Point(
+                    -part.map.navel.x * 2,
                     positions.arm.y
                 ));
             }
@@ -212,10 +215,7 @@ function retrieve_positions(frame_json: any){
         const body_map = frame[body_layer].map;
         // Body
         if(body_map.navel){
-            positions.body = new Point(
-                body_map.navel.x,
-                body_map.navel.y
-            );
+            positions.body = new Point(-body_map.navel.x, 0);
             let arm_layer = [
                 Body.Layer.arm,
                 Body.Layer.arm_over_hair,
@@ -224,7 +224,7 @@ function retrieve_positions(frame_json: any){
             if(arm_layer && frame[arm_layer].map &&frame[arm_layer].map.navel){
                 // Arm
                 positions.arm = new Point(
-                    frame[arm_layer].map.navel.x - body_map.navel.x,
+                    -frame[arm_layer].map.navel.x + body_map.navel.x,
                     frame[arm_layer].map.navel.y - body_map.navel.y,
                 );
             }
@@ -234,7 +234,7 @@ function retrieve_positions(frame_json: any){
             if(head_map.neck && body_map.neck){
                 // Head
                 positions.head = new Point(
-                    -body_map.neck.x + head_map.neck.x,
+                    body_map.neck.x + head_map.neck.x,
                     -body_map.neck.y + head_map.neck.y
                 );
                 if(head_map.brow){
@@ -251,7 +251,7 @@ function retrieve_positions(frame_json: any){
         const hand_map = frame[Body.Layer.hand_below_weapon].map;
         // hand
         if(hand_map.handMove){
-            positions.hand = new Point(hand_map.handMove.x, -hand_map.handMove.y);
+            positions.hand = new Point(-hand_map.handMove.x, -hand_map.handMove.y);
         }
     }
     return positions;

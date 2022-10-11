@@ -67,13 +67,13 @@ export class CharLook implements Drawable{
         }
     }
 
-    draw(transform: Transform): void {
+    draw(): void {
         if(this.animation){
-            this.animation.draw(transform);
+            this.animation.draw();
         }
     }
 
-    private make_animations(stance_id: Stance.Id = Stance.Id.rope){
+    private make_animations(stance_id: Stance.Id = Stance.Id.walk2){
         const body = this.body.stances[stance_id];
         const hair = this.hair.stances[stance_id];
         // Merge stances
@@ -93,7 +93,6 @@ export class CharLook implements Drawable{
         })
         // Generate animation
         this.animation = new Animation(Object.values(stances).map(frame => {
-            console.log(frame)
             let textures: FrameItem[] = [];
             const {body, hair} = frame.layers;
             // TODO: climbing
@@ -132,9 +131,9 @@ export class CharLook implements Drawable{
             }
             // TODO: [equip] weapon over hand
             // TODO: [equip] weapon over body
-            // if(body[Body.Layer.hand_over_hair]){
-            //     textures.push(body[Body.Layer.hand_over_hair]);
-            // }
+            if(body[Body.Layer.hand_over_hair]){
+                textures.push(body[Body.Layer.hand_over_hair]);
+            }
             // if(body[Body.Layer.hand_over_weapon]){
             //     textures.push(body[Body.Layer.hand_over_weapon]);
             // }
