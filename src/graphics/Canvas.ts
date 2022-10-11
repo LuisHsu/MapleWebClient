@@ -82,7 +82,6 @@ export class Canvas implements NeedInit{
     }
 
     apply_transform(transform: Transform){
-        // TODO: flip
         if(transform.translate){
             ctx.translate(transform.translate.x, -transform.translate.y);
         }
@@ -94,6 +93,13 @@ export class Canvas implements NeedInit{
         }
         if(transform.opacity){
             ctx.globalAlpha = transform.opacity;
+        }
+        if(transform.flip){
+            const [flip_x, flip_y] = transform.flip;
+            ctx.scale(
+                flip_x ? -1 : 1,
+                flip_y ? -1 : 1,
+            );
         }
     }
 
