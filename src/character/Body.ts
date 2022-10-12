@@ -31,7 +31,10 @@ export class Body {
                         // Action
                         let new_frame = {
                             ...stances[frame.action][frame.frame],
-                            refer: frame.action,
+                            refer: {
+                                stance: frame.action,
+                                index: frame.frame,
+                            },
                         }
                         if(frame.delay){
                             new_frame.delay += frame.delay;
@@ -75,13 +78,14 @@ export class Body {
                     frame.positions = retrieve_positions(frame);
                     let stance_name = stance;
                     if(frame.refer){
-                        stance_name = frame.refer;
+                        stance_name = frame.refer.stance;
+                        index = frame.refer.index;
                         delete frame.refer;
                     }
                     frame.layers = Object.entries(frame)
                         .filter(([key, _]) => !["delay", "has_face", "positions"].includes(key))
                         .reduce((prev: any, [layer, part]: [string, any]) => {
-                            prev[part.layer? part.layer: layer] = generate_texture(
+                            prev[(part.layer? part.layer: layer)] = generate_texture(
                                 layer,
                                 skin_id, part, stance_name, index, frame.positions
                             );
@@ -120,6 +124,7 @@ export namespace Body {
         positions: {
             body?: Point,
             arm?: Point,
+            armOverHair?: Point,
             hand?: Point,
             head?: Point,
             face?: Point,
@@ -148,7 +153,7 @@ function generate_texture(
             part.origin.y
         )
     };
-    const layer_name = part.layer? part.layer: layer;
+    const layer_name = (part.layer? part.layer: layer);
     if(positions.body){
         option.origin = option.origin.concat(positions.body);
     }
@@ -159,29 +164,19 @@ function generate_texture(
             }
         break;
         case Body.Layer.arm:
-        case Body.Layer.arm_over_hair:
-        case Body.Layer.arm_over_hair_below_weapon:
         case Body.Layer.arm_below_head:
         case Body.Layer.arm_below_head_over_mail:
-            if(positions.arm){
-                option.origin = option.origin.concat(positions.arm);
-            }
-        break;
-        case Body.Layer.hand_over_hair:
-            if(positions.arm && part.map && part.map.navel){
-                option.origin.x -= positions.body.x + part.map.navel.x + positions.arm.x;
-                option.origin.y += positions.body.y + positions.arm.y;
-            }
-            if(positions.hand){
-                option.origin = option.origin.concat(positions.hand);
+        case Body.Layer.arm_over_hair:
+        case Body.Layer.arm_over_hair_below_weapon:
+            if(positions[layer]){
+                option.origin = option.origin.concat(positions[layer]);
             }
         break;
         case Body.Layer.hand_below_weapon:
-            if(positions.arm && part.map && part.map.navel){
-                option.origin.x -= positions.body.x + part.map.navel.x + positions.arm.x;
-            }
-            if(positions.hand){
-                option.origin = option.origin.concat(positions.hand);
+        case Body.Layer.hand_over_hair:
+            if(positions.body && part.map && part.map.navel){
+                option.origin.x -= positions.body.x + part.map.navel.x;
+                option.origin.y -= positions.body.y - part.map.navel.y;
             }
         break;
     }
@@ -192,37 +187,39 @@ function retrieve_positions(frame_json: any){
     let positions = {
         body: new Point,
         arm: new Point,
+        armOverHair: new Point,
         hand: new Point,
         head: new Point,
         face: new Point,
     };
     const frame = {...frame_json};
-    Object.entries(frame).forEach(([name, part]: [string, any]) => {
-        if(typeof(part) != "string" && part.layer != name){
-            frame[part.layer] = frame[name];
-            delete frame[name];
-        }
-    })
+    // Object.entries(frame).forEach(([name, part]: [string, any]) => {
+    //     if(typeof(part) != "string" && part.layer != name){
+    //         frame[part.layer] = frame[name];
+    //         delete frame[name];
+    //     }
+    // })
     let body_layer = [
         Body.Layer.body,
         Body.Layer.back_body,
     ].find(layer => (frame.hasOwnProperty(layer) && frame[layer].map));
     if(body_layer && frame[body_layer].map){
         const body_map = frame[body_layer].map;
-        const arm_layer = [
-            Body.Layer.arm,
-            Body.Layer.arm_over_hair,
-            Body.Layer.arm_over_hair_below_weapon,
-            Body.Layer.arm_below_head,
-            Body.Layer.arm_below_head_over_mail,
-        ].find(layer => (frame.hasOwnProperty(layer) && frame[layer].map));
         // Body
         if(body_map.navel){
-            positions.body = new Point(-body_map.navel.x, 0);
-            if(arm_layer && frame[arm_layer].map && frame[arm_layer].map.navel){
-                const arm_map = frame[arm_layer].map;
-                // Arm
+            positions.body = new Point(-body_map.navel.x, body_map.navel.y);
+            // Arm
+            if(frame.hasOwnProperty(Body.Layer.arm) && frame[Body.Layer.arm].map && frame[Body.Layer.arm].map.navel){
+                const arm_map = frame[Body.Layer.arm].map;
                 positions.arm = new Point(
+                    -arm_map.navel.x + body_map.navel.x,
+                    arm_map.navel.y - body_map.navel.y,
+                );
+            }
+            // Arm over hair
+            if(frame.hasOwnProperty(Body.Layer.arm_over_hair) && frame[Body.Layer.arm_over_hair].map && frame[Body.Layer.arm_over_hair].map.navel){
+                const arm_map = frame[Body.Layer.arm_over_hair].map;
+                positions.armOverHair = new Point(
                     -arm_map.navel.x + body_map.navel.x,
                     arm_map.navel.y - body_map.navel.y,
                 );
@@ -253,11 +250,15 @@ function retrieve_positions(frame_json: any){
                 positions.hand = new Point(-hand_map.handMove.x, -hand_map.handMove.y);
             }
         }
+        const arm_layer = [
+            Body.Layer.arm,
+            Body.Layer.arm_over_hair
+        ].find(layer => frame.hasOwnProperty(layer) && frame[layer].map)
         if(arm_layer && frame[arm_layer].map && frame[arm_layer].map.hand){
             const arm_map = frame[arm_layer].map;
             positions.hand = positions.hand.concat(new Point(
                 -arm_map.hand.x,
-                -arm_map.hand.y
+                arm_map.hand.y
             ))
         }
     }

@@ -73,24 +73,31 @@ export class CharLook implements Drawable{
         }
     }
 
-    private make_animations(stance_id: Stance.Id = Stance.Id.walk2){
+    private make_animations(stance_id: Stance.Id = Stance.Id.shot){
         const body = this.body.stances[stance_id];
         const hair = this.hair.stances[stance_id];
         // Merge stances
         let stances: {[id in number]: any} = {};
         Object.entries(body).forEach(([index_str, frame]: [string, any]) => {
             const index = parseInt(index_str);
-            stances[index] = {...frame};
+            const {delay, has_face, positions, layers} = frame;
+            stances[index] = {
+                delay,
+                has_face,
+                positions,
+                layers: {
+                    body: layers
+                },
+            };
         })
-        Object.entries(hair).forEach(([index_str, frame]: [string, any]) => {
-            const index = parseInt(index_str);
-            if(stances[index]){
-                stances[index].layers = {
-                    body: {...stances[index].layers},
-                    hair: {...frame},
+        if(hair){
+            Object.entries(hair).forEach(([index_str, frame]: [string, any]) => {
+                const index = parseInt(index_str);
+                if(stances[index]){
+                    stances[index].layers.hair = {...frame};
                 }
-            }
-        })
+            })
+        }
         // Generate animation
         this.animation = new Animation(Object.values(stances).map(frame => {
             let textures: FrameItem[] = [];
