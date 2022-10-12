@@ -193,12 +193,6 @@ function retrieve_positions(frame_json: any){
         face: new Point,
     };
     const frame = {...frame_json};
-    // Object.entries(frame).forEach(([name, part]: [string, any]) => {
-    //     if(typeof(part) != "string" && part.layer != name){
-    //         frame[part.layer] = frame[name];
-    //         delete frame[name];
-    //     }
-    // })
     let body_layer = [
         Body.Layer.body,
         Body.Layer.back_body,
