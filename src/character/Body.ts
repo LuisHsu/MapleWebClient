@@ -154,9 +154,6 @@ function generate_texture(
         )
     };
     const layer_name = (part.layer? part.layer: layer);
-    if(positions.body){
-        option.origin = option.origin.concat(positions.body);
-    }
     switch(layer_name){
         case Body.Layer.head:
             if(positions.head){
@@ -231,7 +228,7 @@ function retrieve_positions(frame_json: any){
                     // Face
                     positions.face = positions.head.concat(new Point(
                         head_map.brow.x,
-                        head_map.brow.y
+                        -head_map.brow.y
                     ));
                 }
             }

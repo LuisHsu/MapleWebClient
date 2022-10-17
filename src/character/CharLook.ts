@@ -20,13 +20,13 @@ export class CharLook implements Drawable{
     hair_shade: Animation;
 
     constructor(entry: CharEntry, callback: () => void = () => {}){
-        Promise.all([
-            Body.create(entry.skin_id),
-            Hair.create(entry.hair_id),
-        ]).then(([body, hair]) => {
-            this.body = body;
-            this.hair = hair;
-        }).then(() => {
+        Body.create(entry.skin_id)
+        .then(body => Hair.create(entry.hair_id, body)
+            .then(hair => {
+                this.body = body;
+                this.hair = hair;
+            })
+        ).then(() => {
             this.make_animations();
         }).then(callback)
     }
@@ -73,7 +73,7 @@ export class CharLook implements Drawable{
         }
     }
 
-    private make_animations(stance_id: Stance.Id = Stance.Id.shot){
+    private make_animations(stance_id: Stance.Id = Stance.Id.stand1){
         const body = this.body.stances[stance_id];
         const hair = this.hair.stances[stance_id];
         // Merge stances
@@ -103,10 +103,10 @@ export class CharLook implements Drawable{
             let textures: FrameItem[] = [];
             const {body, hair} = frame.layers;
             // TODO: climbing
-            // if(hair[Hair.Layer.belowbody]){
-            //     hair[Hair.Layer.belowbody].offset = hair[Hair.Layer.belowbody].offset.concat(frame.hair_position);
-            //     textures.push(hair[Hair.Layer.belowbody]);
-            // }
+            if(hair[Hair.Layer.belowbody]){
+                textures.push(hair[Hair.Layer.belowbody]);
+            }
+            
             if(body[Body.Layer.body]){
                 textures.push(body[Body.Layer.body]);
             }else if(body[Body.Layer.back_body]){

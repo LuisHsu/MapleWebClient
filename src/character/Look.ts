@@ -5,8 +5,6 @@
 
 export namespace Stance {
     export enum Id{
-        default = "default",
-        back = "backDefault",
         alert = "alert",
         dead = "dead",
         fly = "fly",
