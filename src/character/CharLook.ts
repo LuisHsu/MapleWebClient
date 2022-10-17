@@ -121,6 +121,11 @@ export class CharLook implements Drawable{
             if(body[Body.Layer.head]){
                 textures.push(body[Body.Layer.head]);
             }
+
+            if(hair[Hair.Layer.default]){
+                textures.push(hair[Hair.Layer.default]);
+            }
+
             if(body[Body.Layer.arm]){
                 textures.push(body[Body.Layer.arm]);
             }
