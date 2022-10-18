@@ -12,6 +12,7 @@ import { Point, Size } from "../Types";
 export class Body {
 
     stances: {[id in Stance.Id]?: {[index in number]: Body.Stance}} = {};
+    skin_id: number;
 
     static create(skin_id: number){
         return Fetch.Json(`${Setting.DataPath}Character/skin/${skin_id}.json`)
@@ -65,6 +66,7 @@ export class Body {
         })
         .then(stances => {
             let body = new Body;
+            body.skin_id = skin_id;
             // Generate Stances
             Object.entries(stances).forEach(([stance, frames]: [string, any]) => {
                 Object.entries(frames).forEach(([index, frame]: [string, any]) => {

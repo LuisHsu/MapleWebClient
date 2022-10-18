@@ -43,18 +43,34 @@ export class Hair {
                                     }
                                 }
                                 if(layer == Hair.Layer.shade){
-                                    Object.entries(hair[layer]).forEach(
-                                        (([shade_key, shade_frame]: [string, any]) => {
-                                            if(typeof(shade_frame) == "string"){
-                                                hair[layer][shade_key] = hair[layer][shade_frame];
-                                            }
-                                        })
-                                    )
+                                    let key = [hair[layer].key, body.skin_id];
+                                    if(typeof(hair[layer][body.skin_id]) == "string"){
+                                        key[1] = hair[layer][body.skin_id];
+                                    }else if(hair[layer][body.skin_id]){
+                                        hair[layer] = hair[layer][key[1]];
+                                        hair[layer].key = key;
+                                    }else{
+                                        delete hair[layer];
+                                        console.log(hair)
+                                    }
+                                    
                                 }
                                 return hair;
                             }, {});
                         }else{
                             entry[frame_key] = {...hair_json["default"]};
+                            if(entry[frame_key][Hair.Layer.shade]){
+                                const shade = entry[frame_key][Hair.Layer.shade];
+                                let key = [shade.key, body.skin_id];
+                                if(typeof(shade[body.skin_id]) == "string"){
+                                    key[1] = shade[body.skin_id];
+                                }else if(shade[body.skin_id]){
+                                    entry[frame_key][Hair.Layer.shade] = shade[key[1]];
+                                    entry[frame_key][Hair.Layer.shade].key = key;
+                                }else{
+                                    delete entry[frame_key][Hair.Layer.shade];
+                                }
+                            }
                         }
                         entry[frame_key].positions = frames[frame_key].positions;
                         return entry;
@@ -73,7 +89,10 @@ export class Hair {
                             delete frame.positions;
                             frames_wrap[frame_key] = Object.entries(frame).reduce((layer_wrap: any, [layer, part]: [string, any]) => {
                                 if(layer == "hairShade"){
-                                    // TODO: Make animation of hairShade
+                                    layer_wrap[layer] = generate_texture(
+                                        `Character/hair/${hair_id}/${part.key[0]}.${part.layer}.${part.key[1]}.png`,
+                                        part, positions.face
+                                    );
                                 }else{
                                     layer_wrap[layer] = generate_texture(
                                         `Character/hair/${hair_id}/${part.key}.${part.layer}.png`,
@@ -86,6 +105,7 @@ export class Hair {
                     }, {});
                     return stances_wrap;
             },{});
+            console.log(hair)
             return hair;
         });
     }
@@ -114,7 +134,7 @@ function generate_texture(url: string, part: any, position: Point){
         ).concat(position)
     };
     if(part.map && part.map.brow){
-        option.origin.concat(new Point(-part.map.brow.x, part.map.brow.y));
+        option.origin = option.origin.concat(new Point(-part.map.brow.x, part.map.brow.y));
     }
     return new Texture(url, option);
 }

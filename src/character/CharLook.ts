@@ -73,7 +73,7 @@ export class CharLook implements Drawable{
         }
     }
 
-    private make_animations(stance_id: Stance.Id = Stance.Id.stand1){
+    private make_animations(stance_id: Stance.Id = Stance.Id.proneStab){
         const body = this.body.stances[stance_id];
         const hair = this.hair.stances[stance_id];
         // Merge stances
@@ -120,6 +120,10 @@ export class CharLook implements Drawable{
             }
             if(body[Body.Layer.head]){
                 textures.push(body[Body.Layer.head]);
+            }
+
+            if(hair[Hair.Layer.shade]){
+                textures.push(hair[Hair.Layer.shade]);
             }
 
             if(hair[Hair.Layer.default]){
