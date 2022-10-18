@@ -8,7 +8,6 @@ import { Stance } from "./Look";
 import Setting from "../Setting";
 import { Texture } from "../graphics/Texture";
 import { Point, Size } from "../Types";
-import Animation, { Frame } from "../graphics/Animation";
 import { Body } from "./Body";
 
 export class Hair {
