@@ -46,3 +46,30 @@ export namespace Stance {
         return (value == Stance.Id.ladder) || (value == Stance.Id.rope);
     }
 }
+
+export enum Expression {
+    default = "default",
+    blink = "blink",
+    hit = "hit",
+    smile = "smile",
+    troubled = "troubled",
+    cry = "cry",
+    angry = "angry",
+    bewildered = "bewildered",
+    stunned = "stunned",
+    vomit = "vomit",
+    oops = "oops",
+    cheers = "cheers",
+    chu = "chu",
+    wink = "wink",
+    pain = "pain",
+    glitter = "glitter",
+    despair = "despair",
+    love = "love",
+    shine = "shine",
+    blaze = "blaze",
+    hum = "hum",
+    bowing = "bowing",
+    hot = "hot",
+    dam = "dam",
+}

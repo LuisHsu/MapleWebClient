@@ -22,12 +22,14 @@ export class Frame implements Drawable {
             delay?: number,
             transform: Transform = new Transform,
             from?: Transform,
-            callback?: () => void
+            callback?: () => void,
+            prepare?: () => void,
         ){
         this.items = items;
         this.delay = delay;
         this.transform = transform;
         this.callback = callback;
+        this.prepare = prepare;
         if(from){
             this.from = from;
         }
@@ -66,13 +68,9 @@ export class Frame implements Drawable {
     reset(): void{
         this.timestamp = Date.now();
     }
-    start(): void{
-        this.items.filter(item => (item instanceof Animation)).forEach((item: Animation) => {
-            item.start();
-        })
-    }
     delay?: number;
     callback?: () => void;
+    prepare?: () => void;
     private items: FrameItem[];
     private transform: Transform;
     private timestamp: number = Date.now();
@@ -91,12 +89,20 @@ export class Animation implements Drawable{
         if((this.frames.length > 1) && (this.timeout === null)){
             this.frames[this.index].reset();
             this.timeout = setTimeout(this.update.bind(this), this.frames[this.index].delay);
+        }else if(this.frames.length == 1){
+            if(this.frames[this.index].prepare){
+                this.frames[this.index].prepare();
+            }
         }
     }
     stop(){
         if((this.frames.length > 1) && this.timeout !== null){
             clearTimeout(this.timeout);
             this.timeout = null;
+        }else if(this.frames.length == 1){
+            if(this.frames[this.index].callback){
+                this.frames[this.index].callback();
+            }
         }
     }
     reset(){
@@ -125,8 +131,8 @@ export class Animation implements Drawable{
             }else{
                 this.index += 1;
             }
-            if(this.frames[this.index] instanceof Animation){
-                this.frames[this.index].start();
+            if(this.frames[this.index].prepare){
+                this.frames[this.index].prepare();
             }
             this.frames[this.index].reset();
             this.timeout = setTimeout(this.update.bind(this), this.frames[this.index].delay);

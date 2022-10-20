@@ -50,7 +50,6 @@ export class Hair {
                                         hair[layer].key = key;
                                     }else{
                                         delete hair[layer];
-                                        console.log(hair)
                                     }
                                     
                                 }
@@ -104,7 +103,6 @@ export class Hair {
                     }, {});
                     return stances_wrap;
             },{});
-            console.log(hair)
             return hair;
         });
     }
