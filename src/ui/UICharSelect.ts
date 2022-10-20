@@ -92,8 +92,8 @@ export class UICharSelect extends UIElement implements LoginState {
                     this.empty_character.draw();
                 }else{
                     canvas.apply_transform(new Transform({
-                        translate: new Point(512, 384), //new Point(150 * (slot_index + 1) + 360, 310), FIXME:
-                        flip: [false, false],
+                        translate: new Point(150 * slot_index + 382, 273),
+                        flip: [true, false],
                     }));
                     this.cheracters[index].look.draw();
                 }
