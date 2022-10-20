@@ -7,7 +7,7 @@ import { CharEntry } from "../character/CharEntry";
 import { CharLook } from "../character/CharLook";
 import { MapleButton } from "../components/Button";
 import Animation, { Frame } from "../graphics/Animation";
-import canvas, { Transform } from "../graphics/Canvas";
+import canvas, { Drawable, Transform } from "../graphics/Canvas";
 import { Sprite } from "../graphics/Sprite";
 import { Texture } from "../graphics/Texture";
 import { TabFocus, KeyType } from "../io/Keyboard";
@@ -24,13 +24,17 @@ export class UICharSelect extends UIElement implements LoginState {
     ){
         super(char_select_sprites());
         this.parent = parent;
-        this.cheracters = characters.map(((entry: any) => (
-            {entry, look: new CharLook(entry, (() => {
-                this.cheracters.forEach(character => {
-                    character.look.set_repeat(true);
-                    character.look.start();
-                })
-            }).bind(this))}
+        this.cheracters = characters.map(((entry: CharEntry) => (
+            {
+                entry,
+                look: new CharLook(entry, (() => {
+                    this.cheracters.forEach(character => {
+                        character.look.set_repeat(true);
+                        character.look.start();
+                    })
+                }).bind(this)),
+                tag: new NameTag(entry.name),
+            }
         )).bind(this));
         this.selected_channel = selected_channel;
         this.tab_focus = new TabFocus([
@@ -84,6 +88,7 @@ export class UICharSelect extends UIElement implements LoginState {
         this.select_char_button.draw();
         for(let slot_index = 0; slot_index < 3; ++slot_index){
             let index = (this.page * 3 + slot_index);
+            // CharLook
             canvas.open_scope(() => {
                 if(index >= this.cheracters.length){
                     canvas.apply_transform(new Transform({
@@ -91,13 +96,15 @@ export class UICharSelect extends UIElement implements LoginState {
                     }));
                     this.empty_character.draw();
                 }else{
+                    let body_pos = this.cheracters[index].look.body_pos ? this.cheracters[index].look.body_pos : new Point();
                     canvas.apply_transform(new Transform({
-                        translate: new Point(150 * slot_index + 382, 273),
+                        translate: new Point(150 * slot_index + 389, 274 - body_pos.y),
                         flip: [true, false],
                     }));
                     this.cheracters[index].look.draw();
                 }
             });
+            // NameTag
         }
     }
 
@@ -142,7 +149,11 @@ export class UICharSelect extends UIElement implements LoginState {
     }
 
     private page: number = 0;
-    private cheracters: {entry: CharEntry, look: CharLook}[] = [];
+    private cheracters: {
+        entry: CharEntry,
+        look: CharLook,
+        tag: NameTag,
+    }[] = [];
     private tab_focus: TabFocus;
     private selected_world: string = "測試機";
     private selected_channel: number;
@@ -205,3 +216,19 @@ const char_select_sprites = (): Sprite[] => {
     ]
     return results;
 };
+
+class NameTag implements Drawable{
+    constructor(name: string){
+        this.name = name;
+        console.log(Math.ceil(canvas.measure_text(name, 15) / 9))// FIXME:
+    }
+    draw(): void {
+        
+    }
+    private name: string;
+    static textures: Texture[][] = [
+        [
+            new Texture("UI/CharSelect/CharSelect.nameTag.0.0.png")
+        ],
+    ]
+}
