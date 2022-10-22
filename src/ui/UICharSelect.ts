@@ -62,6 +62,8 @@ export class UICharSelect extends UIElement implements LoginState {
 
     click_character(index: number){
         this.selected_character = index;
+        this.select_char_effect.reset();
+        this.select_char_effect.start();
         console.log(`Click character: ${index}`);
     }
 
@@ -91,6 +93,15 @@ export class UICharSelect extends UIElement implements LoginState {
         this.delete_char_button.draw();
         this.new_char_button.draw();
         this.select_char_button.draw();
+        if(this.selected_character !== null){
+            canvas.open_scope(() => {
+                canvas.apply_transform(new Transform({
+                    translate: new Point(150 * (this.selected_character % 3) + 356, 760),
+                    scale: new Size(1.2, 1.2)
+                }));
+                this.select_char_effect.draw();
+            });
+        }
         for(let slot_index = 0; slot_index < 3; ++slot_index){
             const index = (this.page * 3 + slot_index);
             const x_offset = 150 * slot_index;
@@ -233,6 +244,14 @@ export class UICharSelect extends UIElement implements LoginState {
         new Sprite(new Texture("UI/CharSelect/CharSelect.character.0.7.png", {origin: new Point(318, 280), size: new Size(74, 10)})),
         new Sprite(new Texture("UI/CharSelect/CharSelect.character.1.0.png", {origin: new Point(330, 345)}))
     ])
+
+    private select_char_effect: Animation = new Animation([
+        new Frame([new Texture("UI/CharSelect/CharSelect.effect.1.0.png", {origin: new Point(0, 0)})], 100),
+        new Frame([new Texture("UI/CharSelect/CharSelect.effect.1.1.png", {origin: new Point(-6, 0)})], 100),
+        new Frame([new Texture("UI/CharSelect/CharSelect.effect.1.2.png", {origin: new Point(-22, 0)})], 100),
+        new Frame([new Texture("UI/CharSelect/CharSelect.effect.1.3.png", {origin: new Point(-28, 0)})], 100),
+        new Frame([new Texture("UI/CharSelect/CharSelect.effect.1.4.png", {origin: new Point(-36, 0)})], 0)
+    ]);
 
     private character_buttons: AreaButton[] = [
         new AreaButton(new Point(330, 345), new Size(50, 75)),
