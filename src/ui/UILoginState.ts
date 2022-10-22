@@ -49,14 +49,17 @@ export class UILoginState extends UIElement implements UIState {
                         case UILoginState.Direction.Up:
                             this.context.offset.y = Window.size.height * (elapsed / 900);
                             next_offset.y = this.context.offset.y - Window.size.height;
+                            this.login_state.draw_state(this.context.offset);
+                            this.context.next.draw_state(next_offset);
                         break;
                         case UILoginState.Direction.Down:
                             this.context.offset.y = -Window.size.height * (elapsed / 900);
                             next_offset.y = Window.size.height + this.context.offset.y;
+                            this.context.next.draw_state(next_offset);
+                            this.login_state.draw_state(this.context.offset);
                         break;
                     }
-                    this.login_state.draw_state(this.context.offset);
-                    this.context.next.draw_state(next_offset);
+                    
                 }
             }else{
                 this.login_state.draw_state();

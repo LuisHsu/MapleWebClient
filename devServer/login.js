@@ -6,7 +6,7 @@ function login_handler(data, send){
 
     // Send login packet
     let packet = Buffer.alloc(6);
-    packet.writeInt16BE(0); // opcode
+    packet.writeInt16BE(30001); // opcode
     if(account == "test" && password == "test"){
         packet.writeInt32BE(0, 2); // success
     }else if(account == "test" && password == "logined"){
@@ -45,7 +45,7 @@ function create_mock_character(){
     buffer.write("TestChar", 6); // name: 8 = TestChar
     buffer.writeUint8(1, 14) // gender: 1 = female
     buffer.writeUint8(0, 15) // skin: 1 = Light
-    buffer.writeUint16BE(3, 16) // face: 2 = Smile
+    buffer.writeUint16BE(3046, 16) // face: 2 = Smile
     buffer.writeUint16BE(100, 18) // hair: 2 = Smile
     buffer.writeUint8(0, 20) // pet_count: 1 = 0
     // pet_id: 2
