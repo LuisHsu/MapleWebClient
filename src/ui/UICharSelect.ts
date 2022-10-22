@@ -5,7 +5,7 @@
 
 import { CharEntry } from "../character/CharEntry";
 import { CharLook } from "../character/CharLook";
-import { MapleButton } from "../components/Button";
+import { AreaButton, MapleButton } from "../components/Button";
 import Animation, { Frame } from "../graphics/Animation";
 import canvas, { Drawable, Transform } from "../graphics/Canvas";
 import { Sprite } from "../graphics/Sprite";
@@ -27,12 +27,7 @@ export class UICharSelect extends UIElement implements LoginState {
         this.cheracters = characters.map(((entry: CharEntry) => (
             {
                 entry,
-                look: new CharLook(entry, (() => {
-                    this.cheracters.forEach(character => {
-                        character.look.set_repeat(true);
-                        character.look.start();
-                    })
-                }).bind(this)),
+                look: new CharLook(entry),
                 tag: new NameTag(entry.name),
             }
         )).bind(this));
@@ -55,13 +50,23 @@ export class UICharSelect extends UIElement implements LoginState {
         console.log("New character");
     }
 
-    select_character(){
+    select_character(index: number = null){
+        if(index !== null){
+            this.selected_character = index;
+        }
         // TODO:
-        console.log("Select character");
+        if(this.selected_character !== null){
+            console.log(`Select character ${this.selected_character}`);
+        }
+    }
+
+    click_character(index: number){
+        this.selected_character = index;
+        console.log(`Click character: ${index}`);
     }
 
     clean(): void {
-        // TODO:
+        this.tab_focus.remove();
     }
 
     return_world_select(){
@@ -87,24 +92,36 @@ export class UICharSelect extends UIElement implements LoginState {
         this.new_char_button.draw();
         this.select_char_button.draw();
         for(let slot_index = 0; slot_index < 3; ++slot_index){
-            let index = (this.page * 3 + slot_index);
-            // CharLook
-            canvas.open_scope(() => {
-                if(index >= this.cheracters.length){
+            const index = (this.page * 3 + slot_index);
+            const x_offset = 150 * slot_index;
+            if(index >= this.cheracters.length){
+                // Empty
+                canvas.open_scope(() => {
                     canvas.apply_transform(new Transform({
-                        translate: new Point(150 * slot_index, 0)
+                        translate: new Point(x_offset, 0)
                     }));
                     this.empty_character.draw();
-                }else{
-                    let body_pos = this.cheracters[index].look.body_pos ? this.cheracters[index].look.body_pos : new Point();
+                });
+                this.character_buttons[index].active = false;
+            }else{
+                let body_pos = this.cheracters[index].look.body_pos ? this.cheracters[index].look.body_pos : new Point();
+                // CharLook
+                canvas.open_scope(() => {
                     canvas.apply_transform(new Transform({
-                        translate: new Point(150 * slot_index + 389, 274 - body_pos.y),
+                        translate: new Point(x_offset + 359, 274 - body_pos.y),
                         flip: [true, false],
                     }));
                     this.cheracters[index].look.draw();
-                }
-            });
-            // NameTag
+                });
+                // NameTag
+                canvas.open_scope(() => {
+                    canvas.apply_transform(new Transform({
+                        translate: new Point(x_offset + 355, 260),
+                    }));
+                    this.cheracters[index].tag.draw();
+                });
+                this.character_buttons[index].active = true;
+            }
         }
     }
 
@@ -128,6 +145,9 @@ export class UICharSelect extends UIElement implements LoginState {
         this.delete_char_button.update_pressed(position);
         this.new_char_button.update_pressed(position);
         this.select_char_button.update_pressed(position);
+        for(let char_index = 0; char_index < 3; ++char_index){
+            this.character_buttons[char_index].update_pressed(position);
+        }
     }
 
     mouse_up(position: Point): void {
@@ -135,6 +155,9 @@ export class UICharSelect extends UIElement implements LoginState {
         this.delete_char_button.update_released(position);
         this.new_char_button.update_released(position);
         this.select_char_button.update_released(position);
+        for(let char_index = 0; char_index < 3; ++char_index){
+            this.character_buttons[char_index].update_pressed(position);
+        }
     }
 
     left_click(position: Point): void {
@@ -142,6 +165,19 @@ export class UICharSelect extends UIElement implements LoginState {
         this.delete_char_button.handle_click(position, this.delete_character.bind(this));
         this.new_char_button.handle_click(position, this.new_character.bind(this));
         this.select_char_button.handle_click(position, this.select_character.bind(this));
+        for(let char_index = 0; char_index < 3; ++char_index){
+            this.character_buttons[char_index].handle_click(position,
+                this.click_character.bind(this, 3 * this.page + char_index)
+            );
+        }
+    }
+
+    double_click(position: Point): void {
+        for(let char_index = 0; char_index < 3; ++char_index){
+            this.character_buttons[char_index].handle_click(position,
+                this.select_character.bind(this, 3 * this.page + char_index)
+            );
+        }
     }
 
     key_up(key: KeyType): void {
@@ -157,6 +193,7 @@ export class UICharSelect extends UIElement implements LoginState {
     private tab_focus: TabFocus;
     private selected_world: string = "測試機";
     private selected_channel: number;
+    private selected_character: number = null;
     private step_texture: Texture = new Texture("UI/CharSelect/Common.step.2.png", {origin: new Point(0, 700), size: new Size(165, 63)});
     private selected_world_texture: Texture = new Texture("UI/CharSelect/Common.selectWorld.png", {origin: new Point(0, 630), size: new Size(165, 63)});
 
@@ -193,9 +230,15 @@ export class UICharSelect extends UIElement implements LoginState {
     }, new Point(819, 529), this.select_character.bind(this));
 
     private empty_character: UIElement = new UIElement([
-        new Sprite(new Texture("UI/CharSelect/CharSelect.character.0.7.png", {origin: new Point(348, 280), size: new Size(74, 10)})),
-        new Sprite(new Texture("UI/CharSelect/CharSelect.character.1.0.png", {origin: new Point(360, 345)}))
+        new Sprite(new Texture("UI/CharSelect/CharSelect.character.0.7.png", {origin: new Point(318, 280), size: new Size(74, 10)})),
+        new Sprite(new Texture("UI/CharSelect/CharSelect.character.1.0.png", {origin: new Point(330, 345)}))
     ])
+
+    private character_buttons: AreaButton[] = [
+        new AreaButton(new Point(330, 345), new Size(50, 75)),
+        new AreaButton(new Point(480, 345), new Size(50, 75)),
+        new AreaButton(new Point(630, 345), new Size(50, 75)),
+    ]
 
     parent: UILoginState;
 }
@@ -218,17 +261,45 @@ const char_select_sprites = (): Sprite[] => {
 };
 
 class NameTag implements Drawable{
+
+    active: boolean = false;
+
     constructor(name: string){
         this.name = name;
-        console.log(Math.ceil(canvas.measure_text(name, 15) / 9))// FIXME:
+        this.name_width = Math.ceil(canvas.measure_text(this.name, 15) / 9) + 1;
     }
     draw(): void {
-        
+        const x_offset = -(4 * this.name_width + 3);
+        const textures = NameTag.textures[this.active ? 1 : 0];
+        canvas.draw_texture(textures[0], new Transform({
+            translate: new Point(x_offset, 0)
+        }));
+        for(let i = 1; i <= this.name_width; ++i){
+            canvas.draw_texture(textures[1], new Transform({
+                translate: new Point(8 * i + x_offset, 0)
+            }));
+        }
+        canvas.draw_texture(textures[2], new Transform({
+            translate: new Point(8 * (this.name_width + 1) - 1 + x_offset, 0)
+        }));
+        canvas.draw_text(this.name, 15,
+            new Point(0, -9),
+            new Color(255, 255, 255),
+            TextAlign.Center
+        );
     }
     private name: string;
-    static textures: Texture[][] = [
+    private name_width: number;
+    private static textures: Texture[][] = [
         [
-            new Texture("UI/CharSelect/CharSelect.nameTag.0.0.png")
+            new Texture("UI/CharSelect/CharSelect.nameTag.0.0.png"),
+            new Texture("UI/CharSelect/CharSelect.nameTag.0.1.png"),
+            new Texture("UI/CharSelect/CharSelect.nameTag.0.2.png"),
+        ],
+        [
+            new Texture("UI/CharSelect/CharSelect.nameTag.1.0.png"),
+            new Texture("UI/CharSelect/CharSelect.nameTag.1.1.png"),
+            new Texture("UI/CharSelect/CharSelect.nameTag.1.2.png"),
         ],
     ]
 }

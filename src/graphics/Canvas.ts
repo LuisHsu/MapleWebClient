@@ -111,6 +111,7 @@ export class Canvas implements NeedInit{
 
     draw_texture(texture: Texture, transform?: Transform): void {
         if(texture.bitmap !== null){
+            ctx.save();
             if(transform){
                 this.apply_transform(transform);
             }
@@ -119,6 +120,7 @@ export class Canvas implements NeedInit{
                 origin.x, -origin.y,
                 texture.size().width, texture.size().height
             );
+            ctx.restore();
         }
     }
     draw_text(text: string, size: number, offset: Point, color: Color, align: TextAlign = TextAlign.Left){
@@ -140,6 +142,24 @@ export class Canvas implements NeedInit{
         ctx.lineTo(1024, 384);
         ctx.stroke();
         ctx.restore();
+    }
+    draw_rect(color: Color, position: Point, size: Size){
+        ctx.save();
+        ctx.fillStyle = color.toString();
+        ctx.fillRect(
+            position.x,
+            -position.y, 
+            size.width,
+            size.height
+        );
+        ctx.restore();
+    }
+    measure_text(text: string, size: number): number{
+        ctx.save();
+        ctx.font = `${size}px serif`;
+        const result = ctx.measureText(text).width;
+        ctx.restore();
+        return result;
     }
     private started = true;
     private draw: () => void;

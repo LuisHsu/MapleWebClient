@@ -7,7 +7,7 @@ import { Sound } from "../audio/Audio";
 import canvas, { Drawable, Transform } from "../graphics/Canvas";
 import { Texture } from "../graphics/Texture";
 import { TabHandler } from "../io/Keyboard";
-import { Point, Rect } from "../Types";
+import { Color, Point, Rect, Size } from "../Types";
 
 export abstract class Button implements Drawable, TabHandler {
     state: Button.State;
@@ -180,4 +180,42 @@ export class MapleButton extends Button {
 
     private textures: {[state in Button.State]?: Texture};
     private focus_texture?: Texture;
+}
+
+export class AreaButton extends Button{
+    state: Button.State = Button.State.NORMAL;
+    active: boolean = true;
+    position: Point;
+    size: Size;
+    focused: boolean = false;
+    focus_enter?(): void;
+
+    draw(): void {
+        canvas.draw_rect(new Color(255, 255, 255, 0.5), this.position, this.size);
+    };
+
+    constructor(position: Point, size: Size, focus_click?: () => void){
+        super();
+        this.position = position;
+        this.size = size;
+        this.focus_enter = focus_click;
+    }
+    
+    blur(): void{
+        this.focused = false;
+    }
+
+    focus(): void {
+        this.focused = true;
+    }
+
+    bounds(offset: Point): Rect {
+        let origin = this.position.concat(offset);
+        return new Rect(
+            origin.y,
+            origin.y - this.size.height,
+            origin.x,
+            origin.x + this.size.width
+        )
+    }
 }
