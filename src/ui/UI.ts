@@ -4,7 +4,7 @@
  */
 
 import canvas, { Drawable, Transform } from "../graphics/Canvas";
-import { NeedInit, Point, Size } from "../Types";
+import { NeedInit, Point } from "../Types";
 import { Cursor, CursorState, MouseHandler } from "../io/Cursor";
 import { UILogo } from "./UILogo";
 import { KeyboardHandler, KeyType } from "../io/Keyboard";

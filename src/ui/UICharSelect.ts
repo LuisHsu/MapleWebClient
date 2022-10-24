@@ -5,6 +5,7 @@
 
 import { CharEntry } from "../character/CharEntry";
 import { CharLook } from "../character/CharLook";
+import { Job } from "../character/Job";
 import { AreaButton, MapleButton } from "../components/Button";
 import Animation, { Frame } from "../graphics/Animation";
 import canvas, { Drawable, Transform } from "../graphics/Canvas";
@@ -64,7 +65,7 @@ export class UICharSelect extends UIElement implements LoginState {
         this.selected_character = index;
         this.select_char_effect.reset();
         this.select_char_effect.start();
-        console.log(`Click character: ${index}`);
+        this.char_stats.set_entry(this.cheracters[index].entry);
     }
 
     clean(): void {
@@ -100,6 +101,14 @@ export class UICharSelect extends UIElement implements LoginState {
                     scale: new Size(1.2, 1.2)
                 }));
                 this.select_char_effect.draw();
+
+            });
+            canvas.open_scope(() => {
+                canvas.apply_transform(new Transform({
+                    translate: new Point(150 * (this.selected_character % 3) + 356, 520),
+                    scale: new Size(1.2, 1.2),
+                }));
+                this.char_stats.draw();
             });
         }
         for(let slot_index = 0; slot_index < 3; ++slot_index){
@@ -259,6 +268,8 @@ export class UICharSelect extends UIElement implements LoginState {
         new AreaButton(new Point(630, 345), new Size(50, 75)),
     ]
 
+    private char_stats = new CharStats();
+
     parent: UILoginState;
 }
 
@@ -321,4 +332,44 @@ class NameTag implements Drawable{
             new Texture("UI/CharSelect/CharSelect.nameTag.1.2.png"),
         ],
     ]
+}
+
+class CharStats extends UIElement{
+
+    constructor(){
+        super([
+            new Sprite(new Texture("UI/CharSelect/CharSelect.scroll.1.0.png",
+                {size: new Size(220, 200), origin: new Point(-114, 104)}
+            )),
+            new Sprite(new Texture("UI/CharSelect/CharSelect.charInfo1.png")),
+        ])
+    }
+
+    draw(): void {
+        super.draw();
+        if(this.character){
+            canvas.draw_text(`${Job.Name[this.character.job.id]}`, 12, new Point(17, 60), CharStats.color, TextAlign.Center);
+            canvas.draw_text(`${this.character.level}`, 12, new Point(-27, 42), CharStats.color, TextAlign.Center);
+            canvas.draw_text(`${this.character.str}`, 12, new Point(-27, 24), CharStats.color, TextAlign.Center);
+            canvas.draw_text(`${this.character.dex}`, 12, new Point(-27, 6), CharStats.color, TextAlign.Center);
+            canvas.draw_text(`${this.character.fame}`, 12, new Point(63, 42), CharStats.color, TextAlign.Center);
+            canvas.draw_text(`${this.character.int}`, 12, new Point(63, 24), CharStats.color, TextAlign.Center);
+            canvas.draw_text(`${this.character.luk}`, 12, new Point(63, 6), CharStats.color, TextAlign.Center);
+            canvas.draw_text(`${this.character.job_rank.value}`, 12, new Point(0, -37), CharStats.color, TextAlign.Center);
+            canvas.draw_texture(this.trand_textures[this.character.job_rank.trend], new Transform({translate: new Point(75, -30)}));
+            canvas.draw_text(`${this.character.rank.value}`, 12, new Point(0, -75), CharStats.color, TextAlign.Center);
+            canvas.draw_texture(this.trand_textures[this.character.rank.trend], new Transform({translate: new Point(75, -68)}));
+        }
+    }
+
+    set_entry(char: CharEntry){
+        this.character = char;
+    }
+    private static color: Color = new Color(0, 0, 0);
+    private character: CharEntry;
+    private trand_textures: {[trand in CharEntry.Trend]: Texture} = {
+        [CharEntry.Trend.increase]: new Texture("UI/CharSelect/CharSelect.icon.up.png"),
+        [CharEntry.Trend.even]: new Texture("UI/CharSelect/CharSelect.icon.same.png"),
+        [CharEntry.Trend.decrease]: new Texture("UI/CharSelect/CharSelect.icon.down.png"),
+    };
 }

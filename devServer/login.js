@@ -54,7 +54,7 @@ function create_mock_character(){
     buffer.writeUint8(1, 25) // grade: 1 = first
     buffer.writeUint16BE(4, 26) // str: 2 = 4
     buffer.writeUint16BE(4, 28) // dex: 2 = 4
-    buffer.writeUint16BE(86, 30) // inte: 2 = 86
+    buffer.writeUint16BE(86, 30) // int: 2 = 86
     buffer.writeUint16BE(23, 32) // luk: 2 = 23
     buffer.writeUint32BE(1000, 34) // hp: 4 = 1000
     buffer.writeUint32BE(1200, 38) // max_hp: 4 = 1200
