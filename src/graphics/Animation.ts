@@ -86,7 +86,10 @@ export class Animation implements Drawable{
         }
     }
     start(){
-        if((this.frames.length > 1) && (this.timeout === null)){
+        if((this.timeout === null) && (
+            (this.frames.length > 1) || 
+            ((this.frames.length == 1) && this.frames[0].delay)
+        )){
             this.frames[this.index].reset();
             this.timeout = setTimeout(this.update.bind(this), this.frames[this.index].delay);
         }else if(this.frames.length == 1){
@@ -96,7 +99,10 @@ export class Animation implements Drawable{
         }
     }
     stop(){
-        if((this.frames.length > 1) && this.timeout !== null){
+        if((this.timeout !== null) && (
+            (this.frames.length > 1) || 
+            ((this.frames.length == 1) && this.frames[0].delay)
+        )){
             clearTimeout(this.timeout);
             this.timeout = null;
         }else if(this.frames.length == 1){
@@ -107,6 +113,9 @@ export class Animation implements Drawable{
     }
     reset(){
         this.index = 0;
+        if(this.frames.length >= 1){
+            this.frames[this.index].reset();
+        }
     }
     draw(){
         this.frames[this.index].draw();
