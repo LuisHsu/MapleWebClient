@@ -20,10 +20,10 @@ export class TextInput implements TabHandler, Drawable {
     }){
         this.position = position;
         this.size = size;
-        this.focus_enter = option.focus_enter;
         this.element = document.createElement("input");
         this.element.className = "input";
         if(option){
+            this.focus_enter = option.focus_enter;
             this.element.type = option.type ? option.type : "text";
             if(option.color){
                 this.element.style.color = option.color;
