@@ -11,5 +11,6 @@ export namespace InPacket{
     export enum Type {
         Login = 30001,
         Character_list = 11,
+        Character_name = 13,
     }
 }

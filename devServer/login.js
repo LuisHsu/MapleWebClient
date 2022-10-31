@@ -32,9 +32,23 @@ function char_list_handler(data, send){
     send(packet);
 }
 
+function char_name_handler(data, send){
+    let [name] = parse_string(data);
+    
+    let result = (name == "TestChar") ? 0 : 1;
+
+    // Send character name packet
+    let packet = Buffer.alloc(3);
+    packet.writeInt16BE(13); // opcode
+    packet.writeUint8(result, 2); // channel
+
+    send(packet);
+}
+
 module.exports = {
     login: login_handler,
     char_list: char_list_handler,
+    char_name: char_name_handler,
 }
 
 function create_mock_character(){

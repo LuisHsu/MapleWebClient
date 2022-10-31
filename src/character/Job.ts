@@ -4,8 +4,8 @@
  */
 
 export class Job {
-    id: Job.ID;
-    grade: Job.Grade;
+    id: Job.ID = Job.ID.beginner;
+    grade: Job.Grade = Job.Grade.Beginner;
 }
 
 export namespace Job {

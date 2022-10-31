@@ -110,7 +110,6 @@ export class UICharSelect extends UIElement implements LoginState {
                     scale: new Size(1.2, 1.2)
                 }));
                 this.select_char_effect.draw();
-
             });
             canvas.open_scope(() => {
                 canvas.apply_transform(new Transform({
@@ -299,7 +298,7 @@ const char_select_sprites = (): Sprite[] => {
     return results;
 };
 
-class NameTag implements Drawable{
+export class NameTag implements Drawable{
 
     active: boolean = false;
 

@@ -6,7 +6,11 @@
 import { PacketSwitch } from "./PacketSwitch";
 
 export abstract class Session {
-    connect(url: string, callback?: () => void){
+    close(){
+        this.socket.close();
+        this.socket = null;
+    }
+    protected connect(url: string, callback?: () => void){
         if(this.socket !== null && this.socket.readyState == WebSocket.OPEN){
             this.socket.close();
         }
@@ -16,12 +20,8 @@ export abstract class Session {
             this.socket.onopen = callback;
         }
     }
-    send(data: string | ArrayBufferLike | ArrayBufferView){
+    protected send(data: string | ArrayBufferLike | ArrayBufferView){
         this.socket.send(data);
-    }
-    close(){
-        this.socket.close();
-        this.socket = null;
     }
     private receive(event: MessageEvent){
         this.packet_switch.handle(event.data);

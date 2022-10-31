@@ -110,6 +110,7 @@ export namespace UILoginNotice {
         account_not_match,
         already_logged_in,
         back_to_login,
+        name_exists,
     }
 }
 
@@ -122,4 +123,5 @@ const message_map: {[type in UILoginNotice.MessageID]: string} = {
     [UILoginNotice.MessageID.account_not_match]: "UI/Login/Notice.text.2.png",
     [UILoginNotice.MessageID.already_logged_in]: "UI/Login/Notice.text.17.png",
     [UILoginNotice.MessageID.back_to_login]: "UI/Login/Notice.text.7.png",
+    [UILoginNotice.MessageID.name_exists]: "UI/Login/Notice.text.5.png",
 }

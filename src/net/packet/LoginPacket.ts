@@ -75,7 +75,7 @@ export namespace LoginPacket {
                 packet.channel = view.getUint8(offset);
                 for(let char_len = view.getUint8(offset += 1); char_len > 0; --char_len){
                     let character = new CharEntry;
-                    character.cid = view.getInt32(offset += 1, );
+                    character.cid = view.getInt32(offset += 1, endian);
                     let name_length = view.getUint16(offset += 4, endian);
                     character.name = String.decode(data, name_length, offset += 2).data;
                     character.gender = view.getUint8(offset += name_length);
@@ -139,9 +139,39 @@ export namespace LoginPacket {
                     sizeof(Type.UInt8) * 2
                 );
                 let view = new DataView(buffer);
-                view.setUint16(0, OutPacket.Type.Character_list);
+                view.setUint16(0, OutPacket.Type.Character_list, endian);
                 view.setUint8(2, this.world);
                 view.setUint8(3, this.channel);
+                return buffer;
+            }
+        }
+    }
+
+    export namespace CharName {
+        export class In extends InPacket{
+            is_valid: boolean;
+            static decode(data: ArrayBuffer): InPacket{
+                let packet = new CharName.In;
+                let view = new DataView(data);
+                packet.is_valid = (view.getUint8(0) !== 0);
+                return packet;
+            }
+        }
+
+        export class Out extends OutPacket{
+            name: String;
+            constructor(name: string){
+                super();
+                this.name = new String(name);
+            }
+            encode(): ArrayBuffer {
+                let buffer = new ArrayBuffer(
+                    sizeof(Type.UInt16) +
+                    this.name.size()
+                );
+                let view = new DataView(buffer);
+                view.setUint16(0, OutPacket.Type.Character_name, endian);
+                this.name.encode(buffer, sizeof(Type.UInt16));
                 return buffer;
             }
         }

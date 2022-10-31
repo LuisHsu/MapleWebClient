@@ -77,7 +77,9 @@ export class TextInput implements TabHandler, Drawable {
     }
 
     clean(): void {
-        display.removeChild(this.element);
+        if(display.contains(this.element)){
+            display.removeChild(this.element);
+        }
     }
     
     private set_focus(event: MouseEvent): void{

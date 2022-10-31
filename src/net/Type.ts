@@ -49,7 +49,7 @@ export class String {
     }
     encode(buffer: ArrayBuffer, byteOffset: number = 0){
         let view = new DataView(buffer, byteOffset);
-        view.setUint16(0, this.data.length);
+        view.setUint16(0, this.data.length, endian);
         let string_view = new Uint8Array(buffer, byteOffset + sizeof(Type.UInt16));
         let encoder = new TextEncoder();
         string_view.set(encoder.encode(this.data));

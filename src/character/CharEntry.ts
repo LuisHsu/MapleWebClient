@@ -6,34 +6,34 @@
 import { Job } from "./Job";
 
 export class CharEntry {
-    cid: number;
-    name: string;
+    cid: number = -1;
+    name: string = "";
     pet_ids: number[] = [];
-    exp: number;
+    exp: number = 0;
     map_id: number;
     portal: number;
     rank: CharEntry.Rank;
     job_rank: CharEntry.Rank;
-    gender: Gender;
-    skin_id: number;
-    face_id: number;
-    hair_id: number;
+    gender: Gender = Gender.female;
+    skin_id: number = 0;
+    face_id: number = 0;
+    hair_id: number = 0;
     equips: {[key in number]?: number} = {};
     masked_equips: {[key in number]?: number} = {};
-    level: number;
-    job: Job;
-    str: number;
-    dex: number;
-    int: number;
-    luk: number;
-    hp: number;
-    max_hp: number;
-    mp: number;
-    max_mp: number;
-    ap: number;
-    sp: number;
-    fame: number;
-    meso: number;
+    level: number = 1;
+    job: Job = new Job;
+    str: number = 0;
+    dex: number = 0;
+    int: number = 0;
+    luk: number = 0;
+    hp: number = 0;
+    max_hp: number = 0;
+    mp: number = 0;
+    max_mp: number = 0;
+    ap: number = 0;
+    sp: number = 0;
+    fame: number = 0;
+    meso: number = 0;
 }
 
 export namespace CharEntry {

@@ -1,6 +1,7 @@
 const { 
     login,
     char_list,
+    char_name,
 } = require("./login");
 
 function Switch(data){
@@ -22,4 +23,5 @@ module.exports = Session
 const handler_map = {
     1: login,
     5: char_list,
+    21: char_name,
 }

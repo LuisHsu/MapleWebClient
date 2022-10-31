@@ -32,8 +32,8 @@ export class UILoginState extends UIElement implements UIState {
                 origin: new Point(0, 768),
             })),
         ])
-        this.login_state = new UILogin(this);
-        // this.login_state = new UICharCreate(this, 3);
+        this.state = new UILogin(this);
+        // this.state = new UICharCreate(this, 3);
         LoginSession.init(this);
         // FIXME:
         LoginSession.open(() => {
@@ -46,33 +46,33 @@ export class UILoginState extends UIElement implements UIState {
             if(this.context !== null){
                 const elapsed = Date.now() - this.context.timestamp;
                 if(elapsed >= 1000){
-                    this.login_state = this.context.next;
+                    this.state = this.context.next;
                     this.offset.y = this.context.destination;
                     this.context = null;
-                    this.login_state.draw_state(this.offset);
+                    this.state.draw_state(this.offset);
                 }else{
                     let next_offset = new Point;
                     switch(this.context.direction){
                         case UILoginState.Direction.Up:
                             this.offset.y = (Window.size.height - this.context.destination) * (elapsed / 1000);
                             next_offset.y = this.offset.y - Window.size.height;
-                            this.login_state.draw_state(this.offset);
+                            this.state.draw_state(this.offset);
                             this.context.next.draw_state(next_offset);
                         break;
                         case UILoginState.Direction.Down:
                             this.offset.y = -(Window.size.height - this.context.destination) * (elapsed / 1000);
                             next_offset.y = Window.size.height + this.offset.y;
                             this.context.next.draw_state(next_offset);
-                            this.login_state.draw_state(this.offset);
+                            this.state.draw_state(this.offset);
                         break;
                     }
                 }
             }else{
-                this.login_state.draw_state(this.offset);
+                this.state.draw_state(this.offset);
             }
             super.draw();
-            if(this.context === null && this.login_state.draw_foreground){
-                this.login_state.draw_foreground();
+            if(this.context === null && this.state.draw_foreground){
+                this.state.draw_foreground();
             }
             if(this.notice != null){
                 this.notice.draw();
@@ -81,7 +81,7 @@ export class UILoginState extends UIElement implements UIState {
     };
 
     change_state(next: LoginState, direction: UILoginState.Direction, destination?: number){
-        this.login_state.clean();
+        this.state.clean();
         this.offset = new Point;
         this.context = new UILoginState.TransformContext(next, direction, destination);
     }
@@ -109,9 +109,8 @@ export class UILoginState extends UIElement implements UIState {
     }
 
     mouse_move(position: Point): void {
-        position = position.concat(this.offset.neg());
-        if((this.context === null) && this.login_state.mouse_move){
-            this.login_state.mouse_move(position);
+        if((this.context === null) && this.state.mouse_move){
+            this.state.mouse_move(position);
         }
         if(this.notice !== null){
             this.notice.mouse_move(position);
@@ -119,9 +118,8 @@ export class UILoginState extends UIElement implements UIState {
     }
 
     mouse_down(position: Point): void {
-        position = position.concat(this.offset.neg());
-        if((this.context === null) && this.login_state.mouse_down){
-            this.login_state.mouse_down(position);
+        if((this.context === null) && this.state.mouse_down){
+            this.state.mouse_down(position);
         }
         if(this.notice !== null){
             this.notice.mouse_down(position);
@@ -129,9 +127,8 @@ export class UILoginState extends UIElement implements UIState {
     }
 
     mouse_up(position: Point): void {
-        position = position.concat(this.offset.neg());
-        if((this.context === null) && this.login_state.mouse_up){
-            this.login_state.mouse_up(position);
+        if((this.context === null) && this.state.mouse_up){
+            this.state.mouse_up(position);
         }
         if(this.notice !== null){
             this.notice.mouse_up(position);
@@ -139,29 +136,26 @@ export class UILoginState extends UIElement implements UIState {
     }
 
     mouse_wheel(delta: number): void {
-        if((this.context === null) && this.login_state.mouse_wheel){
-            this.login_state.mouse_wheel(delta);
+        if((this.context === null) && this.state.mouse_wheel){
+            this.state.mouse_wheel(delta);
         }
     }
 
     double_click(position: Point): void {
-        position = position.concat(this.offset.neg());
-        if((this.context === null) && this.login_state.double_click){
-            this.login_state.double_click(position);
+        if((this.context === null) && this.state.double_click){
+            this.state.double_click(position);
         }
     }
 
     right_click(position: Point): void {
-        position = position.concat(this.offset.neg());
-        if((this.context === null) && this.login_state.right_click){
-            this.login_state.right_click(position);
+        if((this.context === null) && this.state.right_click){
+            this.state.right_click(position);
         }
     }
 
     left_click(position: Point): void {
-        position = position.concat(this.offset.neg());
-        if((this.context === null) && this.login_state.left_click){
-            this.login_state.left_click(position);
+        if((this.context === null) && this.state.left_click){
+            this.state.left_click(position);
         }
         if(this.notice !== null){
             this.notice.left_click(position);
@@ -169,14 +163,14 @@ export class UILoginState extends UIElement implements UIState {
     }
 
     key_down(key: KeyType): void {
-        if((this.context === null) && this.login_state.key_down){
-            this.login_state.key_down(key);
+        if((this.context === null) && this.state.key_down){
+            this.state.key_down(key);
         }
     }
 
     key_up(key: KeyType): void {
-        if((this.context === null) && this.login_state.key_up){
-            this.login_state.key_up(key);
+        if((this.context === null) && this.state.key_up){
+            this.state.key_up(key);
         }
     }
 
@@ -191,7 +185,7 @@ export class UILoginState extends UIElement implements UIState {
 
     public notice: UILoginNotice = null;
     private offset: Point = new Point;
-    private login_state: LoginState;
+    public state: LoginState;
     private context: UILoginState.TransformContext = null;
 }
 

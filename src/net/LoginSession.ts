@@ -4,6 +4,7 @@
  */
 
 import { NeedInit } from "../Types";
+import { UICharCreate } from "../ui/UICharCreate";
 import { UICharSelect } from "../ui/UICharSelect";
 import { UILoginNotice } from "../ui/UILoginNotice";
 import { UILoginState } from "../ui/UILoginState";
@@ -20,6 +21,7 @@ class LoginSession extends Session implements NeedInit{
         this.packet_switch = new PacketSwitch([
             [InPacket.Type.Login, {decode: LoginPacket.Login.In.decode, handle: this.login_handler.bind(this)}],
             [InPacket.Type.Character_list, {decode: LoginPacket.CharList.In.decode, handle: this.char_list_handler.bind(this)}],
+            [InPacket.Type.Character_name, {decode: LoginPacket.CharName.In.decode, handle: this.char_name_handler.bind(this)}],
         ]);
     }
 
@@ -37,6 +39,10 @@ class LoginSession extends Session implements NeedInit{
 
     character_list(channel: number, world: number = 0){
         this.send(new LoginPacket.CharList.Out(channel, world).encode());
+    }
+
+    character_name(name: string){
+        this.send(new LoginPacket.CharName.Out(name).encode());
     }
     
     private ui: UILoginState;
@@ -59,8 +65,16 @@ class LoginSession extends Session implements NeedInit{
     private char_list_handler: PacketHandler = (packet: LoginPacket.CharList.In) => {
         this.ui.change_state(
             new UICharSelect(this.ui, packet.channel, packet.characters),
-            UILoginState.Direction.Down
+            (this.ui.state instanceof UICharCreate) ? UILoginState.Direction.Up : UILoginState.Direction.Down
         )
+    }
+
+    private char_name_handler: PacketHandler = (packet: LoginPacket.CharName.In) => {
+        if(packet.is_valid){
+            console.log("Valid") // TODO:
+        }else{
+            this.ui.set_notice(UILoginNotice.Type.error, UILoginNotice.MessageID.name_exists);
+        }
     }
 }
 
