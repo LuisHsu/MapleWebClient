@@ -85,7 +85,7 @@ export abstract class Button implements Drawable, TabHandler {
         callback: () => void,
         base_pos: Point = new Point
     ): void {
-        if(this.active && this.state != Button.State.DISABLED && this.state != Button.State.IDENTITY){
+        if(this.active && this.state != Button.State.DISABLED && this.state != Button.State.INVALID){
             let bounds = this.bounds(base_pos);
             if((mouse_pos.x <= bounds.right) && (mouse_pos.x >= bounds.left)
                 && (mouse_pos.y <= bounds.top) && (mouse_pos.y >= bounds.bottom)
@@ -103,7 +103,7 @@ export namespace Button {
         DISABLED,
         HOVERED,
         PRESSED,
-        IDENTITY,
+        INVALID,
     }
 }
 
@@ -114,6 +114,7 @@ export class MapleButton extends Button {
     position: Point;
     focused: boolean = false;
     transform?: Transform;
+    validate?(): boolean;
 
     constructor(textures: {
         pressed: Texture,
@@ -127,6 +128,7 @@ export class MapleButton extends Button {
             [Button.State.PRESSED]: textures.pressed,
             [Button.State.HOVERED]: textures.hovered,
             [Button.State.DISABLED]: textures.disabled,
+            [Button.State.INVALID]: textures.disabled,
             [Button.State.NORMAL]: textures.normal,
         }
         this.position = position;
@@ -137,6 +139,11 @@ export class MapleButton extends Button {
 
     draw(): void {
         if(this.active){
+            if(this.validate && !this.validate()){
+                this.state = Button.State.INVALID;
+            }else if(this.state == Button.State.INVALID){
+                this.state = Button.State.NORMAL;
+            }
             canvas.open_scope(() => {
                 let transform;
                 if(this.transform){
@@ -175,7 +182,7 @@ export class MapleButton extends Button {
     blur(): void {
         this.focused = false;
     }
-
+    
     focus_enter?(): void;
 
     private textures: {[state in Button.State]?: Texture};
@@ -191,6 +198,7 @@ export class AreaButton extends Button{
     focus_enter?(): void;
 
     draw(): void {
+        // For development
         canvas.draw_rect(new Color(255, 255, 255, 0.5), this.position, this.size);
     };
 

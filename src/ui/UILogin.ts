@@ -22,7 +22,6 @@ export class UILogin extends UIElement implements LoginState {
         super(login_sprites());
         this.parent = parent;
         Music.play("Login", 1, true);
-        this.login_button.state = Button.State.DISABLED;
         this.login_button.focus = () => {
             if(this.account_input.value() && this.password_input.value()){
                 this.login_button.focused = true;
@@ -31,22 +30,8 @@ export class UILogin extends UIElement implements LoginState {
             }
         }
         let saved_account = window.localStorage.getItem("account");
-        this.account_input = new TextInput(new Point(669, 410), new Size(185, 24), {
-            color: "white",
-            value: saved_account,
-            focus_enter: () => {
-                TabFocus.update(KeyType.Tab);
-            }
-        });
-        this.password_input = new TextInput(new Point(669, 373), new Size(185, 24), {
-            color: "white",
-            type: "password",
-            focus_enter: () => {
-                if(this.account_input.value() && this.password_input.value()){
-                    this.login();
-                }
-            },
-        });
+        this.account_input.set_value(saved_account);
+        this.login_button.validate = this.validate.bind(this);
         this.save_account = (saved_account !== null);
         this.tab_focus = new TabFocus([
             this.account_input,
@@ -57,6 +42,11 @@ export class UILogin extends UIElement implements LoginState {
         ]);
         TabFocus.update(KeyType.Tab);
         Window.set_background(new Color(0, 0, 0));
+    }
+
+    validate(): boolean {
+        return (this.account_input.value() != "")
+            && (this.password_input.value() != "");
     }
 
     login(): void {
@@ -106,7 +96,6 @@ export class UILogin extends UIElement implements LoginState {
     };
 
     draw_foreground(){
-        this.login_button.state = (this.account_input.value() && this.password_input.value()) ? Button.State.NORMAL : Button.State.DISABLED;
         this.account_save_button.draw();
         canvas.draw_texture(this.account_save_status[this.save_account ? 1 : 0]);
         this.login_button.draw();
@@ -145,8 +134,21 @@ export class UILogin extends UIElement implements LoginState {
 
     private save_account: boolean = false;
 
-    private account_input: TextInput;
-    private password_input: TextInput;
+    private account_input: TextInput = new TextInput(new Point(669, 410), new Size(185, 24), {
+        color: "white",
+        focus_enter: () => {
+            TabFocus.update(KeyType.Tab);
+        }
+    });
+    private password_input: TextInput = new TextInput(new Point(669, 373), new Size(185, 24), {
+        color: "white",
+        type: "password",
+        focus_enter: () => {
+            if(this.account_input.value() && this.password_input.value()){
+                this.login();
+            }
+        },
+    });
 
     private tab_focus: TabFocus;
 
