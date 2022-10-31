@@ -14,6 +14,7 @@ import { Texture } from "../graphics/Texture";
 import Window from "../io/Window";
 import LoginSession from "../net/LoginSession";
 import { UILoginNotice } from "./UILoginNotice";
+import { UICharCreate } from "./UICharCreate";
 
 export interface LoginState extends UIState {
     readonly parent: UILoginState;
@@ -32,37 +33,42 @@ export class UILoginState extends UIElement implements UIState {
             })),
         ])
         this.login_state = new UILogin(this);
+        // this.login_state = new UICharCreate(this, 3);
         LoginSession.init(this);
+        // FIXME:
+        LoginSession.open(() => {
+            LoginSession.character_list(2)
+        });
     }
 
     draw(): void{
         canvas.open_scope(() => {
             if(this.context !== null){
                 const elapsed = Date.now() - this.context.timestamp;
-                if(elapsed >= 900){
+                if(elapsed >= 1000){
                     this.login_state = this.context.next;
+                    this.offset.y = this.context.destination;
                     this.context = null;
-                    this.login_state.draw_state();
+                    this.login_state.draw_state(this.offset);
                 }else{
                     let next_offset = new Point;
                     switch(this.context.direction){
                         case UILoginState.Direction.Up:
-                            this.context.offset.y = Window.size.height * (elapsed / 900);
-                            next_offset.y = this.context.offset.y - Window.size.height;
-                            this.login_state.draw_state(this.context.offset);
+                            this.offset.y = (Window.size.height - this.context.destination) * (elapsed / 1000);
+                            next_offset.y = this.offset.y - Window.size.height;
+                            this.login_state.draw_state(this.offset);
                             this.context.next.draw_state(next_offset);
                         break;
                         case UILoginState.Direction.Down:
-                            this.context.offset.y = -Window.size.height * (elapsed / 900);
-                            next_offset.y = Window.size.height + this.context.offset.y;
+                            this.offset.y = -(Window.size.height - this.context.destination) * (elapsed / 1000);
+                            next_offset.y = Window.size.height + this.offset.y;
                             this.context.next.draw_state(next_offset);
-                            this.login_state.draw_state(this.context.offset);
+                            this.login_state.draw_state(this.offset);
                         break;
                     }
-                    
                 }
             }else{
-                this.login_state.draw_state();
+                this.login_state.draw_state(this.offset);
             }
             super.draw();
             if(this.context === null && this.login_state.draw_foreground){
@@ -74,9 +80,10 @@ export class UILoginState extends UIElement implements UIState {
         })
     };
 
-    change_state(next: LoginState, direction: UILoginState.Direction){
+    change_state(next: LoginState, direction: UILoginState.Direction, destination?: number){
         this.login_state.clean();
-        this.context = new UILoginState.TransformContext(next, direction);
+        this.offset = new Point;
+        this.context = new UILoginState.TransformContext(next, direction, destination);
     }
 
     set_notice(
@@ -102,6 +109,7 @@ export class UILoginState extends UIElement implements UIState {
     }
 
     mouse_move(position: Point): void {
+        position = position.concat(this.offset.neg());
         if((this.context === null) && this.login_state.mouse_move){
             this.login_state.mouse_move(position);
         }
@@ -111,6 +119,7 @@ export class UILoginState extends UIElement implements UIState {
     }
 
     mouse_down(position: Point): void {
+        position = position.concat(this.offset.neg());
         if((this.context === null) && this.login_state.mouse_down){
             this.login_state.mouse_down(position);
         }
@@ -120,6 +129,7 @@ export class UILoginState extends UIElement implements UIState {
     }
 
     mouse_up(position: Point): void {
+        position = position.concat(this.offset.neg());
         if((this.context === null) && this.login_state.mouse_up){
             this.login_state.mouse_up(position);
         }
@@ -135,18 +145,21 @@ export class UILoginState extends UIElement implements UIState {
     }
 
     double_click(position: Point): void {
+        position = position.concat(this.offset.neg());
         if((this.context === null) && this.login_state.double_click){
             this.login_state.double_click(position);
         }
     }
 
     right_click(position: Point): void {
+        position = position.concat(this.offset.neg());
         if((this.context === null) && this.login_state.right_click){
             this.login_state.right_click(position);
         }
     }
 
     left_click(position: Point): void {
+        position = position.concat(this.offset.neg());
         if((this.context === null) && this.login_state.left_click){
             this.login_state.left_click(position);
         }
@@ -177,6 +190,7 @@ export class UILoginState extends UIElement implements UIState {
     }
 
     public notice: UILoginNotice = null;
+    private offset: Point = new Point;
     private login_state: LoginState;
     private context: UILoginState.TransformContext = null;
 }
@@ -188,14 +202,14 @@ export namespace UILoginState {
     }
     export class TransformContext {
         next: LoginState;
-        offset: Point;
         direction: Direction;
         timestamp: number;
-        constructor(next: LoginState, direction: Direction){
+        destination: number;
+        constructor(next: LoginState, direction: Direction, destination: number = 0){
             this.next = next;
             this.direction = direction;
-            this.offset = new Point;
             this.timestamp = Date.now();
+            this.destination = destination;
         }
     }
 }

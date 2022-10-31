@@ -13,11 +13,16 @@ import { Sprite } from "../graphics/Sprite";
 import { Texture } from "../graphics/Texture";
 import { TabFocus, KeyType } from "../io/Keyboard";
 import { Color, Point, Size, TextAlign } from "../Types";
+import { UICharCreate } from "./UICharCreate";
 import { UIElement } from "./UIElement";
 import { LoginState, UILoginState } from "./UILoginState";
 import { UIWorldSelect } from "./UIWorldSelect";
 
 export class UICharSelect extends UIElement implements LoginState {
+
+    // TODO: page
+    // TODO: cloud
+
     constructor(
         parent: UILoginState,
         selected_channel: number,
@@ -47,8 +52,12 @@ export class UICharSelect extends UIElement implements LoginState {
     }
 
     new_character(){
-        // TODO:
-        console.log("New character");
+        this.clean();
+        this.parent.change_state(
+            new UICharCreate(this.parent, this.selected_channel),
+            UILoginState.Direction.Down,
+            125
+        );
     }
 
     select_character(index: number = null){
@@ -73,7 +82,7 @@ export class UICharSelect extends UIElement implements LoginState {
     }
 
     return_world_select(){
-        this.tab_focus.remove();
+        this.clean();
         this.parent.change_state(
             new UIWorldSelect(this.parent),
             UILoginState.Direction.Up
@@ -105,7 +114,7 @@ export class UICharSelect extends UIElement implements LoginState {
             });
             canvas.open_scope(() => {
                 canvas.apply_transform(new Transform({
-                    translate: new Point(150 * (this.selected_character % 3) + 356, 520),
+                    translate: new Point(150 * (this.selected_character % 3) + 356, 540),
                     scale: new Size(1.2, 1.2),
                 }));
                 this.char_stats.draw();
@@ -128,7 +137,7 @@ export class UICharSelect extends UIElement implements LoginState {
                 // CharLook
                 canvas.open_scope(() => {
                     canvas.apply_transform(new Transform({
-                        translate: new Point(x_offset + 359, 274 - body_pos.y),
+                        translate: new Point(x_offset + 359, 294 - body_pos.y),
                         flip: [true, false],
                     }));
                     this.cheracters[index].look.draw();
@@ -136,7 +145,7 @@ export class UICharSelect extends UIElement implements LoginState {
                 // NameTag
                 canvas.open_scope(() => {
                     canvas.apply_transform(new Transform({
-                        translate: new Point(x_offset + 355, 260),
+                        translate: new Point(x_offset + 355, 280),
                     }));
                     this.cheracters[index].tag.draw();
                 });
@@ -215,14 +224,14 @@ export class UICharSelect extends UIElement implements LoginState {
     private selected_channel: number;
     private selected_character: number = null;
     private step_texture: Texture = new Texture("UI/CharSelect/Common.step.2.png", {origin: new Point(0, 700), size: new Size(165, 63)});
-    private selected_world_texture: Texture = new Texture("UI/CharSelect/Common.selectWorld.png", {origin: new Point(0, 630), size: new Size(165, 63)});
+    private selected_world_texture: Texture = new Texture("UI/Common.selectWorld.png", {origin: new Point(0, 630), size: new Size(165, 63)});
 
     private return_button: MapleButton = new MapleButton({
-        pressed: new Texture("UI/CharSelect/Common.BtStart.pressed.png", {size: new Size(136, 57)}),
-        normal: new Texture("UI/CharSelect/Common.BtStart.normal.png", {size: new Size(136, 57)}),
-        hovered: new Texture("UI/CharSelect/Common.BtStart.mouseOver.png", {size: new Size(136, 57)}),
-        disabled: new Texture("UI/CharSelect/Common.BtStart.disabled.png", {size: new Size(136, 57)}),
-        focused: new Texture("UI/CharSelect/Common.BtStart.mouseOver.png", {size: new Size(136, 57)}),
+        pressed: new Texture("UI/Common.BtStart.pressed.png", {size: new Size(136, 57)}),
+        normal: new Texture("UI/Common.BtStart.normal.png", {size: new Size(136, 57)}),
+        hovered: new Texture("UI/Common.BtStart.mouseOver.png", {size: new Size(136, 57)}),
+        disabled: new Texture("UI/Common.BtStart.disabled.png", {size: new Size(136, 57)}),
+        focused: new Texture("UI/Common.BtStart.mouseOver.png", {size: new Size(136, 57)}),
     }, new Point(73, 125), this.return_world_select.bind(this));
 
     private delete_char_button: MapleButton = new MapleButton({
@@ -231,7 +240,7 @@ export class UICharSelect extends UIElement implements LoginState {
         hovered: new Texture("UI/CharSelect/CharSelect.BtDelete.mouseOver.0.png", {size: new Size(126, 53)}),
         disabled: new Texture("UI/CharSelect/CharSelect.BtDelete.disabled.0.png", {size: new Size(126, 53)}),
         focused: new Texture("UI/CharSelect/CharSelect.BtDelete.focused.0.png", {size: new Size(160, 54), origin:new Point(-63, 28)}),
-    }, new Point(818, 410), this.delete_character.bind(this));
+    }, new Point(818, 430), this.delete_character.bind(this));
 
     private new_char_button: MapleButton = new MapleButton({
         pressed: new Texture("UI/CharSelect/CharSelect.BtNew.pressed.0.png", {size: new Size(126, 44)}),
@@ -239,7 +248,7 @@ export class UICharSelect extends UIElement implements LoginState {
         hovered: new Texture("UI/CharSelect/CharSelect.BtNew.mouseOver.0.png", {size: new Size(126, 44)}),
         disabled: new Texture("UI/CharSelect/CharSelect.BtNew.disabled.0.png", {size: new Size(126, 44)}),
         focused: new Texture("UI/CharSelect/CharSelect.BtNew.focused.0.png", {size: new Size(183, 43), origin: new Point(-65, 22)}),
-    }, new Point(820, 481), this.new_character.bind(this));
+    }, new Point(820, 501), this.new_character.bind(this));
 
     private select_char_button: MapleButton = new MapleButton({
         pressed: new Texture("UI/CharSelect/CharSelect.BtSelect.pressed.0.png", {size: new Size(126, 37)}),
@@ -247,11 +256,11 @@ export class UICharSelect extends UIElement implements LoginState {
         hovered: new Texture("UI/CharSelect/CharSelect.BtSelect.mouseOver.0.png", {size: new Size(126, 37)}),
         disabled: new Texture("UI/CharSelect/CharSelect.BtSelect.disabled.0.png", {size: new Size(126, 37)}),
         focused: new Texture("UI/CharSelect/CharSelect.BtSelect.focused.0.png", {size: new Size(166, 44), origin:new Point(-65, 23)}),
-    }, new Point(819, 529), this.select_character.bind(this));
+    }, new Point(819, 549), this.select_character.bind(this));
 
     private empty_character: UIElement = new UIElement([
-        new Sprite(new Texture("UI/CharSelect/CharSelect.character.0.7.png", {origin: new Point(318, 280), size: new Size(74, 10)})),
-        new Sprite(new Texture("UI/CharSelect/CharSelect.character.1.0.png", {origin: new Point(330, 345)}))
+        new Sprite(new Texture("UI/CharSelect/CharSelect.character.0.7.png", {origin: new Point(318, 300), size: new Size(74, 10)})),
+        new Sprite(new Texture("UI/CharSelect/CharSelect.character.1.0.png", {origin: new Point(330, 365)}))
     ])
 
     private select_char_effect: Animation = new Animation([
@@ -263,9 +272,9 @@ export class UICharSelect extends UIElement implements LoginState {
     ]);
 
     private character_buttons: AreaButton[] = [
-        new AreaButton(new Point(330, 345), new Size(50, 75)),
-        new AreaButton(new Point(480, 345), new Size(50, 75)),
-        new AreaButton(new Point(630, 345), new Size(50, 75)),
+        new AreaButton(new Point(330, 365), new Size(50, 75)),
+        new AreaButton(new Point(480, 365), new Size(50, 75)),
+        new AreaButton(new Point(630, 365), new Size(50, 75)),
     ]
 
     private char_stats = new CharStats();
@@ -278,14 +287,14 @@ const char_select_sprites = (): Sprite[] => {
         new Sprite(new Texture("Map/Back/back.1.png", {origin: new Point(0, 768), size: new Size(1024, 768)})),
         new Sprite(new Animation([
             new Frame([new Texture("Map/Back/back.3.png", {origin: new Point(0, 300), size: new Size(224, 102)})],
-                10, new Transform({translate: new Point(1136, 300)}), new Transform({translate: new Point(0, 300)})
+                10000, new Transform({translate: new Point(1024, 300)}), new Transform({translate: new Point(0, 300)})
             ),
         ], true, true)),
-        new Sprite(new Texture("Map/Back/back.13.png", {origin: new Point(11, 149), size: new Size(535, 464)})),
-        new Sprite(new Texture("Map/Back/back.14.png", {origin: new Point(32, 352), size: new Size(921, 203)})),
-        new Sprite(new Texture("Map/Back/back.15.png", {origin: new Point(30, 840), size: new Size(501, 488)})),
-        new Sprite(new Texture("Map/Back/WorldSelect.signboard.1.0.png", {origin: new Point(310, 246), size: new Size(445, 201)})),
-        new Sprite(new Texture("UI/CharSelect/CharSelect.signboard.png", {origin: new Point(735, 570), size: new Size(166, 298)})),
+        new Sprite(new Texture("Map/Back/back.13.png", {origin: new Point(11, 169), size: new Size(535, 464)})),
+        new Sprite(new Texture("Map/Back/back.14.png", {origin: new Point(32, 372), size: new Size(921, 203)})),
+        new Sprite(new Texture("Map/Back/back.15.png", {origin: new Point(30, 860), size: new Size(501, 488)})),
+        new Sprite(new Texture("Map/Back/WorldSelect.signboard.1.0.png", {origin: new Point(310, 266), size: new Size(445, 201)})),
+        new Sprite(new Texture("UI/CharSelect/CharSelect.signboard.png", {origin: new Point(735, 590), size: new Size(166, 298)})),
     ]
     return results;
 };
