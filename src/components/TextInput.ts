@@ -68,6 +68,10 @@ export class TextInput implements TabHandler, Drawable {
         this.element.disabled = !active;
     }
 
+    set_value(value: string): void{
+        this.element.value = value;
+    }
+
     value(): string{
         return this.element.value;
     }

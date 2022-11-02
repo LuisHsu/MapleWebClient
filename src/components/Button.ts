@@ -72,7 +72,7 @@ export abstract class Button implements Drawable, TabHandler {
             if((mouse_pos.x <= bounds.right) && (mouse_pos.x >= bounds.left)
                 && (mouse_pos.y <= bounds.top) && (mouse_pos.y >= bounds.bottom)
             ){
-                this.state = Button.State.HOVERED;
+                this.state = Button.State.NORMAL;
                 if(callback){
                     callback();
                 }
@@ -128,7 +128,6 @@ export class MapleButton extends Button {
             [Button.State.PRESSED]: textures.pressed,
             [Button.State.HOVERED]: textures.hovered,
             [Button.State.DISABLED]: textures.disabled,
-            [Button.State.INVALID]: textures.disabled,
             [Button.State.NORMAL]: textures.normal,
         }
         this.position = position;
@@ -152,7 +151,9 @@ export class MapleButton extends Button {
                     transform = new Transform({translate: this.position});
                 }
                 canvas.apply_transform(transform);
-                canvas.draw_texture(this.textures[this.state]);
+                canvas.draw_texture(this.textures[
+                    (this.state == Button.State.INVALID) ? Button.State.DISABLED : this.state
+                ]);
                 if(this.focused && this.focus_texture){
                     canvas.draw_texture(this.focus_texture);
                 }
@@ -190,6 +191,7 @@ export class MapleButton extends Button {
 }
 
 export class AreaButton extends Button{
+
     state: Button.State = Button.State.NORMAL;
     active: boolean = true;
     position: Point;

@@ -77,6 +77,14 @@ export class Color {
     }
 }
 
+export namespace Color{
+    export const Black = new Color(0, 0, 0);
+    export const White = new Color(255, 255, 255);
+    export const Gallery = new Color(234, 234, 234);
+    export const DustyGray = new Color(153, 153, 153);
+    export const GrayOlive = new Color(171, 171, 153);
+}
+
 export interface NeedInit {
     init(...args: any[]): void;
 }
