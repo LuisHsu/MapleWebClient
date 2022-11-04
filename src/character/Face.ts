@@ -3,7 +3,7 @@
  * @module Face
  */
 
-import { Fetch } from "../Fetch";
+import { Fetch } from "../Util";
 import { Expression } from "./Look";
 import Setting from "../Setting";
 import { Texture } from "../graphics/Texture";

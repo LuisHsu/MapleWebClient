@@ -3,7 +3,7 @@
  * @module Hair
  */
 
-import { Fetch } from "../Fetch";
+import { Fetch } from "../Util";
 import { Stance } from "./Look";
 import Setting from "../Setting";
 import { Texture } from "../graphics/Texture";
