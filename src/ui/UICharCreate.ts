@@ -14,9 +14,11 @@ import { MapleButton } from "../components/Button";
 import { Sprite } from "../graphics/Sprite";
 import { TextInput } from "../components/TextInput";
 import LoginSession from "../net/LoginSession";
-import { CharEntry } from "../character/CharEntry";
+import { CharEntry, Gender } from "../character/CharEntry";
 import { CharLook } from "../character/CharLook";
 import { NameTag } from "./UICharSelect";
+import { ComboBox } from "../components/ComboBox";
+import { LocaleString } from "../Util";
 
 export class UICharCreate extends UIElement implements LoginState {
     
@@ -34,7 +36,6 @@ export class UICharCreate extends UIElement implements LoginState {
         super(char_create_sprites());
         this.parent = parent;
         this.selected_channel = selected_channel;
-        this.menu = new CreateMenu(this);
         this.tab_focus = new TabFocus([ 
             this.return_button,
         ]);
@@ -45,6 +46,8 @@ export class UICharCreate extends UIElement implements LoginState {
         // TODO:
         console.log(`Create character`);
     }
+
+    change_phase = (phase: UICharCreate.Phase) => this.menu.change_phase(phase);
 
     clean(): void {
         this.tab_focus.remove();
@@ -98,8 +101,8 @@ export class UICharCreate extends UIElement implements LoginState {
     draw_foreground(): void {
         canvas.draw_texture(this.step_texture);
         canvas.draw_texture(this.selected_world_texture);
-        canvas.draw_text(this.selected_world, 15, new Point(105, 600), new Color(255, 255, 255), TextAlign.Center);
-        canvas.draw_text(`Ch. ${this.selected_channel + 1}`, 15, new Point(105, 580), new Color(255, 255, 255), TextAlign.Center);
+        canvas.draw_text(this.selected_world, 15, new Point(105, 600), Color.White, TextAlign.Center);
+        canvas.draw_text(`Ch. ${this.selected_channel + 1}`, 15, new Point(105, 580), Color.White, TextAlign.Center);
         this.return_button.draw();
     }
 
@@ -132,7 +135,7 @@ export class UICharCreate extends UIElement implements LoginState {
     private selected_channel: number;
     private step_texture: Texture = new Texture("UI/CharCreate/Common.step.3.png", {origin: new Point(0, 700), size: new Size(165, 63)});
     private selected_world_texture: Texture = new Texture("UI/Common.selectWorld.png", {origin: new Point(0, 630), size: new Size(165, 63)});
-    private menu: CreateMenu;
+    private menu: CreateMenu = new CreateMenu(this);
     private offset: Point = new Point;
 
     private return_button: MapleButton = new MapleButton({
@@ -154,65 +157,175 @@ const char_create_sprites = (): Sprite[] => {
     ]
 };
 
+export namespace UICharCreate{
+    export enum Phase{
+        Name, Look, Ability
+    }
+}
+
 class CreateMenu extends UIElement{
 
     constructor(parent: UICharCreate){
-        super(name_phase_sprites(CreateMenu.Phase.Name));
+        super(menu_sprites(UICharCreate.Phase.Name));
         this.parent = parent;
         this.tab_focus = new TabFocus([
             this.confirm_button,
             this.cancel_button,
         ]);
+        this.confirm_button.validate = this.validate.bind(this);
+        LocaleString.Eqp("Face").then(face_list => {
+            this.face_list = [
+                [100, 401, 402].map(id => ({id, name: face_list[id].name})),
+                [1700, 1201, 1002].map(id => ({id, name: face_list[id].name})),
+            ]
+        })
     }
 
-    confirm_click(){
+    validate(): boolean{
+        return this.name_input.value() != "";
+    }
+
+    change_phase(phase: UICharCreate.Phase): void{
+        switch(phase){
+            case UICharCreate.Phase.Name:
+                this.confirm_button.validate = this.validate.bind(this);
+                this.confirm_button.position = new Point(732, 268);
+                this.cancel_button.position = new Point(820, 268);
+                break;
+            case UICharCreate.Phase.Look:
+                this.confirm_button.validate = undefined;
+                this.confirm_button.position = new Point(732, 152);
+                this.cancel_button.position = new Point(820, 152);
+                break;
+            case UICharCreate.Phase.Ability:
+        }
+        this.sprites = menu_sprites(phase);
+        this.phase = phase;
+    }
+
+    change_face(step: number){
+        // TODO:
+        console.log(step);
+    }
+    change_hair(step: number){
+        // TODO:
+        console.log(step);
+    }
+    change_upper(step: number){
+        // TODO:
+        console.log(step);
+    }
+    change_lower(step: number){
+        // TODO:
+        console.log(step);
+    }
+    change_shoe(step: number){
+        // TODO:
+        console.log(step);
+    }
+    change_weapon(step: number){
+        // TODO:
+        console.log(step);
+    }
+
+    confirm_click(): void{
         switch(this.phase){
-            case CreateMenu.Phase.Name:
+            case UICharCreate.Phase.Name:
                 LoginSession.character_name(this.name_input.value());
                 break;
-            case CreateMenu.Phase.Look:
-            case CreateMenu.Phase.Ability:
+            case UICharCreate.Phase.Look:
+            case UICharCreate.Phase.Ability:
         }
     }
 
-    cancel_click(){
+    cancel_click(): void{
         switch(this.phase){
-            case CreateMenu.Phase.Name:
+            case UICharCreate.Phase.Name:
                 this.parent.return_character_select();
                 break;
-            case CreateMenu.Phase.Look:
-            case CreateMenu.Phase.Ability:
+            case UICharCreate.Phase.Look:
+                this.change_phase(UICharCreate.Phase.Name);
+                break;
+            case UICharCreate.Phase.Ability:
         }
     }
 
     draw(): void {
         super.draw()  
-        this.name_input.set_active(this.phase == CreateMenu.Phase.Name);  
+        this.name_input.set_active(this.phase == UICharCreate.Phase.Name);
         this.name_input.draw();
+        this.gender_combobox.set_active(this.phase == UICharCreate.Phase.Look);
         this.confirm_button.draw();
         this.cancel_button.draw();
+        if(this.phase == UICharCreate.Phase.Look){
+            this.face_buttons.forEach(button => button.draw());
+            this.hair_buttons.forEach(button => button.draw());
+            this.upper_buttons.forEach(button => button.draw());
+            this.lower_buttons.forEach(button => button.draw());
+            this.shoe_buttons.forEach(button => button.draw());
+            this.weapon_buttons.forEach(button => button.draw());
+            if(this.face_list && this.parent.cheracter.entry.gender !== undefined){
+                canvas.draw_text(this.face_list[this.parent.cheracter.entry.gender][0].name, 14, new Point(790, 363), Color.Black, TextAlign.Center);
+            }
+        }
+        this.gender_combobox.draw();
     }
 
     mouse_move(position: Point): void {
         this.confirm_button.update_hover(position);
         this.cancel_button.update_hover(position);
+        this.gender_combobox.update_hover(position);
+        if(this.phase == UICharCreate.Phase.Look){
+            this.face_buttons.forEach(button => button.update_hover(position));
+            this.hair_buttons.forEach(button => button.update_hover(position));
+            this.upper_buttons.forEach(button => button.update_hover(position));
+            this.lower_buttons.forEach(button => button.update_hover(position));
+            this.shoe_buttons.forEach(button => button.update_hover(position));
+            this.weapon_buttons.forEach(button => button.update_hover(position));
+        }
     }
 
     mouse_down(position: Point): void {
         this.confirm_button.update_pressed(position);
         this.cancel_button.update_pressed(position);
+        if(this.phase == UICharCreate.Phase.Look){
+            this.face_buttons.forEach(button => button.update_pressed(position));
+            this.hair_buttons.forEach(button => button.update_pressed(position));
+            this.upper_buttons.forEach(button => button.update_pressed(position));
+            this.lower_buttons.forEach(button => button.update_pressed(position));
+            this.shoe_buttons.forEach(button => button.update_pressed(position));
+            this.weapon_buttons.forEach(button => button.update_pressed(position));
+        }
     }
 
     mouse_up(position: Point): void {
         this.confirm_button.update_released(position);
         this.cancel_button.update_released(position);
+        if(this.phase == UICharCreate.Phase.Look){
+            this.face_buttons.forEach(button => button.update_released(position));
+            this.hair_buttons.forEach(button => button.update_released(position));
+            this.upper_buttons.forEach(button => button.update_released(position));
+            this.lower_buttons.forEach(button => button.update_released(position));
+            this.shoe_buttons.forEach(button => button.update_released(position));
+            this.weapon_buttons.forEach(button => button.update_released(position));
+        }
     }
 
     left_click(position: Point): void {
         this.confirm_button.handle_click(position, this.confirm_click.bind(this));
         this.cancel_button.handle_click(position, this.cancel_click.bind(this));
+        if(this.phase == UICharCreate.Phase.Look){
+            this.gender_combobox.handle_click(position, value => {
+                this.parent.cheracter.entry.gender = value;
+            });
+            this.face_buttons.forEach((button, index) => button.handle_click(position, this.change_face.bind(this, index * 2 - 1)));
+            this.hair_buttons.forEach((button, index) => button.handle_click(position, this.change_hair.bind(this, index * 2 - 1)));
+            this.upper_buttons.forEach((button, index) => button.handle_click(position, this.change_upper.bind(this, index * 2 - 1)));
+            this.lower_buttons.forEach((button, index) => button.handle_click(position, this.change_lower.bind(this, index * 2 - 1)));
+            this.shoe_buttons.forEach((button, index) => button.handle_click(position, this.change_shoe.bind(this, index * 2 - 1)));
+            this.weapon_buttons.forEach((button, index) => button.handle_click(position, this.change_weapon.bind(this, index * 2 - 1)));
+        }
     }
-
 
     key_up(key: KeyType): void {
         TabFocus.update(key);
@@ -225,9 +338,15 @@ class CreateMenu extends UIElement{
 
     public name_input: TextInput = new TextInput(new Point(771, 466), new Size(170, 25), {color: "white"});
     public parent: UICharCreate;
-    public phase: CreateMenu.Phase = CreateMenu.Phase.Name;
+    public phase: UICharCreate.Phase = UICharCreate.Phase.Name;
     
     private tab_focus: TabFocus;
+
+    private face_list: {id: number, name:string}[][];
+
+    private gender_combobox: ComboBox = new ComboBox([["女", Gender.female], ["男", Gender.male],],
+        ComboBox.Type.Default, new Point(812, 415), new Size(60, 20), 14, "角色性別"
+    );
 
     private confirm_button: MapleButton = new MapleButton({
         pressed: new Texture("UI/CharCreate/NewChar.BtYes.pressed.0.png", {size: new Size(97, 49)}),
@@ -235,7 +354,7 @@ class CreateMenu extends UIElement{
         hovered: new Texture("UI/CharCreate/NewChar.BtYes.mouseOver.0.png", {size: new Size(97, 49)}),
         disabled: new Texture("UI/CharCreate/NewChar.BtYes.disabled.0.png", {size: new Size(97, 49)}),
         focused: new Texture("UI/CharCreate/NewChar.BtYes.mouseOver.0.png", {size: new Size(97, 49)}),
-    }, new Point(732, 267), this.confirm_click.bind(this));
+    }, new Point(732, 268), this.confirm_click.bind(this));
 
     private cancel_button: MapleButton = new MapleButton({
         pressed: new Texture("UI/CharCreate/NewChar.BtNo.pressed.0.png", {size: new Size(97, 49)}),
@@ -244,27 +363,68 @@ class CreateMenu extends UIElement{
         disabled: new Texture("UI/CharCreate/NewChar.BtNo.disabled.0.png", {size: new Size(97, 49)}),
         focused: new Texture("UI/CharCreate/NewChar.BtNo.mouseOver.0.png", {size: new Size(97, 49)}),
     }, new Point(820, 268), this.cancel_click.bind(this));
+
+    private static left_button_textures = {
+        pressed: new Texture("UI/CharCreate/NewChar.BtLeft.pressed.0.png", {size: new Size(17, 18)}),
+        normal: new Texture("UI/CharCreate/NewChar.BtLeft.normal.0.png", {size: new Size(17, 18)}),
+        hovered: new Texture("UI/CharCreate/NewChar.BtLeft.mouseOver.0.png", {size: new Size(17, 18)}),
+        disabled: new Texture("UI/CharCreate/NewChar.BtLeft.disabled.0.png", {size: new Size(17, 18)}),
+        focused: new Texture("UI/CharCreate/NewChar.BtLeft.mouseOver.0.png", {size: new Size(17, 18)}),
+    };
+
+    private static right_button_textures = {
+        pressed: new Texture("UI/CharCreate/NewChar.BtRight.pressed.0.png", {size: new Size(17, 18)}),
+        normal: new Texture("UI/CharCreate/NewChar.BtRight.normal.0.png", {size: new Size(17, 18)}),
+        hovered: new Texture("UI/CharCreate/NewChar.BtRight.mouseOver.0.png", {size: new Size(17, 18)}),
+        disabled: new Texture("UI/CharCreate/NewChar.BtRight.disabled.0.png", {size: new Size(17, 18)}),
+        focused: new Texture("UI/CharCreate/NewChar.BtRight.mouseOver.0.png", {size: new Size(17, 18)}),
+    };
+
+    private face_buttons: MapleButton[] = [
+        new MapleButton(CreateMenu.left_button_textures, new Point(725, 370), this.change_face.bind(this, -1)),
+        new MapleButton(CreateMenu.right_button_textures, new Point(855, 370), this.change_face.bind(this, 1)),
+    ];
+    private hair_buttons: MapleButton[] = [
+        new MapleButton(CreateMenu.left_button_textures, new Point(725, 348), this.change_hair.bind(this, -1)),
+        new MapleButton(CreateMenu.right_button_textures, new Point(855, 348), this.change_hair.bind(this, 1)),
+    ];
+    private upper_buttons: MapleButton[] = [
+        new MapleButton(CreateMenu.left_button_textures, new Point(725, 326), this.change_upper.bind(this, -1)),
+        new MapleButton(CreateMenu.right_button_textures, new Point(855, 326), this.change_upper.bind(this, 1)),
+    ];
+    private lower_buttons: MapleButton[] = [
+        new MapleButton(CreateMenu.left_button_textures, new Point(725, 304), this.change_lower.bind(this, -1)),
+        new MapleButton(CreateMenu.right_button_textures, new Point(855, 304), this.change_lower.bind(this, 1)),
+    ];
+    private shoe_buttons: MapleButton[] = [
+        new MapleButton(CreateMenu.left_button_textures, new Point(725, 282), this.change_shoe.bind(this, -1)),
+        new MapleButton(CreateMenu.right_button_textures, new Point(855, 282), this.change_shoe.bind(this, 1)),
+    ];
+    private weapon_buttons: MapleButton[] = [
+        new MapleButton(CreateMenu.left_button_textures, new Point(725, 260), this.change_weapon.bind(this, -1)),
+        new MapleButton(CreateMenu.right_button_textures, new Point(855, 260), this.change_weapon.bind(this, 1)),
+    ];
 }
 
-const name_phase_sprites = (phase: CreateMenu.Phase): Sprite[] => {
+const menu_sprites = (phase: UICharCreate.Phase): Sprite[] => {
     switch(phase){
-        case CreateMenu.Phase.Name:
+        case UICharCreate.Phase.Name:
             return [
                 new Sprite(new Texture("UI/CharCreate/NewChar.charName.png", {origin: new Point(650, 505), size: new Size(241, 269)})),
             ]
-        case CreateMenu.Phase.Look:
+        case UICharCreate.Phase.Look:
             return [
-                new Sprite(new Texture("UI/CharCreate/NewChar.charName.png", {origin: new Point(650, 505), size: new Size(241, 269)})),
+                new Sprite(new Texture("UI/CharCreate/NewChar.charSet.png", {origin: new Point(650, 505), size: new Size(241, 384)})),
+                new Sprite(new Texture("UI/CharCreate/NewChar.avatarSel.0.normal.png", {origin: new Point(675, 380), size: new Size(192, 20)})),
+                new Sprite(new Texture("UI/CharCreate/NewChar.avatarSel.1.normal.png", {origin: new Point(675, 358), size: new Size(192, 20)})),
+                new Sprite(new Texture("UI/CharCreate/NewChar.avatarSel.2.normal.png", {origin: new Point(675, 336), size: new Size(192, 20)})),
+                new Sprite(new Texture("UI/CharCreate/NewChar.avatarSel.3.normal.png", {origin: new Point(675, 314), size: new Size(192, 20)})),
+                new Sprite(new Texture("UI/CharCreate/NewChar.avatarSel.4.normal.png", {origin: new Point(675, 292), size: new Size(192, 20)})),
+                new Sprite(new Texture("UI/CharCreate/NewChar.avatarSel.5.normal.png", {origin: new Point(675, 270), size: new Size(192, 20)})),
             ]
-        case CreateMenu.Phase.Ability:
+        case UICharCreate.Phase.Ability:
             return [
-                new Sprite(new Texture("UI/CharCreate/NewChar.charName.png", {origin: new Point(650, 505), size: new Size(241, 269)})),
+                new Sprite(new Texture("UI/CharCreate/NewChar.charSet.png", {origin: new Point(650, 505), size: new Size(241, 384)})),
             ]
     }
 };
-
-namespace CreateMenu{
-    export enum Phase{
-        Name, Look, Ability
-    }
-}
