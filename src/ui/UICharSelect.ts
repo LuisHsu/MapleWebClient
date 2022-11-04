@@ -156,8 +156,8 @@ export class UICharSelect extends UIElement implements LoginState {
     draw_foreground(): void {
         canvas.draw_texture(this.step_texture);
         canvas.draw_texture(this.selected_world_texture);
-        canvas.draw_text(this.selected_world, 15, new Point(105, 600), new Color(255, 255, 255), TextAlign.Center);
-        canvas.draw_text(`Ch. ${this.selected_channel + 1}`, 15, new Point(105, 580), new Color(255, 255, 255), TextAlign.Center);
+        canvas.draw_text(this.selected_world, 15, new Point(105, 600), Color.White, TextAlign.Center);
+        canvas.draw_text(`Ch. ${this.selected_channel + 1}`, 15, new Point(105, 580), Color.White, TextAlign.Center);
         this.return_button.draw();
     }
 
@@ -322,7 +322,7 @@ export class NameTag implements Drawable{
         }));
         canvas.draw_text(this.name, 15,
             new Point(0, -9),
-            new Color(255, 255, 255),
+            Color.White,
             TextAlign.Center
         );
     }

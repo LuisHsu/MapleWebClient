@@ -71,7 +71,8 @@ class LoginSession extends Session implements NeedInit{
 
     private char_name_handler: PacketHandler = (packet: LoginPacket.CharName.In) => {
         if(packet.is_valid){
-            console.log("Valid") // TODO:
+            const ui = this.ui.state as UICharCreate;
+            ui.change_phase(UICharCreate.Phase.Look);
         }else{
             this.ui.set_notice(UILoginNotice.Type.error, UILoginNotice.MessageID.name_exists);
         }

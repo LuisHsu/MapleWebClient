@@ -14,7 +14,7 @@ export class CharEntry {
     portal: number;
     rank: CharEntry.Rank;
     job_rank: CharEntry.Rank;
-    gender: Gender = Gender.female;
+    gender: Gender;
     skin_id: number = 0;
     face_id: number = 0;
     hair_id: number = 0;
