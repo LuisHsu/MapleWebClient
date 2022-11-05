@@ -128,7 +128,7 @@ export class CharLook implements Drawable{
         this.make_animations(stance);
     }
 
-    private make_animations(stance_id: Stance.Id){
+    make_animations(stance_id: Stance.Id){
         const body = this.body.stances[stance_id];
         const hair = this.hair.stances[stance_id];
         // Merge stances
@@ -234,7 +234,7 @@ export class CharLook implements Drawable{
         this.face_pos = Object.values(stances)[0].positions.face;
     }
 
-    private make_face(expression: Expression){
+    make_face(expression: Expression){
         this.animation.face = this.face.expressions[expression];
         // TODO: [equip] Face
     }

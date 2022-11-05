@@ -39,7 +39,6 @@ export class UICharCreate extends UIElement implements LoginState {
         this.tab_focus = new TabFocus([ 
             this.return_button,
         ]);
-        this.cheracter.look = new CharLook(this.cheracter.entry);
     }
 
     create_character(){
@@ -81,12 +80,14 @@ export class UICharCreate extends UIElement implements LoginState {
         super.draw();
         this.menu.draw();
         // CharLook
-        canvas.open_scope(() => {
-            canvas.apply_transform(new Transform({
-                translate: new Point(520, 242),
-            }));
-            this.cheracter.look.draw();
-        });
+        if(this.cheracter.look){
+            canvas.open_scope(() => {
+                canvas.apply_transform(new Transform({
+                    translate: new Point(520, 242),
+                }));
+                this.cheracter.look.draw();
+            });
+        }
         // NameTag
         if(this.cheracter.tag){
             canvas.open_scope(() => {
@@ -181,10 +182,6 @@ class CreateMenu extends UIElement{
         })
     }
 
-    validate(): boolean{
-        return this.name_input.value() != "";
-    }
-
     change_phase(phase: UICharCreate.Phase): void{
         switch(phase){
             case UICharCreate.Phase.Name:
@@ -203,32 +200,46 @@ class CreateMenu extends UIElement{
         this.phase = phase;
     }
 
-    change_face(step: number){
+    private validate(): boolean{
+        return this.name_input.value() != "";
+    }
+
+    private change_face(step: number){
+        if(step > 0){
+            this.face_list[this.parent.cheracter.entry.gender].unshift(this.face_list[this.parent.cheracter.entry.gender][this.face_list[this.parent.cheracter.entry.gender].length - 1]);
+            this.face_list[this.parent.cheracter.entry.gender].pop();
+        }else{
+            this.face_list[this.parent.cheracter.entry.gender].push(this.face_list[this.parent.cheracter.entry.gender].shift());
+        }
+        this.refresh_look();
+    }
+    private change_hair(step: number){
         // TODO:
         console.log(step);
     }
-    change_hair(step: number){
+    private change_upper(step: number){
         // TODO:
         console.log(step);
     }
-    change_upper(step: number){
+    private change_lower(step: number){
         // TODO:
         console.log(step);
     }
-    change_lower(step: number){
+    private change_shoe(step: number){
         // TODO:
         console.log(step);
     }
-    change_shoe(step: number){
-        // TODO:
-        console.log(step);
-    }
-    change_weapon(step: number){
+    private change_weapon(step: number){
         // TODO:
         console.log(step);
     }
 
-    confirm_click(): void{
+    private refresh_look(): void{
+        this.parent.cheracter.entry.face_id = this.face_list[this.parent.cheracter.entry.gender][0].id;
+        this.parent.cheracter.look = new CharLook(this.parent.cheracter.entry);
+    }
+
+    private confirm_click(): void{
         switch(this.phase){
             case UICharCreate.Phase.Name:
                 LoginSession.character_name(this.name_input.value());
@@ -238,7 +249,7 @@ class CreateMenu extends UIElement{
         }
     }
 
-    cancel_click(): void{
+    private cancel_click(): void{
         switch(this.phase){
             case UICharCreate.Phase.Name:
                 this.parent.return_character_select();
@@ -317,6 +328,7 @@ class CreateMenu extends UIElement{
         if(this.phase == UICharCreate.Phase.Look){
             this.gender_combobox.handle_click(position, value => {
                 this.parent.cheracter.entry.gender = value;
+                this.refresh_look();
             });
             this.face_buttons.forEach((button, index) => button.handle_click(position, this.change_face.bind(this, index * 2 - 1)));
             this.hair_buttons.forEach((button, index) => button.handle_click(position, this.change_hair.bind(this, index * 2 - 1)));
