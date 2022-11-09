@@ -3,6 +3,7 @@
  * @module CharEntry
  */
 
+import { Gender } from "../Types";
 import { Job } from "./Job";
 
 export class CharEntry {
@@ -46,8 +47,4 @@ export namespace CharEntry {
         value: number;
         trend: Trend;
     }
-}
-
-export enum Gender {
-    male, female,
 }

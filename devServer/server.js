@@ -13,8 +13,8 @@ app.use(WebpackDevMiddleware(compiler, {publicPath: config.output.publicPath}));
 app.use(require("webpack-hot-middleware")(compiler));
 app.use(Express.static(Path.resolve(__dirname, "..", "dist")));
 
-app.ws("/login", ws => {
+app.ws("/api", ws => {
     Session(ws);
 })
 
-app.listen(8080)
+app.listen(8484)

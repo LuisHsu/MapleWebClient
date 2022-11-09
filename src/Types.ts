@@ -85,6 +85,10 @@ export namespace Color{
     export const GrayOlive = new Color(171, 171, 153);
 }
 
+export enum Gender {
+    male, female,
+}
+
 export interface NeedInit {
     init(...args: any[]): void;
 }

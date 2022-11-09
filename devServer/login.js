@@ -8,11 +8,11 @@ function login_handler(data, send){
     let packet = Buffer.alloc(6);
     packet.writeInt16BE(30001); // opcode
     if(account == "test" && password == "test"){
-        packet.writeInt32BE(0, 2); // success
+        packet.writeUint8(1, 2); // success
     }else if(account == "test" && password == "logined"){
-        packet.writeInt32BE(7, 2); // already logined
+        packet.writeUint8(7, 2); // already logined
     }else{
-        packet.writeInt32BE(5, 2); // not registered
+        packet.writeUint8(0, 2); // not registered
     }
     send(packet);
 }

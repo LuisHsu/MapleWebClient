@@ -3,6 +3,7 @@
  * @module LoginSession
  */
 
+import Setting from "../Setting";
 import { NeedInit } from "../Types";
 import { UICharCreate } from "../ui/UICharCreate";
 import { UICharSelect } from "../ui/UICharSelect";
@@ -30,7 +31,7 @@ class LoginSession extends Session implements NeedInit{
     }
 
     open(callback?: () => void): void {
-        super.connect(`ws://${location.host}/login`, callback);
+        super.connect(`ws://${Setting.ServerHost}:${Setting.ServerPort}/api`, callback);
     }
 
     login(account: string, password: string){

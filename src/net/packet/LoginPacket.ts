@@ -3,7 +3,7 @@
  * @module LoginPacket
  */
 
-import { CharEntry, Gender } from "../../character/CharEntry";
+import { CharEntry } from "../../character/CharEntry";
 import { Job } from "../../character/Job";
 import { InPacket } from "../InPacket";
 import { OutPacket } from "../OutPacket";
@@ -16,7 +16,7 @@ export namespace LoginPacket {
             static decode(data: ArrayBuffer): InPacket{
                 let packet = new Login.In;
                 let view = new DataView(data);
-                switch(view.getUint32(0, endian)){
+                switch(view.getUint8(0)){
                     case Reason.success:
                         packet.reason = Reason.success;
                     break;
@@ -34,8 +34,8 @@ export namespace LoginPacket {
         }
 
         export enum Reason {
-            success = 0,
-            not_regstered = 5,
+            success = 1,
+            not_regstered = 0,
             already_logged_in = 7,
             unknown = 23,
         }
