@@ -1,9 +1,11 @@
 const Path = require("path");
+const Crypto = require("crypto");
+const { readFileSync, copyFileSync } = require("fs");
 
 function WzObject(parent, json){
     this._parent = parent;
 
-    if(json["_dirName"]){
+    if(json["_dirName"] !== undefined){
         this._name = json["_dirName"];
         delete json["_dirName"];
     }
@@ -37,30 +39,27 @@ function WzObject(parent, json){
     Object.entries(json).forEach(([key, val]) => resolve_object.call(this, key, val));
 }
 
-function WzJSON(path, json){
-    this._path = path;
+function WzJSON(path, out_path, json){
+    this._path = path.split(Path.sep);
+    this._out = out_path;
     WzObject.call(this, null, json);
 }
-WzJSON.prototype.valueOf = function(){
+WzJSON.prototype.toJSON = function(){
     let result = {...this};
     delete result["_parent"];
+    delete result["_path"];
+    delete result["_out"];
     return result;
-}
-WzJSON.prototype.toJSON = function(){
-    return this.valueOf();
 }
 
 function WzDir(parent, json){
     WzObject.call(this, parent, json);
 }
-WzDir.prototype.valueOf = function(){
+WzDir.prototype.toJSON = function(){
     let result = {...this};
     delete result["_parent"];
     delete result["_name"];
     return result;
-}
-WzDir.prototype.toJSON = function(){
-    return this.valueOf();
 }
 
 function WzNumber(parent, json){
@@ -101,26 +100,33 @@ function WzCanvas(parent, json){
     this.size = [json["_width"], json["_height"]];
     this.layer = this.z;
     delete this.z;
+    this.image = `${this._name}.png`;
+    // Get image path
+    for(let cursor = this._parent; cursor; cursor = cursor._parent){
+        if(cursor instanceof WzDir){
+            this.image = `${cursor._name}.${this.image}`;
+        }else if(cursor instanceof WzJSON){
+            const file_path = cursor._path.reduce(
+                (path, elem) => path + (elem + Path.sep).repeat(2), ""
+            ) + this.image;
+            this.hash = Crypto.createHash("md5").update(readFileSync(file_path)).digest().toString('hex');
+            copyFileSync(file_path, Path.join(cursor._out, this.hash + ".png"));
+        }
+    }
 }
-WzCanvas.prototype.valueOf = function(){
+WzCanvas.prototype.toJSON = function(){
     let result = {...this};
     delete result["_parent"];
     delete result["_name"];
     return result;
-}
-WzCanvas.prototype.toJSON = function(){
-    return this.valueOf();
 }
 
 function WzLink(parent, json){
     WzObject.call(this, parent, json);
     this._link = json["_value"];
 }
-WzLink.prototype.valueOf = function(){
-    return this._link;
-}
 WzLink.prototype.toJSON = function(){
-    return this.valueOf();
+    return this._link;
 }
 
 module.exports = {
