@@ -7,11 +7,14 @@ function Fixer(in_path, out_path){
     this.out_path = out_path;
 }
 
-Fixer.prototype.start = function() {
+Fixer.prototype.prepare = function() {
     return Fs.rm(this.out_path, {recursive: true, force: true})
     .then(() => Fs.mkdir(Path.join(this.out_path), {recursive: true}))
     .then(() => Fs.readdir(this.in_path))
-    .then(paths => paths.filter(path => path.endsWith(".json"))
+}
+
+Fixer.prototype.start = function(paths){
+    return paths.filter(path => path.endsWith(".json"))
         .map(path => Fs.readFile(Path.join(this.in_path, path))
             .then(data => JSON.parse(data))
             .then(json => new WzJSON(
@@ -24,16 +27,16 @@ Fixer.prototype.start = function() {
                 JSON.stringify(json, null, 2)
             ))
         )
-    )
-    .then(results => Promise.all(results))
 }
 
-Fixer.prototype.fix = function(json) {
-    return json;
-}
+module.exports = { Fixer }
 
-const test_fixer = new Fixer(process.argv[2], process.argv[3])
-test_fixer.start()
-.then(() => {
-    console.log("Finished")
-})
+if(require.main === module){
+    const fixer = new Fixer(process.argv[2], process.argv[3])
+    fixer.prepare()
+    .then(paths => fixer.start(paths))
+    .then(proms => Promise.all(proms))
+    .then(() => {
+        console.log("Finished")
+    })
+}
