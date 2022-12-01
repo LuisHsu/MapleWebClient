@@ -34,8 +34,8 @@ export namespace LoginPacket {
         }
 
         export enum Reason {
-            success = 1,
-            not_regstered = 0,
+            success = 0,
+            not_regstered = 1,
             already_logged_in = 7,
             unknown = 23,
         }
@@ -79,10 +79,10 @@ export namespace LoginPacket {
                     let name_length = view.getUint16(offset += 4, endian);
                     character.name = String.decode(data, name_length, offset += 2).data;
                     character.gender = view.getUint8(offset += name_length);
-                    character.skin_id = view.getUint8(offset += 1);
-                    character.face_id = view.getUint16(offset += 1, endian);
-                    character.hair_id = view.getUint16(offset += 2, endian);
-                    let pet_count = view.getUint8(offset += 2);
+                    character.skin_id = view.getUint32(offset += 1, endian).toString().padStart(8, '0');
+                    character.face_id = view.getUint32(offset += 4, endian);
+                    character.hair_id = view.getUint32(offset += 4, endian).toString().padStart(8, '0');
+                    let pet_count = view.getUint8(offset += 4);
                     for(let i = 0; i < pet_count; ++i){
                         character.pet_ids.push(view.getUint8(offset += 1));
                     }
@@ -104,11 +104,11 @@ export namespace LoginPacket {
                     character.fame = view.getUint16(offset += 4, endian);
                     character.map_id = view.getUint32(offset += 2, endian);
                     character.portal = view.getUint8(offset += 4);
-                    for(let slot = view.getUint8(offset += 1); slot != 0xFF; slot = view.getUint8(offset += 4)){
-                        character.equips[slot] = view.getUint32(offset += 1, endian);
+                    for(let slot = view.getUint32(offset += 1); slot != 0xFF; slot = view.getUint32(offset += 4)){
+                        character.equips[slot] = view.getUint32(offset += 4, endian);
                     }
-                    for(let slot = view.getUint8(offset += 1); slot != 0xFF; slot = view.getUint8(offset += 4)){
-                        character.masked_equips[slot] = view.getUint32(offset += 1, endian);
+                    for(let slot = view.getUint32(offset += 4); slot != 0xFF; slot = view.getUint32(offset += 4)){
+                        character.masked_equips[slot] = view.getUint32(offset += 4, endian);
                     }
                     let has_rankinfo = view.getUint8(offset += 1);
                     if(has_rankinfo){

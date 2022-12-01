@@ -8,11 +8,11 @@ function login_handler(data, send){
     let packet = Buffer.alloc(6);
     packet.writeInt16BE(30001); // opcode
     if(account == "test" && password == "test"){
-        packet.writeUint8(1, 2); // success
+        packet.writeUint8(0, 2); // success
     }else if(account == "test" && password == "logined"){
         packet.writeUint8(7, 2); // already logined
     }else{
-        packet.writeUint8(0, 2); // not registered
+        packet.writeUint8(1, 2); // not registered
     }
     send(packet);
 }
@@ -52,40 +52,40 @@ module.exports = {
 }
 
 function create_mock_character(){
-    let buffer = Buffer.alloc(78);
-
+    let buffer = Buffer.alloc(91);
+    let offset = 0;
     buffer.writeInt32BE(123); // cid: 4 = 123
-    buffer.writeUint16BE(8, 4); // name_length: 2 = 8
-    buffer.write("TestChar", 6); // name: 8 = TestChar
-    buffer.writeUint8(1, 14) // gender: 1 = female
-    buffer.writeUint8(0, 15) // skin: 1 = Light
-    buffer.writeUint16BE(3046, 16) // face: 2 = Smile
-    buffer.writeUint16BE(100, 18) // hair: 2 = Smile
-    buffer.writeUint8(0, 20) // pet_count: 1 = 0
+    buffer.writeUint16BE(8, offset += 4); // name_length: 2 = 8
+    buffer.write("TestChar", offset += 2); // name: 8 = TestChar
+    buffer.writeUint8(1, offset += 8) // gender: 1 = female
+    buffer.writeUint32BE(2000, offset += 1) // skin: 4 = Light
+    buffer.writeUint32BE(21000, offset += 4) // face: 4 = Smile
+    buffer.writeUint32BE(30100, offset += 4) // hair: 4 = Smile
+    buffer.writeUint8(0, offset += 4) // pet_count: 1 = 0
     // pet_id: 2
-    buffer.writeUint16BE(20, 21) // level: 2 = 20
-    buffer.writeUint16BE(200, 23) // job: 2 = magician
-    buffer.writeUint8(1, 25) // grade: 1 = first
-    buffer.writeUint16BE(4, 26) // str: 2 = 4
-    buffer.writeUint16BE(4, 28) // dex: 2 = 4
-    buffer.writeUint16BE(86, 30) // int: 2 = 86
-    buffer.writeUint16BE(23, 32) // luk: 2 = 23
-    buffer.writeUint32BE(1000, 34) // hp: 4 = 1000
-    buffer.writeUint32BE(1200, 38) // max_hp: 4 = 1200
-    buffer.writeUint32BE(5000, 42) // mp: 4 = 5000
-    buffer.writeUint32BE(5600, 46) // max_mp: 4 = 5600
-    buffer.writeUint16BE(5, 50) // ap: 2 = 5
-    buffer.writeUint16BE(3, 52) // sp: 2 = 3
-    buffer.writeUint32BE(72000, 54) // exp: 4 = 72000
-    buffer.writeUint16BE(15, 58) // fame: 2 = 15
-    buffer.writeUint32BE(0, 60) // map_id: 4 = 0
-    buffer.writeUint8(0, 64) // portal: 1 = 0
-    buffer.writeUint8(0xFF, 65) // equip_slot: 1 = none
-    buffer.writeUint8(0xFF, 66) // masked_equip_slot: 1 = none
-    buffer.writeUint8(1, 67) // has rankinfo: 1 = true
-    buffer.writeUint32BE(345, 68) // rank_value: 4 = 345
-    buffer.writeInt8(-1, 72) // rank_trend: 1 = -
-    buffer.writeUint32BE(234, 73) // job_rank_value: 4 = 234
-    buffer.writeInt8(1, 77) // job_rank_trend: 1 = +
+    buffer.writeUint16BE(20, offset += 1) // level: 2 = 20
+    buffer.writeUint16BE(200, offset += 2) // job: 2 = magician
+    buffer.writeUint8(1, offset += 2) // grade: 1 = first
+    buffer.writeUint16BE(4, offset += 1) // str: 2 = 4
+    buffer.writeUint16BE(4, offset += 2) // dex: 2 = 4
+    buffer.writeUint16BE(86, offset += 2) // int: 2 = 86
+    buffer.writeUint16BE(23, offset += 2) // luk: 2 = 23
+    buffer.writeUint32BE(1000, offset += 2) // hp: 4 = 1000
+    buffer.writeUint32BE(1200, offset += 4) // max_hp: 4 = 1200
+    buffer.writeUint32BE(5000, offset += 4) // mp: 4 = 5000
+    buffer.writeUint32BE(5600, offset += 4) // max_mp: 4 = 5600
+    buffer.writeUint16BE(5, offset += 4) // ap: 2 = 5
+    buffer.writeUint16BE(3, offset += 2) // sp: 2 = 3
+    buffer.writeUint32BE(72000, offset += 2) // exp: 4 = 72000
+    buffer.writeUint16BE(15, offset += 4) // fame: 2 = 15
+    buffer.writeUint32BE(0, offset += 2) // map_id: 4 = 0
+    buffer.writeUint8(0, offset += 4) // portal: 1 = 0
+    buffer.writeUint32BE(0xFF, offset += 1) // equip_slot: 1 = none
+    buffer.writeUint32BE(0xFF, offset += 4) // masked_equip_slot: 1 = none
+    buffer.writeUint8(1, offset += 4) // has rankinfo: 1 = true
+    buffer.writeUint32BE(345, offset += 1) // rank_value: 4 = 345
+    buffer.writeInt8(-1, offset += 4) // rank_trend: 1 = -
+    buffer.writeUint32BE(234, offset += 1) // job_rank_value: 4 = 234
+    buffer.writeInt8(1, offset += 4) // job_rank_trend: 1 = +
     return buffer;
 }
